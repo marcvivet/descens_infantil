@@ -1,0 +1,53 @@
+{
+  "name": "descens_infantil",
+  "version": "1.0.0",
+  "description": "Descens Infantil",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "postinstall": "install-app-deps",
+    "pack": "./node_modules/.bin/electron-packager . --overwrite --ignore=pyapp$",
+    "dist": "build"
+  },
+  "keywords": [],
+  "author": "Marc Vivet <marc.vivet@gmail.com>",
+  "homepage": "www.vivet.cat",
+  "license": "ISC",
+  "build": {
+    "appId": "descens_infantil",
+    "dmg": {
+      "contents": [
+        {
+          "x": 110,
+          "y": 150
+        },
+        {
+          "x": 240,
+          "y": 150,
+          "type": "link",
+          "path": "/Applications"
+        }
+      ]
+    },
+    "linux": {
+      "target": [
+        "AppImage",
+        "deb"
+      ]
+    },
+    "win": {
+      "target": "NSIS"
+    }
+  },
+  "devDependencies": {
+    "electron": "^4.1.2",
+    "electron-builder": "^20.39.0",
+    "electron-packager": "^13.1.1",
+    "electron-prebuilt": "*"
+  },
+  "dependencies": {
+    "python-shell": "^0.5.0",
+    "request-promise": "*"
+  }
+}

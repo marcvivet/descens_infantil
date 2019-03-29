@@ -1,0 +1,10 @@
+Hola Cunyaoooo! A veure anem a pams, per a que entenguis com funciona ara i així serà més fàcil que entenguis el que vull. T’adjunto:
+
+Un document de com funciona actualment la base de dades. Millor que et llegeixes primer aquest, ja que la BD dona alguns errors i aquí ja s’expliquen els truquets per a “saltar-se” els problemes d’encallada.
+La Base de dades actual per a que vegis el format de com funciona, en principi la entrada de temps i els informes que genera serien iguals.
+Dos exemples de resultats per a que vegis el disseny i el tema del premi Anselm bort, però això si no et queda clar ja ho arreglem quan ens veiem o fem Skype.
+Un document de que necessitem de la nova BD.
+Excel dels incsrits/llista sortida/llista repartiment dorsals. Aqueí veus el full que genera el web dels inscrits. També la llista de sortida i la de dorsals que actualment no em fa la BD de ara i que caldria que fes.
+Aprofito per dir-te que volem comprar un nou ordinador/tablet (300-400 €) ja que només la fem servir un cop l’any. Només instal·larem la base de dades, i algo d’accés a internet per a penjar 4 documents. Estaria bé valorar el programa en funció del aparell que comprem. No sé si per això potser una tablet o un ordinador senzillet tipus el del Lluc, saps? Parlem-ne.
+
+ 

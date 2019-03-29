@@ -1,0 +1,5 @@
+build
+.venv
+pyappdist
+node_modules
+*__pycache__*
