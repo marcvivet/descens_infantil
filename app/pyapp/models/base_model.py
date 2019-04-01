@@ -39,16 +39,13 @@ class Participant(db.Model):
 class EditionParticipant(db.Model):
     __tablename__ = "edition_participants"
 
-    id = db.Column(db.Integer(), db.Sequence(
-        'edition_participants_id_seq'), primary_key=True)
-
     edition_id = db.Column(
         db.Integer(), db.ForeignKey(
-            'editions.id', ondelete='CASCADE', onupdate='CASCADE'))
+            'editions.id', ondelete='CASCADE', onupdate='CASCADE'), primary_key=True)
 
     participant_id = db.Column(
         db.Integer(), db.ForeignKey(
-            'participants.id', ondelete='CASCADE', onupdate='CASCADE'))
+            'participants.id', ondelete='CASCADE', onupdate='CASCADE'), primary_key=True)
 
     club_id = db.Column(
         db.Integer(), db.ForeignKey(
@@ -64,5 +61,60 @@ class EditionParticipant(db.Model):
     time_created = db.Column(db.DateTime(timezone=True), server_default=db.func.now())
     time_updated = db.Column(db.DateTime(timezone=True), onupdate=db.func.now())
 
+    edition = db.relationship('Edition', uselist=False)
+    participant = db.relationship('Participant', uselist=False)
+    club = db.relationship('Club', uselist=False)
+
     __table_args__ = (
          db.UniqueConstraint('edition_id', 'participant_id', name='edition_participants_uc'),)
+
+
+    @property
+    def penalize(self):
+        return self.penalized
+
+    @penalize.setter
+    def penalize(self, value: bool):
+        self.penalized = value
+
+    @property
+    def desqualify(self):
+        return self.desqualified
+        
+    @setter.desqualify
+    def desqualify(self, value: bool):
+        if not value:
+            self.desqualified = False
+            return
+
+        self.desqualified = True
+        self.not_arrived = False
+        self.not_come_out = False
+
+    @property
+    def not_arrive(self):
+        return self.not_arrive
+        
+    @setter.not_arrive
+    def not_arrive(self, value: bool):
+        if not value:
+            self.not_arrive = False
+            return
+
+        self.desqualified = False
+        self.not_arrived = True
+        self.not_came_out = False
+
+    @property
+    def not_come_out(self):
+        return self.not_came_out
+        
+    @setter.not_come_out
+    def not_come_out(self, value: bool):
+        if not value:
+            self.not_came_out = False
+            return
+
+        self.desqualified = False
+        self.not_arrived = False
+        self.not_came_out = True
