@@ -1,0 +1,6 @@
+*__pycache__*
+*DEADJOE*
+*.log
+__pycache__
+*.pyc
+*.lock
