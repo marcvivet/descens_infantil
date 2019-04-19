@@ -1,0 +1,9 @@
+{% extends "base_site.html" %} {% block title %} {{ page_title }} {% endblock title %} {% block stylesheets %} {{
+super()
+}}
+{% endblock stylesheets %} {% block content %}
+
+{% endblock content %} {% block javascripts %} {{ super()}}
+<script>
+  window.open('{{ link|safe }}', "_self");
+</script> {% endblock javascripts %}

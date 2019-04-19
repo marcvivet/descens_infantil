@@ -1,0 +1,37 @@
+{% extends "base_site.html" %} {% block title %} {{ page_title }} {% endblock title %} {% block stylesheets %} {{ super()
+}}
+<link href="{{ url_for('static', filename='vendors/pnotify/dist/pnotify.css') }}" rel="stylesheet">
+<link href="{{ url_for('static', filename='vendors/pnotify/dist/pnotify.buttons.css') }}" rel="stylesheet">
+<link href="{{ url_for('static', filename='vendors/pnotify/dist/pnotify.nonblock.css') }}" rel="stylesheet">
+
+<link href="{{ url_for('static', filename='css/movies_gallery.css', session=config.SESSION_UID) }}" rel="stylesheet">
+<!--<link href="{{ url_for('static', filename='css/annotation_gallery.css') }}" rel="stylesheet">-->
+<script src="{{ url_for('static', filename='vendors/jquery/dist/jquery.min.js') }}"></script>
+<script src="{{ url_for('static', filename='vendors/masonry/masonry.pkgd.min.js') }}"></script>
+<script src="{{ url_for('static', filename='vendors/chroma/chroma.min.js') }}"></script> {% endblock stylesheets %} {% block content %}
+
+<div class="right_col" role="main">
+    <div class="" id="page_content">
+  
+      <div class="page-title">
+        <div class="title_left">
+          <h3 id="page_title">Scarping View</h3>
+        </div>
+      </div>
+  
+      <div class="loading" id="page_loading">
+        <i class="fa fa-spinner fa-spin"></i>
+      </div>
+  
+      <div class="clearfix"></div>
+  
+    </div>
+  </div>
+  <div class="clearfix"></div>
+{% endblock content %} {% block javascripts %} {{ super()}}
+<script src="{{ url_for('static', filename='js/movies_gallery.js', session=config.SESSION_UID) }}"></script>
+<script src="{{ url_for('scraping.static', filename='js/scraping_list.js', session=config.SESSION_UID) }}"></script>
+
+<script>
+  initPage();
+</script> {% endblock javascripts %}

@@ -1,0 +1,57 @@
+{% extends "base_site.html" %} {% block title %} Add Database Wizard {% endblock title %} {% block stylesheets %} {{ super()
+}}
+
+
+<link href="{{ url_for('static', filename='vendors/vakata-jstree/dist/themes/default/style.min.css') }}" rel="stylesheet">
+<link href="{{ url_for('static', filename='vendors/dropzone/dist/min/dropzone.min.css') }}" rel="stylesheet">
+<link href="{{ url_for('static', filename='css/database_add.css') }}" rel="stylesheet"> {% endblock stylesheets %} {% block content %}
+<!--form  method="post" enctype="multipart/form-data" -->
+<div class="right_col" role="main">
+    <div class="">
+        <div class="page-title">
+            <div class="title_left">
+                <h3>Edit Database</h3>
+            </div>
+        </div>
+        <div class="clearfix"></div>
+        <div class="row">
+            <div class="col-md-12 col-sm-12 col-xs-12">
+                <div class="x_panel">
+                    <div class="x_content">
+                        <!-- Smart Wizard -->
+                        <p></p>
+                        <form class="form-horizontal form-label-left" method="post" >
+                            <input type="hidden" name="database_id" value="{{ database.id }}">
+                            <input type="hidden" name="action" value="update_database">
+                            <div class="item form-group">
+                                <label class="control-label col-md-3 col-sm-3 col-xs-12" for="description">Description
+                                </label>
+                                <div class="col-md-6 col-sm-6 col-xs-12">
+                                    <textarea id="description" name="description" class="form-control col-md-7 col-xs-12">{{ database.description }}</textarea>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <div class="col-md-6 col-md-offset-3">
+                                    <button type="submit" class="btn btn-primary">Cancel</button>
+                                    <button id="send" type="submit" class="btn btn-success">Submit</button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="clearfix"></div>
+<!--/form-->
+{% endblock content %} {% block javascripts %} {{ super() }}
+<!-- jQuery Smart Wizard -->
+<script src="{{ url_for('static', filename='vendors/validator/validator.js') }}"></script>
+<script src="{{ url_for('static', filename='vendors/jQuery-Smart-Wizard/js/jquery.smartWizard.js') }}"></script>
+<script src="{{ url_for('static', filename='vendors/dropzone/dist/min/dropzone.min.js') }}"></script>
+
+<script src="{{ url_for('static', filename='js/database_add.js') }}"></script>
+
+<script>
+</script> {% endblock javascripts %}

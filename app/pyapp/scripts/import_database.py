@@ -9,7 +9,8 @@ sys.path.append(
     os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 )
 
-from models.base_model import db, Club, Edition, Participant, EditionParticipant
+from models.descens_infantil_model import db as dbd, Club, Edition, Participant, EditionParticipant
+from models.interface_model import db as dbi, User, Role, Page
 from utils.dbmanager import DBManager
 
 
@@ -17,7 +18,8 @@ def main():
     data_folder = '/home/marc/local.x86_64/src/descens_infantil/extract/data'
 
     manager = DBManager(clean=True)
-    manager.create_all(db.Model)
+    manager.create_all(dbd.Model)
+    manager.create_all(dbi.Model)
 
 
     with open(os.path.join(data_folder, 'CLUBS.csv'), newline='') as csvfile:
@@ -87,6 +89,38 @@ def main():
                 # print(club)
                 # print(edition)
                 print(f' Error: {participant}')
+
+    try:
+        admin_role = Role('Admin')
+        user_role = Role('User')
+
+        # Adding Default users
+        user = User(
+            'marc', name='Marc', surname='Vivet', email='marc.vivet@gmail.com', active=True,
+            picture='/static/images/marc.jpg', trusted=True)
+
+        user.roles.append(admin_role)
+        user.roles.append(user_role)
+
+        manager.add(user)
+
+        user = User(
+            'test', name='Test', surname='User', active=True)
+
+        user.roles.append(user_role)
+        manager.add(user)
+        manager.commit()
+
+        page = Page(
+            'templates', description='GUI templates (for development only)')
+        page.roles.append(admin_role)
+        manager.add(page)
+        manager.commit()
+
+    except Exception as e:
+        print('Exception: {}'.format(e))
+        pass
+    
 
 if __name__ == '__main__':
     main()

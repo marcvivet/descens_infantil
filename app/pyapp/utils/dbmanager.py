@@ -6,6 +6,8 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.pool import StaticPool
 
+from models.interface_model import Page, Role, User
+
 LOG = logging.getLogger(__name__)
 
 
@@ -80,7 +82,7 @@ class DBManager(metaclass=NamedSingleton):
         self.data_base_local_path = None
         self.data_base_path = data_base_path
 
-        self.models = {}
+        self.config = None
 
         self.connect(clean=clean)
 
@@ -243,3 +245,51 @@ class DBManager(metaclass=NamedSingleton):
     def query(self, element):
         return self.session.query(element)
 
+    def get_config(self, force=False):
+        """Returns a dictionary with the key as the configuration key and value as its value.
+
+        Returns:
+            Dictionray -- With key as the configuration key and value as its value.
+        """
+
+        if not self.config or force:
+            self.config = {}
+
+            result = self.execute(
+                'SELECT configuration.key, configuration.value '
+                'FROM configuration').fetchall()
+
+            for row in result:
+                self.config[row['key']] = row['value']
+
+        return self.config
+
+    def get_roles(self):
+        return self.query(Role).all()
+
+    def get_role_by_id(self, role_id):
+        return self.query(Role).filter_by(id=role_id).first()
+
+    def delete_role_by_id(self, role_id):
+        role = self.query(Role).filter_by(id=role_id).one()
+        name = role.name
+        self.delete(role)
+        return name
+
+    def get_pages(self):
+        return self.query(Page).all()
+
+    def get_page_by_name(self, page_name):
+        return self.query(Page).filter_by(name=page_name).first()
+
+    def add_page(self, name, description=None, default_role='Admin'):
+        page = Page(name, description=description)
+
+        if default_role:
+            admin = self.query(Role).filter_by(name=default_role).one()
+            page.roles.append(admin)
+
+        self.add(page)
+        self.commit()
+
+        return page

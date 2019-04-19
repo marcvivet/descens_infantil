@@ -62,7 +62,7 @@ function createWindow() {
     var menu = Menu.buildFromTemplate([{
         label: 'Menu',
         submenu: [{
-                label: 'Ask to MovieDB',
+                label: 'Ask to descens infantil',
                 click() {
                     net.addListener
                     const request = net.request({

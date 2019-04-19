@@ -1,0 +1,109 @@
+:root {
+    --selected-row: #539C85;
+    --selected-row-font: white;
+}
+
+.modal-dialog-base {
+    margin: 1% auto;
+}
+
+.modal-lg-base {
+    width: 98%;
+    /*height: 95%;*/
+    
+}
+
+.modal-content {
+    width: 100%;
+    /*height: 100%;*/
+    overflow: auto;
+    min-height: 0px;
+}
+
+.close_tool {
+    float:left;
+    text-align: left;
+    margin-right: 10px;
+    padding-top: 5px;
+    padding-bottom: 0px;
+}
+
+.modal-body {
+    position: relative;
+    /*margin-left: 15px;
+    padding-bottom: 0px;*/
+}
+
+table.dataTable tbody tr.selected {
+    background-color: var(--selected-row);
+    color: var(--selected-row-font);
+  }
+  
+  table.dataTable.stripe tbody tr.odd.selected,
+  table.dataTable.display tbody tr.odd.selected {
+    background-color: var(--selected-row);
+    color: var(--selected-row-font);
+  }
+  
+  table.dataTable.order-column tbody tr.selected > .sorting_1,
+  table.dataTable.order-column tbody tr.selected > .sorting_2,
+  table.dataTable.order-column tbody tr.selected > .sorting_3,
+  table.dataTable.display tbody tr.selected > .sorting_1,
+  table.dataTable.display tbody tr.selected > .sorting_2,
+  table.dataTable.display tbody tr.selected > .sorting_3 {
+    background-color: var(--selected-row);
+    color: var(--selected-row-font);
+  }
+  
+  table.dataTable.display tbody tr.odd.selected > .sorting_1,
+  table.dataTable.order-column.stripe tbody tr.odd.selected > .sorting_1 {
+    background-color: var(--selected-row);
+    color: var(--selected-row-font);
+  }
+  table.dataTable.display tbody tr.odd.selected > .sorting_2,
+  table.dataTable.order-column.stripe tbody tr.odd.selected > .sorting_2 {
+    background-color: var(--selected-row);
+    color: var(--selected-row-font);
+  }
+  table.dataTable.display tbody tr.odd.selected > .sorting_3,
+  table.dataTable.order-column.stripe tbody tr.odd.selected > .sorting_3 {
+    background-color: var(--selected-row);
+    color: var(--selected-row-font);
+  }
+  
+  table.dataTable.display tbody tr.even.selected > .sorting_1,
+  table.dataTable.order-column.stripe tbody tr.even.selected > .sorting_1 {
+    background-color: var(--selected-row);
+    color: var(--selected-row-font);
+  }
+  table.dataTable.display tbody tr.even.selected > .sorting_2,
+  table.dataTable.order-column.stripe tbody tr.even.selected > .sorting_2 {
+    background-color: var(--selected-row);
+    color: var(--selected-row-font);
+  }
+  table.dataTable.display tbody tr.even.selected > .sorting_3,
+  table.dataTable.order-column.stripe tbody tr.even.selected > .sorting_3 {
+    background-color: var(--selected-row);
+    color: var(--selected-row-font);
+  }
+
+  .loading {
+    background: rgba(0, 0, 0, 0.5);
+    left: 0%;
+    top: 0%;
+    width: 100%;
+    height: 100%;
+    position: fixed;
+    z-index: 9999;
+    font-size: 50px;
+    color: white;
+    padding-left: 50%;
+    padding-top: 40%;
+    opacity: 0;
+    pointer-events: none;
+
+    -webkit-transition: all 0.15s ease-in-out;
+    -moz-transition: all 0.15s ease-in-out;
+    -ms-transition: all 0.15s ease-in-out;
+    -o-transition: all 0.15s ease-in-out;
+ }

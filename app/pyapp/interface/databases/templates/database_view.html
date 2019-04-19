@@ -1,0 +1,100 @@
+{% extends "base_site.html" %}
+
+{% block title %} Users {% endblock title %}
+
+{% block stylesheets %}
+  {{ super() }}
+{% endblock stylesheets %}
+
+{% block content %}
+  <div class="right_col" role="main">
+    <div class="">
+      <div class="page-title">
+        <div class="title_left">
+          <h3>Databases</h3>
+        </div>
+      </div>
+
+      <div class="clearfix"></div>
+
+      <div class="row">
+        <div class="col-md-12">
+          <div class="x_panel">
+            <div class="x_content">
+              <div class="row">
+                {% if num_databases == 0%}
+                <p>There isn't any scrapped database in the system. Please add one.</p>
+                {% endif %}
+                {% for database in databases %}
+                <div class="col-md-55" style="min-width: 500px; padding: 0px; margin: 5px;">
+                  <div class="profile_details">
+                  <div class="well profile_view" style="margin-bottom: 0px;">
+                    <div class="col-sm-12">
+                      <div class="left col-xs-9">
+                        <h4>{{ database.name }}</h4>
+                        <p><strong>Description: </strong> {{ database.description }} </p>
+                        <ul class="list-unstyled">
+                          <li><i class="fa fa-database"></i> <strong>type:</strong> {{ database.type }}</li>
+                          <li><i class="fa fa-film"></i> <strong>movies:</strong> {{ database.num_movies }}</li>
+                          <li><i class="fa fa-navicon"></i> <strong>threads:</strong> {{ database.num_threads }}</li>
+                          <li><i class="fa fa-calendar"></i> <strong>created:</strong> {{ database.time_created }}</li>
+                          <li><i class="fa fa-exchange"></i> <strong>interval:</strong> {{ database.date_interval }}</li>
+                        </ul>
+                      </div>
+                      <div class="right col-xs-3 text-center">
+                        <img src="{{ database.picture }}" width="100px" alt="" class="img-responsive">
+                      </div>
+                    </div>
+                    <div class="col-xs-12 bottom text-center">
+                      <div class="col-xs-12 col-sm-3 emphasis">
+                        <form method="post">
+                            <input type="hidden" name="action" value="delete">
+                            <input type="hidden" name="database_id" value="{{ database.id }}">
+                            <button type="submit" class="btn btn-danger btn-xs" {% if database.name == 'ac_default' %}disabled{% endif %}>
+                                <i class="fa fa-remove"> </i> Delete
+                            </button>
+                        </form>
+                      </div>
+                      <div class="col-xs-12 col-sm-3 emphasis">
+                        <form method="post">
+                            <input type="hidden" name="action" value="backup">
+                            <input type="hidden" name="database_id" value="{{ database.id }}">
+                            <button type="submit" class="btn btn-primary btn-xs" disabled>
+                                <i class="fa fa-life-ring"> </i> Backup
+                            </button>
+                        </form>
+                      </div>
+                      <div class="col-xs-12 col-sm-3 emphasis">
+                          <form method="post">
+                              <input type="hidden" name="action" value="edit">
+                              <input type="hidden" name="database_id" value="{{ database.id }}">
+                              <button type="submit" class="btn btn-primary btn-xs" disabled>
+                                  <i class="fa fa-edit"> </i> Edit
+                              </button>
+                          </form>
+                        </div>
+                      {% if database.type == 'SQLite' %}
+                      <div class="col-xs-12 col-sm-3 emphasis">
+                        <button type='button' onclick='location.href = "/databases/download/{{ database.name }}.sqlite"' class="btn btn-primary btn-xs">
+                            <i class="fa fa-download"> </i> Download
+                        </button>
+                      </div>
+                      {% endif %}
+                    </div>
+                  </div>
+                </div>
+                </div>
+                {% endfor %}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock content %}
+
+{% block javascripts %}
+  {{ super() }}
+{% endblock javascripts %}
+

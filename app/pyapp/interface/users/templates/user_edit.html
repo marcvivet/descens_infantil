@@ -1,0 +1,174 @@
+{% extends "base_site.html" %}
+
+{% block title %} Add new user {% endblock title %}
+
+{% block stylesheets %}
+{{ super() }}
+{% endblock stylesheets %}
+
+{% block content %}
+
+<div class="right_col" role="main">
+  <div class="">
+    <div class="page-title">
+      <div class="title_left">
+        <h3>{{ page_title }}</h3>
+      </div>
+    </div>
+    <div class="clearfix"></div>
+
+    <div class="row">
+      <div class="col-md-12 col-sm-12 col-xs-12">
+        <div class="x_panel">
+          <div class="x_content">
+            <form class="form-horizontal form-label-left" method="post" enctype="multipart/form-data">
+              {% if user %}<input type="hidden" name="user_id" value="{{ user.id }}">{% endif %}
+              <div class="item form-group">
+                <label class="control-label col-md-3 col-sm-3 col-xs-12" for="name">User name {% if not user %}<span
+                    class="required">*</span>{% endif %}
+                </label>
+                <div class="col-md-6 col-sm-6 col-xs-12">
+                  <input {% if user %}value="{{ user.username }}" disabled{% endif %} id="username" class="form-control col-md-7 col-xs-12"
+                    data-validate-length-range="6" name="username" placeholder="User name e.g jon" required="required"
+                    type="text">
+                </div>
+              </div>
+              <div class="item form-group">
+                <label class="control-label col-md-3 col-sm-3 col-xs-12" for="name">Name <span class="required">*</span>
+                </label>
+                <div class="col-md-6 col-sm-6 col-xs-12">
+                  <input {% if user %}value="{{ user.name }}" {% endif %} id="name" class="form-control col-md-7 col-xs-12"
+                    data-validate-length-range="6" name="name" placeholder="User name e.g Jon" required="required" type="text">
+                </div>
+              </div>
+              <div class="item form-group">
+                <label class="control-label col-md-3 col-sm-3 col-xs-12" for="surname">Surname <span class="required">*</span>
+                </label>
+                <div class="col-md-6 col-sm-6 col-xs-12">
+                  <input {% if user %}value="{{ user.surname }}" {% endif %} id="surname" class="form-control col-md-7 col-xs-12"
+                    data-validate-length-range="6" name="surname" placeholder="User surname e.g Doe" required="required"
+                    type="text">
+                </div>
+              </div>
+              <div class="item form-group">
+                <label class="control-label col-md-3 col-sm-3 col-xs-12" for="email">Email
+                </label>
+                <div class="col-md-6 col-sm-6 col-xs-12">
+                  <input {% if user and user.email %}value="{{ user.email }}" {% endif %} type="email" id="email" name="email"
+                    class="form-control col-md-7 col-xs-12">
+                </div>
+              </div>
+              <div class="item form-group">
+                <label class="control-label col-md-3 col-sm-3 col-xs-12" for="email">Confirm Email
+                </label>
+                <div class="col-md-6 col-sm-6 col-xs-12">
+                  <input {% if user and user.email %}value="{{ user.email }}" {% endif %} type="email" id="email2" name="confirm_email"
+                    data-validate-linked="email" class="form-control col-md-7 col-xs-12">
+                </div>
+              </div>
+              <div class="item form-group">
+                <label for="password" class="control-label col-md-3 col-sm-3 col-xs-12">Password {% if not user %}<span
+                    class="required">*</span>{% endif %}</label>
+                <div class="col-md-6 col-sm-6 col-xs-12">
+                  <input id="password" type="password" name="password" {% if not user %}required="required" {% endif %}
+                    data-validate-length="6,8" class="form-control col-md-7 col-xs-12">
+                </div>
+              </div>
+              <div class="item form-group">
+                <label for="password2" class="control-label col-md-3 col-sm-3 col-xs-12">Repeat Password {% if not user
+                  %}<span class="required">*</span>{% endif %}</label>
+                <div class="col-md-6 col-sm-6 col-xs-12">
+                  <input id="password2" type="password" name="password2" {% if not user %}required="required" {% endif
+                    %} data-validate-linked="password" class="form-control col-md-7 col-xs-12">
+                </div>
+              </div>
+              <div class="item form-group">
+                <label class="control-label col-md-3 col-sm-3 col-xs-12" for="telephone">Telephone
+                </label>
+                <div class="col-md-6 col-sm-6 col-xs-12">
+                  <input {% if user %}value="{{ user.phone }}" {% endif %} type="tel" id="phone" name="phone"
+                    data-validate-length-range="8,20" class="form-control col-md-7 col-xs-12">
+                </div>
+              </div>
+              <div class="item form-group">
+                <label class="control-label col-md-3 col-sm-3 col-xs-12" for="picture">Picture
+                </label>
+                <div class="col-md-6 col-sm-6 col-xs-12">
+                  <input type="file" name="picture" class="form-control col-md-7 col-xs-12">
+                </div>
+              </div>
+              {% if page_type != 'profile' %}
+              <div class="item form-group">
+                <label class="control-label col-md-3 col-sm-3 col-xs-12">Roles</label>
+                <div class="col-md-6 col-sm-6 col-xs-12">
+                  <select class="select2_multiple form-control col-md-7 col-xs-12" multiple="multiple" name="roles" id="roles">
+                    {% if user %}
+                    {% for role in roles_available %}
+                    {% if role.name in user_roles %}
+                    <option selected>{{ role.name }}</option>
+                    {% else %}
+                    <option>{{ role.name }}</option>
+                    {% endif %}
+                    {% endfor %}
+                    {% else %}
+                    {% for role in roles_available %}
+                    <option>{{ role.name }}</option>
+                    {% endfor %}
+                    {% endif %}
+                  </select>
+                </div>
+              </div>
+              <div class="item form-group">
+                <label class="control-label col-md-3 col-sm-3 col-xs-12" for="active">Active
+                </label>
+                <div class="col-md-6 col-sm-6 col-xs-12">
+                  <input type="checkbox" id="active" name="active" class="flat" {% if not user or user.active %}checked="checked"
+                    {% endif %}>
+                </div>
+              </div>
+              <div class="item form-group">
+                <label class="control-label col-md-3 col-sm-3 col-xs-12" for="trusted">Trusted
+                </label>
+                <div class="col-md-6 col-sm-6 col-xs-12">
+                  <input type="checkbox" id="trusted" name="trusted" class="flat" {% if user.trusted %}checked="checked"
+                    {% endif %}>
+                </div>
+              </div>
+              {% endif %}
+              <div class="item form-group">
+                <label class="control-label col-md-3 col-sm-3 col-xs-12" for="about">About
+                </label>
+                <div class="col-md-6 col-sm-6 col-xs-12">
+                  <textarea id="about" name="about" class="form-control col-md-7 col-xs-12">{% if user %}{{ user.about }}{% endif %}</textarea>
+                </div>
+              </div>
+              <div class="form-group">
+                <div class="col-md-6 col-md-offset-3">
+                  <button type="submit" class="btn btn-primary">Cancel</button>
+                  <button id="send" type="submit" class="btn btn-success">Submit</button>
+                </div>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock content %}
+
+{% block javascripts %}
+{{ super() }}
+<!-- validator -->
+<script src="{{ url_for('static', filename='vendors/validator/validator.js') }}"></script>
+
+<script>
+  {% if page_type != 'profile' %}
+  $('option').mousedown(function (e) {
+    e.preventDefault();
+    $(this).prop('selected', !$(this).prop('selected'));
+    return false;
+  });
+  {% endif %}
+</script>
+{% endblock javascripts %}

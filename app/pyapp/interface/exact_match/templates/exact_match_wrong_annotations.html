@@ -1,0 +1,88 @@
+{% extends "base_site.html" %} {% block title %} Add new user {% endblock title %} {% block stylesheets %} {{ super() }}
+<link href="{{ url_for('static', filename='vendors/datatables.net-bs/css/dataTables.bootstrap.min.css') }}" rel="stylesheet">
+<link href="{{ url_for('static', filename='vendors/datatables.net-buttons-bs/css/buttons.bootstrap.min.css') }}" rel="stylesheet">
+<link href="{{ url_for('static', filename='vendors/datatables.net-fixedheader-bs/css/fixedHeader.bootstrap.min.css') }}"
+    rel="stylesheet">
+<link href="{{ url_for('static', filename='vendors/datatables.net-responsive-bs/css/responsive.bootstrap.min.css') }}" rel="stylesheet">
+<link href="{{ url_for('static', filename='vendors/datatables.net-scroller-bs/css/scroller.bootstrap.min.css') }}" rel="stylesheet">
+<link href="{{ url_for('static', filename='css/exact_match.css', session=config.SESSION_UID) }}" rel="stylesheet">
+{% endblock stylesheets %} {% block content %}
+
+<div class="right_col" role="main">
+    <div class="">
+        <div class="page-title">
+            <div class="title_left">
+                <h3>Wrong Annotations</h3>
+            </div>
+        </div>
+        <div class="clearfix"></div>
+
+        <div class="row">
+            <div class="col-md-12 col-sm-12 col-xs-12">
+                <div class="x_panel">
+                    <div class="x_title">
+                        <h2>Job selection</h2>
+                        {% if job_data %}
+                        <ul class="nav navbar-right panel_toolbox">
+                            <li><button type="button" class="btn btn-success btn-sm" onclick="goButtonExactMatch();" id="button_go">
+                                <i class="fa fa-sign-in"> </i> Go!
+                              </button></li>
+                          </ul>
+                        {% endif %}
+                        <div class="clearfix"></div>
+                    </div>
+                    <div class="x_content">
+                        {% if job_data %}
+                        <p class="text-muted font-13 m-b-30">
+                            Select the job that you want to revise.
+                        </p>
+                        <table id="datatable" class="table table-striped table-bordered">
+                            <thead>
+                                <tr>
+                                    <th>Job Id</th>
+                                    <th>Job Name</th>
+                                    <th>Wrong Annotations</th>
+                                </tr>
+                            </thead>
+
+
+                            <tbody>
+                                {% for job in job_data %}
+                                <tr>
+                                    <td>{{job['job_id']}}</td>
+                                    <td>{{job['job_name']}}</td>
+                                    <td>{{job['count']}}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                        {% else %}
+                        <p class="text-muted font-13 m-b-30">
+                            You don't have any job assigned. Talk to the administrator.
+                        </p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock content %} {% block javascripts %} {{ super() }}
+<script src="{{ url_for('static', filename='vendors/datatables.net/js/jquery.dataTables.min.js') }}"></script>
+<script src="{{ url_for('static', filename='vendors/datatables.net-bs/js/dataTables.bootstrap.min.js') }}"></script>
+<script src="{{ url_for('static', filename='vendors/datatables.net-buttons/js/dataTables.buttons.min.js') }}"></script>
+<script src="{{ url_for('static', filename='vendors/datatables.net-buttons-bs/js/buttons.bootstrap.min.js') }}"></script>
+<script src="{{ url_for('static', filename='vendors/datatables.net-buttons/js/buttons.flash.min.js') }}"></script>
+<script src="{{ url_for('static', filename='vendors/datatables.net-buttons/js/buttons.html5.min.js') }}"></script>
+<script src="{{ url_for('static', filename='vendors/datatables.net-buttons/js/buttons.print.min.js') }}"></script>
+<script src="{{ url_for('static', filename='vendors/datatables.net-fixedheader/js/dataTables.fixedHeader.min.js') }}"></script>
+<script src="{{ url_for('static', filename='vendors/datatables.net-keytable/js/dataTables.keyTable.min.js') }}"></script>
+<script src="{{ url_for('static', filename='vendors/datatables.net-responsive/js/dataTables.responsive.min.js') }}"></script>
+<script src="{{ url_for('static', filename='vendors/datatables.net-responsive-bs/js/responsive.bootstrap.js') }}"></script>
+<script src="{{ url_for('static', filename='vendors/datatables.net-scroller/js/dataTables.scroller.min.js') }}"></script>
+<script src="{{ url_for('static', filename='vendors/jszip/dist/jszip.min.js') }}"></script>
+<script src="{{ url_for('static', filename='vendors/pdfmake/build/pdfmake.min.js') }}"></script>
+<script src="{{ url_for('static', filename='vendors/pdfmake/build/vfs_fonts.js') }}"></script>
+<script src="{{ url_for('static', filename='js/exact_match.js', session=config.SESSION_UID) }}"></script>
+<!-- validator -->
+{% endblock javascripts %}
