@@ -11,14 +11,10 @@ from utils.blueprint_utils import roles_required_online, config
 
 import json
 
-#from threading import Thread, Event
-from eventlet.green.threading import Thread, Event
-from eventlet.green.subprocess import Popen, PIPE
 from random import random
 from time import sleep
 #from subprocess import Popen, PIPE
 from queue import Queue, Empty
-import eventlet
 
 
 blp = Blueprint(
@@ -31,48 +27,6 @@ blp = Blueprint(
 )
 
 # --------------------------------------------------
-
-
-thread = Thread()
-thread_stop_event = Event()
-
-
-@blp.route('/main_test')
-def index():
-    #only by sending this page first will the client be connected to the socketio instance
-    return render_template('database_test.html')
-
-
-class ScrapingThread(Thread):
-    def __init__(self):
-        self.delay = 0.5
-        super(ScrapingThread, self).__init__()
-
-    def scrapingOutput(self):
-        """
-        Generate a random number every 1 second and emit to a socketio instance (broadcast)
-        Ideally to be run in a separate thread?
-        """
-        proc = Popen([
-            'python3', os.path.join(ROOT_FILE_PATH, 'test_process.py')],
-            stdout=PIPE, stderr=PIPE, bufsize=1)
-
-        while not thread_stop_event.isSet():
-            retcode = proc.poll()
-            if retcode is not None: # Process finished.
-                print('Exist thread')
-                break
-
-            for bin_line in proc.stdout:
-                line = bin_line.decode('ascii')[:-1]
-                sys.stdout.write(line)
-                sys.stdout.flush()
-                socketio.emit('scraping_output', json.dumps({'output': line}), namespace='/test')
-            sleep(self.delay)
-
-    def run(self):
-        self.scrapingOutput()
-
 
 
 

@@ -2,10 +2,10 @@ import os
 import sys
 import argparse
 from flask import render_template, session
-from models.interface_model import User
 from logging import basicConfig, DEBUG, getLogger, StreamHandler
 
-from app import create_app, login_manager
+from pyapp.models.interface_model import User
+from pyapp.app import create_app, login_manager
 
 app = create_app()
 
@@ -90,12 +90,12 @@ def internal_error(error):
     return render_template('errors/page_500.html'), 500
 
 
-ARGS = parse_args()
+def run():
+    args = parse_args()
+    configure_logs(app)
+    print(' * Running on http://0.0.0.0:{}/ (Press CTRL+C to quit)'.format(args.port))
+    #app.run(threaded=False, host='0.0.0.0', port=ARGS.port, ssl_context='adhoc')
+    app.run(threaded=False, host='0.0.0.0', port=args.port)
 
 if __name__ == "__main__":
-    configure_logs(app)
-    print(' * Running on http://0.0.0.0:{}/ (Press CTRL+C to quit)'.format(ARGS.port))
-    #app.run(threaded=False, host='0.0.0.0', port=ARGS.port, ssl_context='adhoc')
-    app.run(threaded=False, host='0.0.0.0', port=ARGS.port)
-
-
+    run()

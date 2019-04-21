@@ -10,8 +10,8 @@ from flask import Flask
 from flask_login import LoginManager
 from flask_user import UserManager, SQLAlchemyAdapter
 
-from utils.dbmanager import DBManager
-from models.interface_model import db, User
+from .utils.dbmanager import DBManager
+from .models.interface_model import db, User
 
 
 login_manager = LoginManager()
@@ -140,7 +140,7 @@ def create_app():
                 'scraping'):
             print('Loading module: {}'.format(module_name))
             module = import_module(
-                'interface.{}.{}'.format(module_name, module_name))
+                'pyapp.interface.{}.{}'.format(module_name, module_name))
 
             setup_blueprint(app, module.blp, module_name)
             module.blp.db_manager = app.db_manager

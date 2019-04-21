@@ -1,0 +1,18 @@
+{
+  "name": "descens_infantil",
+  "authors": [
+    "Marc Vivet <marc.vivet@gmail.com>"
+  ],
+  "description": "",
+  "main": "",
+  "license": "MIT",
+  "homepage": "",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "static",
+    "test",
+    "tests"
+  ]
+}

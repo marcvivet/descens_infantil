@@ -1,5 +1,3 @@
-from future.utils import iteritems
-
 import sys
 import os
 

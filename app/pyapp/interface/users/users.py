@@ -7,12 +7,12 @@ from flask import Blueprint, render_template, request, redirect
 from flask_login import current_user
 from flask_login import login_required
 
-from models.interface_model import  User, Role
+from pyapp.models.interface_model import  User, Role
 
 from PIL import Image
 import numpy as np
 
-from utils.blueprint_utils import roles_required_online, config
+from pyapp.utils.blueprint_utils import roles_required_online, config
 
 blp = Blueprint(
     'users',
