@@ -128,11 +128,22 @@ class Language(db.Model):
     def __init__(self, name: str = None, iso_639_1: str = None):
         self.name = name
         self.iso_639_1 = iso_639_1
+        self._locale = {}
 
         string = '{} {}'.format(name, iso_639_1)
 
         self.id = int(
             hashlib.sha256(string.encode('utf-8')).hexdigest(), 16) % 2**31
+
+    
+    @property
+    def locale(self):
+        return self._locale
+
+    @locale.setter
+    def locale(self, value: dict):
+        self._locale = locale
+
 
 
 class User(db.Model, UserMixin):

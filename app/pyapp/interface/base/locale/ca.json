@@ -1,0 +1,10 @@
+{
+    "UserNotActiveError": "El teu usuari està deshabilitat. Contacta amb l'administrador.",
+    "UserIncorrectError": "Nom d'usuari o contrasenya incorrectes.",
+    "Profile": "Perfil",
+    "LogOut": "Tancar Sessió",
+    "LogIn": "Iniciar Sessió",
+    "CopyRight": "©2019 Tots els drets reservats. Descens Infantil.",
+    "Username": "Nom d'usuari",
+    "Password": "Contrasenya"
+}

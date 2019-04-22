@@ -12,7 +12,7 @@ from pyapp.models.interface_model import  User, Role, Language
 from PIL import Image
 import numpy as np
 
-from pyapp.utils.blueprint_utils import roles_required_online, localizable, config
+from pyapp.utils.blueprint_utils import roles_required_online, config
 
 blp = Blueprint(
     'users',
@@ -153,8 +153,7 @@ def add():
 
 @blp.route('/view', methods=['GET', 'POST'])
 @roles_required_online(blp)
-@localizable(blp)
-def view(locale):
+def view():
     db = blp.db_manager
 
     state = None

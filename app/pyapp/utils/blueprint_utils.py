@@ -46,11 +46,8 @@ def roles_required_online(blp):
         return decorated_view
     return wrapper
 
+"""
 def localizable(blp):
-    """ This decorator ensures that the current user has all of the specified roles.
-        Calls the unauthorized_view_function() when requirements fail.
-        See also: UserMixin.has_roles()
-    """
     def wrapper(func):
         @wraps(func)
         def decorated_view(*args, **kwargs):
@@ -73,5 +70,6 @@ def localizable(blp):
             return func(*args, locale, **kwargs)
         return decorated_view
     return wrapper
+"""
 
     

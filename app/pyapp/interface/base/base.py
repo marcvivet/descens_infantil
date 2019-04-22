@@ -14,7 +14,8 @@ from flask_login import (
     login_user,
     logout_user
 )
-from .forms import LoginForm, CreateAccountForm
+from .forms import LoginForm
+
 
 import json
 import requests
@@ -72,7 +73,6 @@ def send_data():
 @blp.route('/login', methods=['GET', 'POST'])
 def login():
     login_form = LoginForm(request.form)
-    create_account_form = CreateAccountForm(request.form)
     if 'login' in request.form:
         username = str(request.form['username'])
         password = str(request.form['password'])
@@ -84,16 +84,16 @@ def login():
             return redirect(url_for('base_blueprint.route_default'))
 
         if user and not user.active:
-            flash('Your username is not active. Talk to your administrator.', 'error')
+            flash(blp.locale[blp.default_locale]['UserNotActiveError'], 'error')
         else:
-            flash('Username or password incorrect.', 'error')
+            flash(blp.locale[blp.default_locale]['UserIncorrectError'], 'error')
 
     try:
         if not current_user.is_authenticated:
             return render_template(
                 'login/login.html',
                 login_form=login_form,
-                create_account_form=create_account_form, enumerate=enumerate
+                enumerate=enumerate
             )
 
         try:
@@ -107,7 +107,7 @@ def login():
         return render_template(
                 'login/login.html',
                 login_form=login_form,
-                create_account_form=create_account_form, enumerate=enumerate
+                enumerate=enumerate
             )
 
 

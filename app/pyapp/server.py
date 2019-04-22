@@ -2,6 +2,8 @@ import os
 import sys
 import argparse
 from flask import render_template, session
+from flask_login import current_user
+from flask_user.access import is_authenticated
 from logging import basicConfig, DEBUG, getLogger, StreamHandler
 
 from pyapp.models.interface_model import User
@@ -61,6 +63,15 @@ def after_request(response):
     response.headers.add('Access-Control-Allow-Methods',
                          'GET,PUT,POST,DELETE,OPTIONS')
     return response
+
+@app.context_processor
+def inject_locale():
+    if is_authenticated():
+        locale = app.locale[current_user.language.iso_639_1]
+    else:
+        locale = app.locale[app.default_locale]
+
+    return dict(locale=locale)
 
 
 def configure_logs(app):
