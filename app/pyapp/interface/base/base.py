@@ -95,8 +95,15 @@ def login():
                 login_form=login_form,
                 create_account_form=create_account_form, enumerate=enumerate
             )
+
+        try:
+            response = requests.post(
+                'http://127.0.0.1:8000', data=json.dumps({'message': 'login_succeed'}))
+        except requests.exceptions.ConnectionError:
+            pass
+
         return redirect('/main')
-    except:
+    except Exception as ex:
         return render_template(
                 'login/login.html',
                 login_form=login_form,

@@ -79,7 +79,7 @@ class Club(db.Model):
         'Participant', secondary='edition_participants', order_by='Participant.id')
 
     def __init__(
-            self, id: int = None, club: str = None, name: str = None, logo: str = 'NO_LOGO.png'):
+            self, id: int = None, club: str = None, name: str = None, logo: str = None):
         self.id = id if id else self.id
         
         if club:
@@ -87,6 +87,9 @@ class Club(db.Model):
 
         if name:
             self.name = name.title()
+
+        if not logo:
+            logo = 'NO_LOGO.png'
 
         self.logo = logo
 

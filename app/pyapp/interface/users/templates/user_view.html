@@ -1,9 +1,16 @@
 {% extends "base_site.html" %}
 
-{% block title %} Users {% endblock title %}
+{% block title %} {{ locale['Users'] }} {% endblock title %}
 
 {% block stylesheets %}
   {{ super() }}
+  <link href="{{ url_for('static', filename='vendors/datatables.net-bs/css/dataTables.bootstrap.min.css') }}" rel="stylesheet">
+<link href="{{ url_for('static', filename='vendors/datatables.net-buttons-bs/css/buttons.bootstrap.min.css') }}" rel="stylesheet">
+<link href="{{ url_for('static', filename='vendors/datatables.net-fixedheader-bs/css/fixedHeader.bootstrap.min.css') }}"
+    rel="stylesheet">
+<link href="{{ url_for('static', filename='vendors/datatables.net-responsive-bs/css/responsive.bootstrap.min.css') }}" rel="stylesheet">
+<link href="{{ url_for('static', filename='vendors/datatables.net-scroller-bs/css/scroller.bootstrap.min.css') }}" rel="stylesheet">
+<link href="{{ url_for('static', filename='vendors/bootstrap-toggle/css/bootstrap-toggle.min.css') }}" rel="stylesheet">
 {% endblock stylesheets %}
 
 {% block content %}
@@ -11,65 +18,122 @@
     <div class="">
       <div class="page-title">
         <div class="title_left">
-          <h3>Users</h3>
+          <h3>{{ locale['Users'] }}</h3>
         </div>
       </div>
 
       <div class="clearfix"></div>
 
       <div class="row">
-        <div class="col-md-12">
-          <div class="x_panel">
-            <div class="x_content">
-              <div class="row">
-                {% for user in users %}
-                <div class="col-md-55" style="min-width: 400px; padding: 0px; margin: 5px;">
-                  <div class="profile_details">
-                  <div class="well profile_view" style="margin-bottom: 0px;">
-                    <div class="col-sm-12">
-                      <h4 class="brief"><i>{{ user.username }}</i></h4>
-                      <div class="left col-xs-7">
-                        <h2>{{ user.name }} {{ user.surname }}</h2>
-                        <p><strong>About: </strong> {{ user.about }} </p>
-                        <ul class="list-unstyled">
-                          <li><i class="fa fa-at"></i> email: {{ user.email }}</li>
-                          <li><i class="fa fa-phone"></i> Phone #: {{ user.phone }}</li>
-                          <li><i class="fa fa-hand-o-right"></i> Active: {{ user.active }}</li>
-                          <li><i class="fa fa-thumbs-o-up"></i> Trusted: {{ user.trusted }}</li>
+          <div class="col-md-12 col-sm-12 col-xs-12">
+              <div class="x_panel">
+                  <div class="x_title">
+                      <h2></h2>
+                      {% if users %}
+                      <ul class="nav navbar-right panel_toolbox">
+                          <li><input id="toggle-visualization" checked type="checkbox" data-toggle="toggle" data-on="{{ locale['Vinyetes'] }}" data-off="{{ locale['Taula'] }}" data-onstyle="default" data-offstyle="default"></li>
                         </ul>
-                      </div>
-                      <div class="right col-xs-5 text-center">
-                        <img src="{{ user.picture }}?{{ user.get_update_time() }}" width="150px" alt="" class="img-circle img-responsive">
-                      </div>
-                    </div>
-                    <div class="col-xs-12 bottom text-center">
-                      <div class="col-xs-12 col-sm-6 emphasis">
-                        <form method="post">
-                            <input type="hidden" name="action" value="delete">
-                            <input type="hidden" name="user_id" value="{{ user.id }}">
-                            <button type="submit" class="btn btn-danger btn-xs">
-                                <i class="fa fa-remove"> </i> Delete
-                            </button>
-                        </form>
-                      </div>
-                      <div class="col-xs-12 col-sm-6 emphasis">
-                        <form method="post">
-                            <input type="hidden" name="action" value="edit">
-                            <input type="hidden" name="user_id" value="{{ user.id }}">
-                            <button type="submit" class="btn btn-primary btn-xs">
-                                <i class="fa fa-edit"> </i> Edit User
-                            </button>
-                        </form>
-                      </div>
-                    </div>
+                      {% endif %}
+                      <div class="clearfix"></div>
                   </div>
-                </div>
-                </div>
-                {% endfor %}
+                  <div class="x_content" id="list">
+                      {% if users %}
+                      <table id="datatable-users" class="table table-striped table-bordered">
+                          <thead>
+                              <tr>
+                                  <th>{{ locale['Username'] }}</th>
+                                  <th>{{ locale['Name'] }}</th>
+                                  <th>{{ locale['Surname'] }}</th>
+                                  <th>{{ locale['Email'] }}</th>
+                                  <th>{{ locale['Phone'] }}</th>
+                                  <th>{{ locale['Active'] }}</th>
+                                  <th data-sortable="false" style="width: 20px;">{{ locale['Edit'] }}</th>
+                                  <th data-sortable="false" style="width: 20px;">{{ locale['Delete'] }}</th>
+                              </tr>
+                          </thead>
+                          <tbody>
+                              {% for user in users %}
+                              <tr>
+                                  <td>{{user.username}}</td>
+                                  <td>{{user.name}}</td>
+                                  <td>{{user.surname}}</td>
+                                  <td>{{ user.email }}</td>
+                                  <td>{{ user.phone }}</td>
+                                  <td>{{ locale[str(user.active)] }}</td>
+                                  <td><form method="post">
+                                      <input type="hidden" name="action" value="edit">
+                                      <input type="hidden" name="user_id" value="{{ user.id }}">
+                                      <button type="submit" class="btn btn-primary btn-xs">
+                                          <i class="fa fa-edit"> </i>
+                                      </button>
+                                  </form></td>
+                                  <td><form method="post">
+                                      <input type="hidden" name="action" value="delete">
+                                      <input type="hidden" name="user_id" value="{{ user.id }}">
+                                      <button type="submit" class="btn btn-danger btn-xs">
+                                          <i class="fa fa-remove"> </i>
+                                      </button>
+                                  </form></td>
+                              </tr>
+                              {% endfor %}
+                          </tbody>
+                      </table>
+                      {% else %}
+                      <p class="text-muted font-13 m-b-30">
+                          {{ locale['NoUser'] }}
+                      </p>
+                      {% endif %}
+                  </div>
+
+                  <div class="x_content"  id="thumbnails">
+                      <div class="row">
+                        {% for user in users %}
+                        <div class="col-md-55" style="min-width: 400px; padding: 0px; margin: 5px;">
+                          <div class="profile_details">
+                          <div class="well profile_view" style="margin-bottom: 0px;">
+                            <div class="col-sm-12">
+                              <h4 class="brief"><i>{{ user.username }}</i></h4>
+                              <div class="left col-xs-7">
+                                <h2>{{ user.name }} {{ user.surname }}</h2>
+                                <p><strong>{{ locale['About'] }}: </strong> {{ user.about }} </p>
+                                <ul class="list-unstyled">
+                                  <li><i class="fa fa-at"></i> {{ locale['Email'] }}: {{ user.email }}</li>
+                                  <li><i class="fa fa-phone"></i> {{ locale['Phone'] }} #: {{ user.phone }}</li>
+                                  <li><i class="fa fa-hand-o-right"></i> {{ locale['Active'] }}: {{ locale[str(user.active)] }}</li>
+                                </ul>
+                              </div>
+                              <div class="right col-xs-5 text-center">
+                                <img src="{{ user.picture }}?{{ user.get_update_time() }}" width="150px" alt="" class="img-circle img-responsive">
+                              </div>
+                            </div>
+                            <div class="col-xs-12 bottom text-center">
+                              <div class="col-xs-12 col-sm-6 emphasis">
+                                <form method="post">
+                                    <input type="hidden" name="action" value="delete">
+                                    <input type="hidden" name="user_id" value="{{ user.id }}">
+                                    <button type="submit" class="btn btn-danger btn-xs">
+                                        <i class="fa fa-remove"> </i> {{ locale['Delete'] }}
+                                    </button>
+                                </form>
+                              </div>
+                              <div class="col-xs-12 col-sm-6 emphasis">
+                                <form method="post">
+                                    <input type="hidden" name="action" value="edit">
+                                    <input type="hidden" name="user_id" value="{{ user.id }}">
+                                    <button type="submit" class="btn btn-primary btn-xs">
+                                        <i class="fa fa-edit"> </i> {{ locale['Edit'] }}
+                                    </button>
+                                </form>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                        </div>
+                        {% endfor %}
+                      </div>
+                    </div>
               </div>
-            </div>
           </div>
-        </div>
       </div>
     </div>
   </div>
@@ -77,5 +141,47 @@
 
 {% block javascripts %}
   {{ super() }}
+  <script src="{{ url_for('static', filename='vendors/datatables.net/js/jquery.dataTables.min.js') }}"></script>
+<script src="{{ url_for('static', filename='vendors/datatables.net-bs/js/dataTables.bootstrap.min.js') }}"></script>
+<script src="{{ url_for('static', filename='vendors/datatables.net-buttons/js/dataTables.buttons.min.js') }}"></script>
+<script src="{{ url_for('static', filename='vendors/datatables.net-buttons-bs/js/buttons.bootstrap.min.js') }}"></script>
+<script src="{{ url_for('static', filename='vendors/datatables.net-buttons/js/buttons.flash.min.js') }}"></script>
+<script src="{{ url_for('static', filename='vendors/datatables.net-buttons/js/buttons.html5.min.js') }}"></script>
+<script src="{{ url_for('static', filename='vendors/datatables.net-buttons/js/buttons.print.min.js') }}"></script>
+<script src="{{ url_for('static', filename='vendors/datatables.net-fixedheader/js/dataTables.fixedHeader.min.js') }}"></script>
+<script src="{{ url_for('static', filename='vendors/datatables.net-keytable/js/dataTables.keyTable.min.js') }}"></script>
+<script src="{{ url_for('static', filename='vendors/datatables.net-responsive/js/dataTables.responsive.min.js') }}"></script>
+<script src="{{ url_for('static', filename='vendors/datatables.net-responsive-bs/js/responsive.bootstrap.js') }}"></script>
+<script src="{{ url_for('static', filename='vendors/datatables.net-scroller/js/dataTables.scroller.min.js') }}"></script>
+
+<script src="{{ url_for('static', filename='vendors/bootstrap-toggle/js/bootstrap-toggle.min.js') }}"></script>
+<script>
+    $(function() {
+      $('#toggle-visualization').change(function() {
+        let row_thumbnails = document.getElementById('thumbnails');
+        let row_list = document.getElementById('list');
+
+        if ($(this).prop('checked')) {
+          row_thumbnails.classList.remove('hidden');
+          row_list.classList.add('hidden');
+          console.log('True');
+        } else {
+          row_thumbnails.classList.add('hidden');
+          row_list.classList.remove('hidden');
+          console.log('False');
+        }
+      });
+
+      $('#toggle-visualization').change();
+    });
+
+    $(document).ready(function() {
+      $('#datatable-users').DataTable( {
+          "language": {
+              "url": "{{ url_for('static', filename='locale/datatable_{}.json'.format(locale['iso_639_1'])) }}"
+          }
+      } );
+  } )
+</script>
 {% endblock javascripts %}
 

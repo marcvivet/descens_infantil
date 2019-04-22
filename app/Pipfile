@@ -4,7 +4,26 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
-flask = "*"
+paramiko = "*"
+httplib2 = "*"
+passlib = "*"
+bcrypt = "*"
+tmdbsimple = "*"
+selenium = "*"
+future = "*"
+numpy = "*"
+eventlet = "*"
+Flask = "*"
+SQLAlchemy = "*"
+Flask-Cors = "*"
+Flask-Login = "*"
+Flask-User = "==0.6.9"
+PyMySQL = "*"
+PyYAML = "*"
+Jinja2 = "*"
+Pillow = "*"
+pyOpenSSL = "*"
+Flask-SocketIO = "*"
 
 [dev-packages]
 

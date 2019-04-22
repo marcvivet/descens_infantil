@@ -1,0 +1,17 @@
+{
+    "Users": "Usuaris",
+    "Username": "Nom d'Usuari",
+    "Name": "Nom",
+    "Surname": "Cognom",
+    "Email": "Correu Electrònic",
+    "Phone": "Telèfon",
+    "Active": "Actiu",
+    "Edit": "Modificar",
+    "Delete": "Eliminar",
+    "About": "Quant a",
+    "True": "Sí",
+    "False": "No",
+    "Thumbnails": "Vinyetes",
+    "Table": "Taula",
+    "NoUser": "No hi ha cap usuari. Parla amb l'administrator."
+}

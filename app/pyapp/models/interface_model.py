@@ -5,13 +5,14 @@ from datetime import date, time
 from flask_sqlalchemy import SQLAlchemy
 from passlib.hash import bcrypt
 from flask_user import UserMixin
+from urllib.parse import quote_plus
 
 db = SQLAlchemy()
 
 class Page(db.Model):
     __tablename__ = 'pages'
     id = db.Column(
-        db.BigInteger, primary_key=True)
+        db.Integer, primary_key=True)
     name = db.Column(db.String(16), nullable=False, unique=True)
     description = db.Column(db.String(64), nullable=True)
 
@@ -24,7 +25,7 @@ class Page(db.Model):
         string = '{}'.format(name)
 
         self.id = int(
-            hashlib.sha256(string.encode('utf-8')).hexdigest(), 16) % 10**18
+            hashlib.sha256(string.encode('utf-8')).hexdigest(), 16) % 2**31
 
     @property
     def allowed_roles(self):
@@ -39,9 +40,9 @@ class RolePage(db.Model):
     __tablename__ = 'role_pages'
     id = db.Column(db.Integer(), db.Sequence(
         'role_pages_id_seq'), primary_key=True)
-    role_id = db.Column(db.BigInteger(), db.ForeignKey(
+    role_id = db.Column(db.Integer(), db.ForeignKey(
         'roles.id', ondelete='CASCADE', onupdate='CASCADE'))
-    page_id = db.Column(db.BigInteger(), db.ForeignKey(
+    page_id = db.Column(db.Integer(), db.ForeignKey(
         'pages.id', ondelete='CASCADE', onupdate='CASCADE'))
 
     __table_args__ = (db.UniqueConstraint('page_id', 'role_id', name='role_pages_uc'),)
@@ -51,7 +52,7 @@ class Role(db.Model):
     __tablename__ = 'roles'
 
     id = db.Column(
-        db.BigInteger, primary_key=True)
+        db.Integer, primary_key=True)
     name = db.Column(db.String(16), nullable=False, unique=True)
     description = db.Column(db.String(64), nullable=True)
 
@@ -94,7 +95,7 @@ class Role(db.Model):
         string = '{}'.format(name)
 
         self.id = int(
-            hashlib.sha256(string.encode('utf-8')).hexdigest(), 16) % 10**18
+            hashlib.sha256(string.encode('utf-8')).hexdigest(), 16) % 2**31
 
     @property
     def allowed_pages(self):
@@ -105,6 +106,35 @@ class Role(db.Model):
         return pages
 
 
+class Language(db.Model):
+    __tablename__ = 'languages'
+
+    LANGUAGES = [
+        {
+            'name': 'Català',
+            'iso_639_1': 'ca'
+        },
+        {
+            'name': 'English',
+            'iso_639_1': 'en'
+        }
+    ]
+
+    id = db.Column(
+        db.Integer, primary_key=True)
+    name = db.Column(db.String(32), nullable=False, unique=True)
+    iso_639_1 = db.Column(db.String(2), nullable=False, unique=True)
+
+    def __init__(self, name: str = None, iso_639_1: str = None):
+        self.name = name
+        self.iso_639_1 = iso_639_1
+
+        string = '{} {}'.format(name, iso_639_1)
+
+        self.id = int(
+            hashlib.sha256(string.encode('utf-8')).hexdigest(), 16) % 2**31
+
+
 class User(db.Model, UserMixin):
     """Table users
     """
@@ -112,7 +142,7 @@ class User(db.Model, UserMixin):
     __tablename__ = 'users'
 
     id = db.Column(
-        db.BigInteger, primary_key=True)
+        db.Integer, primary_key=True)
 
     username = db.Column(db.String(16), nullable=False, unique=True)
     password = db.Column(db.String(64), nullable=False)
@@ -122,9 +152,10 @@ class User(db.Model, UserMixin):
     about = db.Column(db.String(256), nullable=True)
     email = db.Column(db.String(32), nullable=True)
     phone = db.Column(db.String(20), nullable=True)
-    trusted = db.Column(db.Boolean)
     active = db.Column(db.Boolean)
     system = db.Column(db.Boolean)
+
+    language_id = db.Column(db.BigInteger, db.ForeignKey('languages.id'), nullable=True)
 
     time_created = db.Column(
         db.DateTime(timezone=True), server_default=db.func.now())
@@ -134,6 +165,8 @@ class User(db.Model, UserMixin):
     roles = db.relationship('Role', secondary='user_roles', order_by='Role.id')
 
     configuration = db.relationship('UserConfiguration', cascade="all,delete")
+
+    language = db.relationship('Language', foreign_keys=[language_id])
 
     session_data = {}
 
@@ -147,8 +180,7 @@ class User(db.Model, UserMixin):
 
     def __init__(self, username, password='password', name=None,
                  surname=None, picture='/static/images/user.png', about=None,
-                 email=None, phone=None, active=False, system=False,
-                 trusted=False):
+                 email=None, phone=None, active=False, system=False, language_id=None):
 
         self.username = username
         self.password = bcrypt.encrypt(password)
@@ -160,12 +192,12 @@ class User(db.Model, UserMixin):
         self.phone = phone
         self.active = active
         self.system = system
-        self.trusted = trusted
+        self.language_id = language_id
 
         string = '{}'.format(username)
 
         self.id = int(
-            hashlib.sha256(string.encode('utf-8')).hexdigest(), 16) % 10**18
+            hashlib.sha256(string.encode('utf-8')).hexdigest(), 16) % 2**31
 
     def setPassword(self, new_password):
         self.password = bcrypt.encrypt(new_password)
@@ -231,9 +263,9 @@ class UserRoles(db.Model):
     __tablename__ = 'user_roles'
     id = db.Column(db.Integer(), db.Sequence(
         'user_roles_id_seq'), primary_key=True)
-    user_id = db.Column(db.BigInteger(), db.ForeignKey(
+    user_id = db.Column(db.Integer(), db.ForeignKey(
         'users.id', ondelete='CASCADE', onupdate='CASCADE'))
-    role_id = db.Column(db.BigInteger(), db.ForeignKey(
+    role_id = db.Column(db.Integer(), db.ForeignKey(
         'roles.id', ondelete='CASCADE', onupdate='CASCADE'))
 
     __table_args__ = (db.UniqueConstraint('user_id', 'role_id', name='user_roles_uc'),)
@@ -244,7 +276,7 @@ class UserEmail(db.Model):
     id = db.Column(db.Integer, primary_key=True)
 
     user_id = db.Column(
-        db.BigInteger, db.ForeignKey(
+        db.Integer, db.ForeignKey(
             'users.id', ondelete='CASCADE', onupdate='CASCADE'), nullable=False)
     user = db.relationship('User', uselist=False)
 
@@ -262,14 +294,11 @@ class UserConfiguration(db.Model):
 
     __tablename__ = 'user_configuration'
 
-    id = db.Column(db.BigInteger, db.ForeignKey('users.id', onupdate='CASCADE',
+    id = db.Column(db.Integer, db.ForeignKey('users.id', onupdate='CASCADE',
                    ondelete='CASCADE'), primary_key=True)
     key = db.Column(db.String(32), unique=True)
     value = db.Column(db.String(64))
     description = db.Column(db.String(64), nullable=True)
-
-    scraping_source = db.relationship(
-        'User', backref=db.backref('user_configuration', cascade="all,delete"))
 
     def __init__(self, key, value, description=None):
         """Adds a new row to the configuration table

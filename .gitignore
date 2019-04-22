@@ -6,3 +6,6 @@ __pycache__
 *.lock
 *.sqlite
 *.csv
+app/build
+app/dist
+

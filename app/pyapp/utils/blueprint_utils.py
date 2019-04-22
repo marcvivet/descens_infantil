@@ -3,6 +3,8 @@ import os
 
 sys.path.append(os.path.join(os.path.dirname(__file__), "../"))
 
+import json
+
 from flask import current_app
 from flask_login import current_user
 from functools import wraps
@@ -44,6 +46,32 @@ def roles_required_online(blp):
         return decorated_view
     return wrapper
 
+def localizable(blp):
+    """ This decorator ensures that the current user has all of the specified roles.
+        Calls the unauthorized_view_function() when requirements fail.
+        See also: UserMixin.has_roles()
+    """
+    def wrapper(func):
+        @wraps(func)
+        def decorated_view(*args, **kwargs):
+            os.path.join(blp.root_path, 'locale')
 
+            locale = {}
+            iso_639_1 = 'ca'
+
+            if is_authenticated() and current_user.language:
+                iso_639_1 = current_user.language.iso_639_1
+
+            language_file = os.path.join(blp.root_path, 'locale', f'{iso_639_1}.json')
+
+            if os.path.exists(language_file):
+                with open(language_file, 'r') as read_fp:
+                    locale = json.load(read_fp)
+
+            locale['iso_639_1'] = iso_639_1
+            
+            return func(*args, locale, **kwargs)
+        return decorated_view
+    return wrapper
 
     

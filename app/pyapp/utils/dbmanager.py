@@ -6,7 +6,10 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.pool import StaticPool
 
-from ..models.interface_model import Page, Role, User
+try:
+    from ..models.interface_model import Page, Role, User
+except ValueError:
+    from models.interface_model import Page, Role, User
 
 LOG = logging.getLogger(__name__)
 

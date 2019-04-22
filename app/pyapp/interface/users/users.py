@@ -7,12 +7,12 @@ from flask import Blueprint, render_template, request, redirect
 from flask_login import current_user
 from flask_login import login_required
 
-from pyapp.models.interface_model import  User, Role
+from pyapp.models.interface_model import  User, Role, Language
 
 from PIL import Image
 import numpy as np
 
-from pyapp.utils.blueprint_utils import roles_required_online, config
+from pyapp.utils.blueprint_utils import roles_required_online, localizable, config
 
 blp = Blueprint(
     'users',
@@ -129,6 +129,9 @@ def add():
                             phone=data['phone'], about=data['about'], active=active,
                             trusted=trusted, picture=picture)
 
+            language = db.query(Language).filter(Language.iso_639_1 == data['language']).one()
+            new_user.language = language
+
             db.add(new_user)
 
             for role in roles:
@@ -150,7 +153,8 @@ def add():
 
 @blp.route('/view', methods=['GET', 'POST'])
 @roles_required_online(blp)
-def view():
+@localizable(blp)
+def view(locale):
     db = blp.db_manager
 
     state = None
@@ -182,7 +186,7 @@ def view():
                     message = "User {} deleted correctly".format(user.username)
                 else:
                     message = "Could not edit user {}".format(user.username)
-                    return render_template('user_edit.html', **locals())
+                    return render_template('user_edit.html', str=str, **locals())
             else:
                 message = "An error occurred when trying to edit User {}".format(user.username)
                 data = request.form
@@ -239,7 +243,7 @@ def view():
             message = 'An error occurred while trying to edit an user. {}'.format(error_msg)
 
     users = db.query(User).filter(User.system == False).order_by(User.name).order_by(User.surname).all()
-    return render_template('user_view.html', **locals())
+    return render_template('user_view.html', str=str, **locals())
 
 
 @blp.route('/profile', methods=['GET', 'POST'])
@@ -282,6 +286,9 @@ def profile():
             user.email = data['email']
             user.phone = data['phone']
             user.about = data['about']
+
+            language = db.query(Language).filter(Language.iso_639_1 == data['language']).one()
+            user.language = language
 
             if data['password']:
                 user.setPassword(data['password'])

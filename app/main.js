@@ -7,21 +7,71 @@ const {
 const shell = require('electron').shell;
 const path = require('path');
 
-var this_is_a_test = "This is a test";
+let proc = startFlask();
+let window = null;
 
-function startFlask() {  
+function resizeWithAnimation(window, width, height) {
+    let currentSize = window.getBounds();
+
+    if (currentSize.width == width && currentSize.height == height)
+        return;
+
+    let newWidth = currentSize.width;
+    let newHeight = currentSize.height;
+    if (newWidth < width) {
+        newWidth += 10;
+    } else {
+        newWidth = width;           
+    }
+    if (newHeight < height) {
+        newHeight += 10;
+    } else {
+        newHeight = height;
+    }
+
+    window.setSize(newWidth, height);
+
+    setTimeout(() => {
+        resizeWithAnimation(window, width, height);
+    }, 5);
+}
+
+function startFlask() {
     const guessPackaged = () => {
         const fullPath = path.join(__dirname, 'pyappdist')
         return require('fs').existsSync(fullPath)
     }
 
     if (!guessPackaged()) {
-        let pyProc = require('python-shell');
-        pyProc.run('pyapp/server.py', function (err, results) {
+        const PythonShell = require('python-shell');
+
+        let options = {
+            mode: 'text',
+            pythonPath: '/usr/bin/python3',
+            pythonOptions: ['-u', '-m'], // get print results in real-time
+        };
+
+        let pyProc = new PythonShell('pyapp', options, function (err, results) {
             if (err) console.log(err);
         });
 
-        return pyProc;
+        pyProc.on('message', function (message) {
+            // received a message sent from the Python script (a simple "print" statement)
+            console.log(message);
+        });
+
+        /*
+        pyProc.stdout.on('data', (data) => {
+            console.log(uint8arrayToString(data));
+        });
+
+        pyProc.stderr.on('data', (data) => {
+            // As said before, convert the Uint8Array to a readable string.
+            console.log(uint8arrayToString(data));
+        });
+        */
+
+        return pyProc.childProcess;
     } else {
         const getScriptPath = () => {
             let fullpath = path.join(__dirname, 'pyappdist', 'server');
@@ -35,12 +85,10 @@ function startFlask() {
 
         let pyProc = require('child_process').execFile(getScriptPath());
         return pyProc;
-    }  
+    }
 }
 
 function createWindow() {
-
-
     var http = require("http");
     http.createServer(function (req, res) {
         res.writeHead(200, {
@@ -51,6 +99,12 @@ function createWindow() {
 
         req.on('data', chunk => {
             var data = JSON.parse(chunk);
+
+            if (data.message == 'login_succeed') {
+                //resizeWithAnimation(window, 1280, 960);
+                window.setSize(1280, 960, true);
+            }
+
             console.log(`Data: ${data.message}`)
         });
         req.on('end', () => {
@@ -89,14 +143,15 @@ function createWindow() {
                 }
             },
             {
-                label: 'CoinMarketCap',
+                label: 'Web descens infantil',
                 click() {
-                    shell.openExternal('http://coinmarketcap.com')
+                    shell.openExternal('http://descensinfantil.cat')
                 }
             },
             {
                 label: 'Exit',
                 click() {
+                    proc.kill('SIGINT');
                     app.quit()
                 }
             }
@@ -115,27 +170,38 @@ function createWindow() {
         Menu.setApplicationMenu(menu)
     }
 
-
-    let proc = startFlask();
-
+    function checkIfFlaskIsOnline(window, url) {
+        var http = require('http');
+        http.get(url, (res) => {
+            console.log('Flask is Ready!');
+            window.loadURL('http://127.0.0.1:10001/');
+        }).on('error', (e) => {
+            console.log('Flask is Offline');
+            setTimeout(() => {
+                checkIfFlaskIsOnline(window, url);
+            }, 500);
+        });
+    }
 
     window = new BrowserWindow({
-        width: 800,
-        height: 600
-    })
-    setTimeout(function () {
-        window.loadURL('http://127.0.0.1:10001/')
-    }, 500);
-    //window.loadFile('index.html')
+        width: 600,
+        height: 400,
+        webPreferences: {
+            nodeIntegration: false,
+        }
+    });
 
+    window.loadFile('index.html');
+    checkIfFlaskIsOnline(window, 'http://127.0.0.1:10001/');
 }
 
 
 
-app.on('ready', createWindow)
+app.on('ready', createWindow);
 
 app.on('window-all-closed', () => {
     if (process.platform !== 'darwin') {
-        app.quit()
+        proc.kill('SIGINT');
+        app.quit();
     }
 })

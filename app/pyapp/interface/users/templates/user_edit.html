@@ -83,6 +83,21 @@
                 </div>
               </div>
               <div class="item form-group">
+                <label class="control-label col-md-3 col-sm-3 col-xs-12" for="language">Language
+                </label>
+                <div class="col-md-6 col-sm-6 col-xs-12">
+                    <div id="language" class="btn-group" data-toggle="buttons">
+                      <label class="btn btn-default{% if user.language.iso_639_1 == 'ca'%} active{% endif %}" data-toggle-class="btn-primary" data-toggle-passive-class="btn-default">
+                        <input type="radio" name="language" value="ca" data-parsley-multiple="language" data-parsley-id="12"> &nbsp; Català &nbsp;
+                      </label>
+                      <label class="btn btn-default{% if user.language.iso_639_1 == 'en'%} active{% endif %}" data-toggle-class="btn-primary" data-toggle-passive-class="btn-default">
+                        <input type="radio" name="language" value="en" data-parsley-multiple="language"> English
+                      </label>
+                    </div>
+                  </div>
+              </div>
+
+              <div class="item form-group">
                 <label class="control-label col-md-3 col-sm-3 col-xs-12" for="telephone">Telephone
                 </label>
                 <div class="col-md-6 col-sm-6 col-xs-12">
@@ -123,14 +138,6 @@
                 </label>
                 <div class="col-md-6 col-sm-6 col-xs-12">
                   <input type="checkbox" id="active" name="active" class="flat" {% if not user or user.active %}checked="checked"
-                    {% endif %}>
-                </div>
-              </div>
-              <div class="item form-group">
-                <label class="control-label col-md-3 col-sm-3 col-xs-12" for="trusted">Trusted
-                </label>
-                <div class="col-md-6 col-sm-6 col-xs-12">
-                  <input type="checkbox" id="trusted" name="trusted" class="flat" {% if user.trusted %}checked="checked"
                     {% endif %}>
                 </div>
               </div>

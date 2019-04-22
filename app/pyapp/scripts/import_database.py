@@ -10,12 +10,13 @@ sys.path.append(
 )
 
 from models.descens_infantil_model import db as dbd, Club, Edition, Participant, EditionParticipant
-from models.interface_model import db as dbi, User, Role, Page
+from models.interface_model import db as dbi, User, Role, Page, Language
 from utils.dbmanager import DBManager
 
 
 def main():
     data_folder = '/home/marc/local.x86_64/src/descens_infantil/extract/data'
+    club_image_folder = '/home/marc/local.x86_64/src/descens_infantil/app/pyapp/interface/base/static/images/clubs'
 
     manager = DBManager(clean=True)
     manager.create_all(dbd.Model)
@@ -25,7 +26,11 @@ def main():
     with open(os.path.join(data_folder, 'CLUBS.csv'), newline='') as csvfile:
         reader = csv.DictReader(csvfile)
         for row in reader:
-            club = Club(id=int(row['ID_CLUB']), club=row['CLUB'], name=row['NOM'])
+            logo = None
+            if os.path.exists(os.path.join(club_image_folder, f"{row['CLUB'].upper()}.jpg")):
+                logo = f"{row['CLUB'].upper()}.jpg"
+
+            club = Club(id=int(row['ID_CLUB']), club=row['CLUB'], name=row['NOM'], logo=logo)
             manager.add(club)
             manager.commit()
 
@@ -91,16 +96,35 @@ def main():
                 print(f' Error: {participant}')
 
     try:
+        for lang_data in Language.LANGUAGES:
+            language = Language(**lang_data)
+            manager.add(language)
+            manager.commit()
+
+            if language.name == "Català":
+                catala = language
+
         admin_role = Role('Admin')
         user_role = Role('User')
 
         # Adding Default users
         user = User(
             'marc', name='Marc', surname='Vivet', email='marc.vivet@gmail.com', active=True,
-            picture='/static/images/marc.jpg', trusted=True)
+            picture='/static/images/users/marc.jpg')
 
         user.roles.append(admin_role)
         user.roles.append(user_role)
+        user.language = catala
+
+        manager.add(user)
+
+        user = User(
+            'xenia', name='Xènia', surname='Torras', email='descensinfantil@gmail.com', active=True,
+            picture='/static/images/users/xenia.jpg')
+
+        user.roles.append(admin_role)
+        user.roles.append(user_role)
+        user.language = catala
 
         manager.add(user)
 
@@ -108,6 +132,7 @@ def main():
             'test', name='Test', surname='User', active=True)
 
         user.roles.append(user_role)
+        user.language = catala
         manager.add(user)
         manager.commit()
 

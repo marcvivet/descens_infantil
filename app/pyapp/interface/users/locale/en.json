@@ -1,0 +1,17 @@
+{
+    "Users": "Users",
+    "Username": "Username",
+    "Name": "Name",
+    "Surname": "Surname",
+    "Email": "Email",
+    "Phone": "Phone",
+    "Active": "Active",
+    "Edit": "Edit",
+    "Delete": "Delete",
+    "About": "About",
+    "True": "Yes",
+    "False": "No",
+    "Thumbnails": "Thumbnails",
+    "Table": "Table",
+    "NoUser": "There isn't any user. Contact to the administrator."
+}
