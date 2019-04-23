@@ -1,10 +1,10 @@
 {
-    "UserNotActiveError": "Your username is not active. Talk to your administrator.",
-    "UserIncorrectError": "Username or password incorrect.",
-    "Profile": "Profile",
-    "LogOut": "Log Out",
-    "LogIn": "Log in",
-    "CopyRight": "©2019 All Rights Reserved. Descens Infantil.",
-    "Username": "Username",
-    "Password": "Password"
+    "user_not_active_error": "Your username is not active. Talk to your administrator.",
+    "user_incorrect_error": "Username or password incorrect.",
+    "profile": "Profile",
+    "logout": "Log Out",
+    "login": "Log in",
+    "copyright": "©2019 All Rights Reserved. Descens Infantil.",
+    "username": "Username",
+    "password": "Password"
 }

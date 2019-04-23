@@ -5,5 +5,5 @@ from wtforms import TextField, PasswordField
 
 
 class LoginForm(FlaskForm):
-    username = TextField('Username')
-    password = PasswordField('Password')
+    username = TextField('username')
+    password = PasswordField('password')

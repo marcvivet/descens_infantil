@@ -7,6 +7,8 @@ from models.interface_model import User
 
 #from tools.db_manager imDBManagerport 
 
+from pyapp.utils.localization_manager import LocalizationManager
+
 from flask import Blueprint, render_template, redirect, request, url_for, flash, Response
 from flask_login import (
     current_user,
@@ -22,7 +24,7 @@ import requests
 
 
 blp = Blueprint(
-    'base_blueprint',
+    'base',
     __name__,
     url_prefix='',
     template_folder='templates',
@@ -32,7 +34,7 @@ blp = Blueprint(
 
 @blp.route('/')
 def route_default():
-    return redirect(url_for('base_blueprint.login'))
+    return redirect(url_for('base.login'))
 
 
 """
@@ -81,12 +83,13 @@ def login():
         
         if user and user.valid_password(password) and user.active:
             login_user(user)
-            return redirect(url_for('base_blueprint.route_default'))
+            return redirect(url_for('base.route_default'))
 
+        locale = LocalizationManager().get_blueprint_locale(blp)
         if user and not user.active:
-            flash(blp.locale[blp.default_locale]['UserNotActiveError'], 'error')
+            flash(locale.user_not_active_error, 'error')
         else:
-            flash(blp.locale[blp.default_locale]['UserIncorrectError'], 'error')
+            flash(locale.user_incorrect_error, 'error')
 
     try:
         if not current_user.is_authenticated:
@@ -115,22 +118,4 @@ def login():
 @login_required
 def logout():
     logout_user()
-    return redirect(url_for('base_blueprint.login'))
-
-## Errors
-
-
-
-@blp.errorhandler(403)
-def access_forbidden(error):
-    return render_template('errors/page_403.html'), 403
-
-
-@blp.errorhandler(404)
-def not_found_error(error):
-    return render_template('errors/page_404.html'), 404
-
-
-@blp.errorhandler(500)
-def internal_error(error):
-    return render_template('errors/page_500.html'), 500
+    return redirect(url_for('base.login'))

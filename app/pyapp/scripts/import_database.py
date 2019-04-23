@@ -11,7 +11,7 @@ sys.path.append(
 
 from models.descens_infantil_model import db as dbd, Club, Edition, Participant, EditionParticipant
 from models.interface_model import db as dbi, User, Role, Page, Language
-from utils.dbmanager import DBManager
+from utils.db_manager import DBManager
 
 
 def main():

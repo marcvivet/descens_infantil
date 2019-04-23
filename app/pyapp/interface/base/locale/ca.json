@@ -1,10 +1,10 @@
 {
-    "UserNotActiveError": "El teu usuari està deshabilitat. Contacta amb l'administrador.",
-    "UserIncorrectError": "Nom d'usuari o contrasenya incorrectes.",
-    "Profile": "Perfil",
-    "LogOut": "Tancar Sessió",
-    "LogIn": "Iniciar Sessió",
-    "CopyRight": "©2019 Tots els drets reservats. Descens Infantil.",
-    "Username": "Nom d'usuari",
-    "Password": "Contrasenya"
+    "user_not_active_error": "El teu usuari està deshabilitat. Contacta amb l'administrador.",
+    "user_incorrect_error": "Nom d'usuari o contrasenya incorrectes.",
+    "profile": "Perfil",
+    "logout": "Tancar Sessió",
+    "login": "Iniciar Sessió",
+    "copyright": "©2019 Tots els drets reservats. Descens Infantil.",
+    "username": "Nom d'usuari",
+    "password": "Contrasenya"
 }

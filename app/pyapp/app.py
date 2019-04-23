@@ -8,10 +8,12 @@ from importlib import import_module
 from datetime import timedelta
 
 from flask import Flask
+from flask import render_template
 from flask_login import LoginManager
 from flask_user import UserManager, SQLAlchemyAdapter
 
-from .utils.dbmanager import DBManager
+from .utils.db_manager import DBManager
+from .utils.localization_manager import LocalizationManager
 from .models.interface_model import db, User
 
 
@@ -124,6 +126,24 @@ def create_app():
                 blp.page = app.db_manager.add_page(
                     page_name, description=description)
 
+        @blp.context_processor
+        def inject_blp_locale():
+            return dict(blocale=LocalizationManager().get_blueprint_locale(blp))
+
+        @blp.errorhandler(403)
+        def access_forbidden(error):
+            return render_template('errors/page_403.html'), 403
+
+
+        @blp.errorhandler(404)
+        def not_found_error(error):
+            return render_template('errors/page_404.html'), 404
+
+
+        @blp.errorhandler(500)
+        def internal_error(error):
+            return render_template('errors/page_500.html'), 500
+
 
     def register_template_blueprints(app):
         for module_name in ('forms', 'ui', 'tables', 'data', 'additional'):
@@ -143,19 +163,9 @@ def create_app():
             module = import_module(
                 'pyapp.interface.{}.{}'.format(module_name, module_name))
 
-            module.blp.locale = {}
-            for iso_639_1 in app.locale:
-                locale = {}
-                language_file = os.path.join(module.blp.root_path, 'locale', f'{iso_639_1}.json')
-
-                if os.path.exists(language_file):
-                    with open(language_file, 'r') as read_fp:
-                        locale = json.load(read_fp)
-
-                app.locale[iso_639_1][module_name] = locale
-                module.blp.locale[iso_639_1] = locale
-
-            module.blp.default_locale = app.default_locale
+            locale_manager = LocalizationManager()
+            locale_manager.add_blueprint(module.blp)
+           
             setup_blueprint(app, module.blp, module_name)
             module.blp.db_manager = app.db_manager
             app.register_blueprint(module.blp)
@@ -166,12 +176,6 @@ def create_app():
 
     login_manager.init_app(app)
     app.db_manager = DBManager(data_base_name='descens_infantil')
-    app.locale = {
-        'en': {},
-        'ca': {}
-    }
-    app.default_locale = 'ca'
-
     app.config.from_object(__name__+'.ConfigClass')
     app.config['SQLALCHEMY_DATABASE_URI'] = app.db_manager.data_base_local_path
 

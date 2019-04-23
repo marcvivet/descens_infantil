@@ -2,12 +2,11 @@ import os
 import sys
 import argparse
 from flask import render_template, session
-from flask_login import current_user
-from flask_user.access import is_authenticated
 from logging import basicConfig, DEBUG, getLogger, StreamHandler
 
 from pyapp.models.interface_model import User
 from pyapp.app import create_app, login_manager
+from pyapp.utils.localization_manager import LocalizationManager
 
 app = create_app()
 
@@ -66,12 +65,7 @@ def after_request(response):
 
 @app.context_processor
 def inject_locale():
-    if is_authenticated():
-        locale = app.locale[current_user.language.iso_639_1]
-    else:
-        locale = app.locale[app.default_locale]
-
-    return dict(locale=locale)
+    return dict(locale=LocalizationManager())
 
 
 def configure_logs(app):
