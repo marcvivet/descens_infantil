@@ -1,0 +1,17 @@
+{
+    "invalid": "entrada no vàlida",
+    "checked": "s'ha de comprovar",
+    "empty": "posa alguna cosa aquí",
+    "min": "l’entrada és massa curta",
+    "max": "l’entrada és massa llarga",
+    "number_min": "massa baix",
+    "number_max": "massa alt",
+    "url": "URL no vàlid",
+    "number": "no és un número",
+    "email": "l'adreça de correu electrònic no és vàlida",
+    "email_repeat": "els correus electrònics no coincideixen",
+    "password_repeat": "les contrasenyes no coincideixen",
+    "repeat": "no match",
+    "complete": "l'entrada no està completa",
+    "select": "Selecciona una opció"
+}

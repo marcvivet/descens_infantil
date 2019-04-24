@@ -145,7 +145,6 @@ class Language(db.Model):
         self._locale = locale
 
 
-
 class User(db.Model, UserMixin):
     """Table users
     """

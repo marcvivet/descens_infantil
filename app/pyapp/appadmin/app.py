@@ -12,9 +12,9 @@ from flask import render_template
 from flask_login import LoginManager
 from flask_user import UserManager, SQLAlchemyAdapter
 
-from .utils.db_manager import DBManager
-from .utils.localization_manager import LocalizationManager
-from .models.interface_model import db, User
+from appadmin.utils.db_manager import DBManager
+from appadmin.utils.localization_manager import LocalizationManager
+from appadmin.models.interface_model import db, User
 
 
 login_manager = LoginManager()
@@ -161,7 +161,7 @@ def create_app():
                 'scraping'):
             print('Loading module: {}'.format(module_name))
             module = import_module(
-                'pyapp.interface.{}.{}'.format(module_name, module_name))
+                'appadmin.interface.{}.{}'.format(module_name, module_name))
 
             locale_manager = LocalizationManager()
             locale_manager.add_blueprint(module.blp)

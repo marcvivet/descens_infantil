@@ -1,6 +1,6 @@
 {% extends "base_site.html" %}
 
-{% block title %} Add new user {% endblock title %}
+{% block title %}{{ page_title }}{% endblock title %}
 
 {% block stylesheets %}
 {{ super() }}
@@ -24,34 +24,34 @@
             <form class="form-horizontal form-label-left" method="post" enctype="multipart/form-data">
               {% if user %}<input type="hidden" name="user_id" value="{{ user.id }}">{% endif %}
               <div class="item form-group">
-                <label class="control-label col-md-3 col-sm-3 col-xs-12" for="name">User name {% if not user %}<span
+                <label class="control-label col-md-3 col-sm-3 col-xs-12" for="name">{{ blocale.username }} {% if not user %}<span
                     class="required">*</span>{% endif %}
                 </label>
                 <div class="col-md-6 col-sm-6 col-xs-12">
                   <input {% if user %}value="{{ user.username }}" disabled{% endif %} id="username" class="form-control col-md-7 col-xs-12"
-                    data-validate-length-range="6" name="username" placeholder="User name e.g jon" required="required"
+                    data-validate-length-range="6" name="username" placeholder="{{ blocale.placeholder_username }}" required="required"
                     type="text">
                 </div>
               </div>
               <div class="item form-group">
-                <label class="control-label col-md-3 col-sm-3 col-xs-12" for="name">Name <span class="required">*</span>
+                <label class="control-label col-md-3 col-sm-3 col-xs-12" for="name">{{ blocale.name }} <span class="required">*</span>
                 </label>
                 <div class="col-md-6 col-sm-6 col-xs-12">
                   <input {% if user %}value="{{ user.name }}" {% endif %} id="name" class="form-control col-md-7 col-xs-12"
-                    data-validate-length-range="6" name="name" placeholder="User name e.g Jon" required="required" type="text">
+                    data-validate-length-range="6" name="name" placeholder="{{ blocale.placeholder_name }}" required="required" type="text">
                 </div>
               </div>
               <div class="item form-group">
-                <label class="control-label col-md-3 col-sm-3 col-xs-12" for="surname">Surname <span class="required">*</span>
+                <label class="control-label col-md-3 col-sm-3 col-xs-12" for="surname">{{ blocale.surname }} <span class="required">*</span>
                 </label>
                 <div class="col-md-6 col-sm-6 col-xs-12">
                   <input {% if user %}value="{{ user.surname }}" {% endif %} id="surname" class="form-control col-md-7 col-xs-12"
-                    data-validate-length-range="6" name="surname" placeholder="User surname e.g Doe" required="required"
+                    data-validate-length-range="6" name="surname" placeholder="{{ blocale.placeholder_surname }}" required="required"
                     type="text">
                 </div>
               </div>
               <div class="item form-group">
-                <label class="control-label col-md-3 col-sm-3 col-xs-12" for="email">Email
+                <label class="control-label col-md-3 col-sm-3 col-xs-12" for="email">{{ blocale.email }}
                 </label>
                 <div class="col-md-6 col-sm-6 col-xs-12">
                   <input {% if user and user.email %}value="{{ user.email }}" {% endif %} type="email" id="email" name="email"
@@ -59,7 +59,7 @@
                 </div>
               </div>
               <div class="item form-group">
-                <label class="control-label col-md-3 col-sm-3 col-xs-12" for="email">Confirm Email
+                <label class="control-label col-md-3 col-sm-3 col-xs-12" for="email">{{ blocale.confirm_email }}
                 </label>
                 <div class="col-md-6 col-sm-6 col-xs-12">
                   <input {% if user and user.email %}value="{{ user.email }}" {% endif %} type="email" id="email2" name="confirm_email"
@@ -67,7 +67,7 @@
                 </div>
               </div>
               <div class="item form-group">
-                <label for="password" class="control-label col-md-3 col-sm-3 col-xs-12">Password {% if not user %}<span
+                <label for="password" class="control-label col-md-3 col-sm-3 col-xs-12">{{ blocale.password }} {% if not user %}<span
                     class="required">*</span>{% endif %}</label>
                 <div class="col-md-6 col-sm-6 col-xs-12">
                   <input id="password" type="password" name="password" {% if not user %}required="required" {% endif %}
@@ -75,7 +75,7 @@
                 </div>
               </div>
               <div class="item form-group">
-                <label for="password2" class="control-label col-md-3 col-sm-3 col-xs-12">Repeat Password {% if not user
+                <label for="password2" class="control-label col-md-3 col-sm-3 col-xs-12">{{ blocale.repeat_password }} {% if not user
                   %}<span class="required">*</span>{% endif %}</label>
                 <div class="col-md-6 col-sm-6 col-xs-12">
                   <input id="password2" type="password" name="password2" {% if not user %}required="required" {% endif
@@ -83,14 +83,14 @@
                 </div>
               </div>
               <div class="item form-group">
-                <label class="control-label col-md-3 col-sm-3 col-xs-12" for="language">Language
+                <label class="control-label col-md-3 col-sm-3 col-xs-12" for="language">{{ blocale.language }}
                 </label>
                 <div class="col-md-6 col-sm-6 col-xs-12">
                     <div id="language" class="btn-group" data-toggle="buttons">
-                      <label class="btn btn-default{% if user.language.iso_639_1 == 'ca'%} active{% endif %}" data-toggle-class="btn-primary" data-toggle-passive-class="btn-default">
+                      <label class="btn btn-default{% if user %}{% if user.language.iso_639_1 == 'ca' %} active{% endif %}{% else %} active{% endif %}" data-toggle-class="btn-primary" data-toggle-passive-class="btn-default">
                         <input type="radio" name="language" value="ca" data-parsley-multiple="language" data-parsley-id="12"> &nbsp; Català &nbsp;
                       </label>
-                      <label class="btn btn-default{% if user.language.iso_639_1 == 'en'%} active{% endif %}" data-toggle-class="btn-primary" data-toggle-passive-class="btn-default">
+                      <label class="btn btn-default{% if user %}{% if user.language.iso_639_1 == 'en' %} active{% endif %}{% endif %}" data-toggle-class="btn-primary" data-toggle-passive-class="btn-default">
                         <input type="radio" name="language" value="en" data-parsley-multiple="language"> English
                       </label>
                     </div>
@@ -98,7 +98,7 @@
               </div>
 
               <div class="item form-group">
-                <label class="control-label col-md-3 col-sm-3 col-xs-12" for="telephone">Telephone
+                <label class="control-label col-md-3 col-sm-3 col-xs-12" for="telephone">{{ blocale.phone }}
                 </label>
                 <div class="col-md-6 col-sm-6 col-xs-12">
                   <input {% if user %}value="{{ user.phone }}" {% endif %} type="tel" id="phone" name="phone"
@@ -106,7 +106,7 @@
                 </div>
               </div>
               <div class="item form-group">
-                <label class="control-label col-md-3 col-sm-3 col-xs-12" for="picture">Picture
+                <label class="control-label col-md-3 col-sm-3 col-xs-12" for="picture">{{ blocale.picture }}
                 </label>
                 <div class="col-md-6 col-sm-6 col-xs-12">
                   <input type="file" name="picture" class="form-control col-md-7 col-xs-12">
@@ -114,7 +114,7 @@
               </div>
               {% if page_type != 'profile' %}
               <div class="item form-group">
-                <label class="control-label col-md-3 col-sm-3 col-xs-12">Roles</label>
+                <label class="control-label col-md-3 col-sm-3 col-xs-12">{{ blocale.roles }}</label>
                 <div class="col-md-6 col-sm-6 col-xs-12">
                   <select class="select2_multiple form-control col-md-7 col-xs-12" multiple="multiple" name="roles" id="roles">
                     {% if user %}
@@ -134,7 +134,7 @@
                 </div>
               </div>
               <div class="item form-group">
-                <label class="control-label col-md-3 col-sm-3 col-xs-12" for="active">Active
+                <label class="control-label col-md-3 col-sm-3 col-xs-12" for="active">{{ blocale.active }}
                 </label>
                 <div class="col-md-6 col-sm-6 col-xs-12">
                   <input type="checkbox" id="active" name="active" class="flat" {% if not user or user.active %}checked="checked"
@@ -143,7 +143,7 @@
               </div>
               {% endif %}
               <div class="item form-group">
-                <label class="control-label col-md-3 col-sm-3 col-xs-12" for="about">About
+                <label class="control-label col-md-3 col-sm-3 col-xs-12" for="about">{{ blocale.about }}
                 </label>
                 <div class="col-md-6 col-sm-6 col-xs-12">
                   <textarea id="about" name="about" class="form-control col-md-7 col-xs-12">{% if user %}{{ user.about }}{% endif %}</textarea>
@@ -151,8 +151,8 @@
               </div>
               <div class="form-group">
                 <div class="col-md-6 col-md-offset-3">
-                  <button type="submit" class="btn btn-primary">Cancel</button>
-                  <button id="send" type="submit" class="btn btn-success">Submit</button>
+                  <button type="submit" class="btn btn-primary">{{ blocale.cancel }}</button>
+                  <button id="send" type="submit" class="btn btn-success">{{ blocale.submit }}</button>
                 </div>
               </div>
             </form>
@@ -166,6 +166,12 @@
 
 {% block javascripts %}
 {{ super() }}
+<script>
+    var request = new XMLHttpRequest();
+    request.open("GET","{{ url_for('static', filename='locale/validator_{}.json'.format(locale.user_locale)) }}", false);
+    request.send(null);
+    var message_locale = JSON.parse(request.responseText);
+</script>
 <!-- validator -->
 <script src="{{ url_for('static', filename='vendors/validator/validator.js') }}"></script>
 

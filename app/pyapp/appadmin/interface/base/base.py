@@ -1,13 +1,8 @@
 import sys
 import os
 
-sys.path.append(os.path.join(os.path.dirname(__file__), "../../../"))
-
-from models.interface_model import User
-
-#from tools.db_manager imDBManagerport 
-
-from pyapp.utils.localization_manager import LocalizationManager
+from appadmin.models.interface_model import User
+from appadmin.utils.localization_manager import LocalizationManager
 
 from flask import Blueprint, render_template, redirect, request, url_for, flash, Response
 from flask_login import (

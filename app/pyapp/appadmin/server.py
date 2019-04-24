@@ -4,9 +4,9 @@ import argparse
 from flask import render_template, session
 from logging import basicConfig, DEBUG, getLogger, StreamHandler
 
-from pyapp.models.interface_model import User
-from pyapp.app import create_app, login_manager
-from pyapp.utils.localization_manager import LocalizationManager
+from appadmin.models.interface_model import User
+from appadmin.app import create_app, login_manager
+from appadmin.utils.localization_manager import LocalizationManager
 
 app = create_app()
 

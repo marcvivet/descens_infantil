@@ -16,5 +16,3 @@ future
 numpy
 pillow
 pyopenssl
-flask-socketio
-eventlet

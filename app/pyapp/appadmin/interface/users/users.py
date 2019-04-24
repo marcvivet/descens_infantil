@@ -1,19 +1,17 @@
 import sys
 import os
 
-sys.path.append(os.path.join(os.path.dirname(__file__), "../../../"))
-
 from flask import Blueprint, render_template, request, redirect
 from flask_login import current_user
 from flask_login import login_required
 
-from pyapp.models.interface_model import  User, Role, Language
-
 from PIL import Image
 import numpy as np
 
-from pyapp.utils.blueprint_utils import roles_required_online, config
-from pyapp.utils.localization_manager import LocalizedException
+from appadmin.models.interface_model import User, Role, Language
+from appadmin.utils.blueprint_utils import roles_required_online, config
+from appadmin.utils.localization_manager import LocalizedException, LocalizationManager
+
 
 blp = Blueprint(
     'users',
@@ -77,11 +75,13 @@ def save_centered_and_resized(picture_name, upload_folder):
 def add():
     db = blp.db_manager
 
+    _locale = LocalizationManager().get_blueprint_locale(blp.name)
+
     state = None
     user = None
     message = None
     page_type = 'new_user'
-    page_title = 'Add new user'
+    page_title = _locale.add_user
 
     if current_user.has_role('Admin'):
         roles_available = db.get_roles()
@@ -94,7 +94,7 @@ def add():
             roles = request.form.getlist('roles')
             
             if db.query(User).filter(User.name == data['username']).count():
-                raise Exception('This username already exists!')
+                raise LocalizedException(_locale.user_exists, blp=blp.name)
 
             picture = None
             # check if the post request has the file part
@@ -121,15 +121,10 @@ def add():
             else:
                 active = False
 
-            if request.form.get('trusted'):
-                trusted = True
-            else:
-                trusted = False
-
             new_user = User(data['username'], password=data['password'],
                             name=data['name'], surname=data['surname'], email=data['email'],
                             phone=data['phone'], about=data['about'], active=active,
-                            trusted=trusted, picture=picture)
+                            picture=picture)
 
             language = db.query(Language).filter(Language.iso_639_1 == data['language']).one()
             new_user.language = language
@@ -141,14 +136,14 @@ def add():
 
             db.add(new_user)
             db.commit()
-            message = 'User added correctly!'
+            message = _locale.user_added
             state = 'success'
         except Exception as e:
             db.rollback()
             error_msg = 'Exception: {}'.format(e)
             print(error_msg)
             state = 'error'
-            message = 'An error occurred while trying to add a new user. {}'.format(error_msg)
+            message = f'{_locale.error_while_adding}. {error_msg}'
 
     return render_template('user_edit.html', **locals())
 
@@ -158,12 +153,14 @@ def add():
 def view():
     db = blp.db_manager
 
+    _locale = LocalizationManager().get_blueprint_locale(blp.name)
+
     state = None
     message = None
     user = None
 
     page_type = 'users'
-    page_title = 'Edit User'
+    page_title = _locale.edit_user
 
     if current_user.has_role('Admin'):
         roles_available = db.get_roles()
@@ -178,18 +175,18 @@ def view():
 
             if 'action' in data:              
                 if data['action'] == 'delete':
-                    message = "Could not delete user {}".format(user.username)
+                    message = _locale.can_not_delete.format(user.username)
 
                     user_to_delete = db.query(User).get(int(data['user_id']))
                     db.delete(user_to_delete)
 
                     db.commit()
-                    message = "User {} deleted correctly".format(user.username)
+                    message = _locale.user_deleted.format(user.username)
                 else:
-                    message = "Could not edit user {}".format(user.username)
+                    message = _locale.can_not_edit.format(user.username)
                     return render_template('user_edit.html', str=str, **locals())
             else:
-                message = "An error occurred when trying to edit User {}".format(user.username)
+                message = _locale.error_on_edit.format(user.username)
                 data = request.form
                 roles = request.form.getlist('roles')
 
@@ -232,16 +229,16 @@ def view():
                     user.roles.append(db.query(Role).filter(Role.name == role).one())
 
                 db.commit()
-                message = "User {} edited correctly".format(user.username)
+                message = _locale.user_edited.format(user.username)
             
             state = 'success'
             return redirect('/users/view')
         except Exception as e:
             db.rollback()
-            error_msg = 'Exception: {}'.format(e)
+            error_msg = _locale.exception.format(e)
             print(error_msg)
             state = 'error'
-            message = 'An error occurred while trying to edit an user. {}'.format(error_msg)
+            message = _locale.error_during_edit.format(error_msg)
 
     users = db.query(User).filter(User.system == False).order_by(User.name).order_by(User.surname).all()
     return render_template('user_view.html', str=str, **locals())
@@ -251,13 +248,14 @@ def view():
 @login_required
 def profile():
     db = blp.db_manager
+    _locale = LocalizationManager().get_blueprint_locale(blp.name)
     
     state = None
     message = None
     user = db.query(User).filter(User.id == current_user.id).one()
 
     page_type = 'profile'
-    page_title = 'Edit Profile'
+    page_title = _locale.edit_profile
 
     if request.method == 'POST':
         try:
@@ -295,7 +293,7 @@ def profile():
                 user.setPassword(data['password'])
 
             db.commit()
-            message = 'Your data have been modified correctly'
+            message = _locale.profile_edited
             state = 'success'
 
             return redirect('/users/profile')
@@ -304,6 +302,6 @@ def profile():
             error_msg = 'Exception: {}'.format(e)
             print(error_msg)
             state = 'error'
-            message = 'An error occurred while trying modify your profile. {}'.format(error_msg)
+            message = _locale.profile_error.format(error_msg)
 
     return render_template('user_edit.html', **locals())

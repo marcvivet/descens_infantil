@@ -1,0 +1,5 @@
+{
+    "python.autoComplete.extraPaths": [
+        "/home/marc/local.x86_64/src/descens_infantil/app/pyapp"
+    ]
+}

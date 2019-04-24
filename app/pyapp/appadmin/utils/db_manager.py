@@ -6,10 +6,7 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.pool import StaticPool
 
-try:
-    from ..models.interface_model import Page, Role, User
-except ValueError:
-    from models.interface_model import Page, Role, User
+from appadmin.models.interface_model import Page, Role, User
 
 LOG = logging.getLogger(__name__)
 
@@ -96,7 +93,8 @@ class DBManager(metaclass=NamedSingleton):
             if not self.data_base_path:
                 tmp_dir = os.path.join(os.path.dirname(
                     os.path.dirname(
-                        os.path.abspath(__file__))), 'data/databases/')
+                        os.path.dirname(
+                            os.path.abspath(__file__)))), 'data/databases/')
 
                 if not os.path.isdir(tmp_dir):
                     os.makedirs(tmp_dir)

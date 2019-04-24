@@ -7,10 +7,7 @@ from typing import Any
 from flask_login import current_user
 from flask_user.access import is_authenticated
 
-try:
-    from ..models.interface_model import Language
-except ValueError:
-    from models.interface_model import Language
+from appadmin.models.interface_model import Language
 
 
 class LocalizedException(Exception):
@@ -86,9 +83,13 @@ class LocalizationManager(metaclass=Singleton):
         self._default_locale = 'ca'
 
     def add_blueprint(self, blp):
-        for iso_639_1 in self._locale:
-            language_file = os.path.join(blp.root_path, 'locale', f'{iso_639_1}.json')
-            self._locale[iso_639_1][blp.name] = LocaleData.create_from_file(language_file)
+        try:
+            for iso_639_1 in self._locale:
+                language_file = os.path.join(blp.root_path, 'locale', f'{iso_639_1}.json')
+                self._locale[iso_639_1][blp.name] = LocaleData.create_from_file(language_file)
+        except:
+            self._logger.error("Error while parsing locale JSON for blueprint %s, language %s", blp.name, iso_639_1)
+            raise
 
     def get_blueprint_locale(self, blp):
         return self.locale[blp]

@@ -9,14 +9,14 @@ sys.path.append(
     os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 )
 
-from models.descens_infantil_model import db as dbd, Club, Edition, Participant, EditionParticipant
-from models.interface_model import db as dbi, User, Role, Page, Language
-from utils.db_manager import DBManager
+from appadmin.models.descens_infantil_model import db as dbd, Club, Edition, Participant, EditionParticipant
+from appadmin.models.interface_model import db as dbi, User, Role, Page, Language
+from appadmin.utils.db_manager import DBManager
 
 
 def main():
     data_folder = '/home/marc/local.x86_64/src/descens_infantil/extract/data'
-    club_image_folder = '/home/marc/local.x86_64/src/descens_infantil/app/pyapp/interface/base/static/images/clubs'
+    club_image_folder = '/home/marc/local.x86_64/src/descens_infantil/app/pyapp/appadmin/interface/base/static/images/clubs'
 
     manager = DBManager(clean=True)
     manager.create_all(dbd.Model)

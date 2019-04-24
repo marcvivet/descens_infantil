@@ -30,13 +30,13 @@
                   <div class="x_title">
                       <h2></h2>
                       {% if users %}
-                      <ul class="nav navbar-right panel_toolbox">
-                          <li><input id="toggle-visualization" checked type="checkbox" data-toggle="toggle" data-on="{{ blocale.thumbnails }}" data-off="{{ blocale.table }}" data-onstyle="default" data-offstyle="default"></li>
+                        <ul class="nav navbar-right panel_toolbox">
+                          <li><input id="users-toggle-visualization" checked type="checkbox" data-toggle="toggle" data-on="{{ blocale.thumbnails }}" data-off="{{ blocale.table }}" data-onstyle="default" data-offstyle="default"></li>
                         </ul>
                       {% endif %}
                       <div class="clearfix"></div>
                   </div>
-                  <div class="x_content" id="list">
+                  <div class="x_content hidden" id="list">
                       {% if users %}
                       <table id="datatable-users" class="table table-striped table-bordered">
                           <thead>
@@ -85,7 +85,7 @@
                       {% endif %}
                   </div>
 
-                  <div class="x_content"  id="thumbnails">
+                  <div class="x_content hidden"  id="thumbnails">
                       <div class="row">
                         {% for user in users %}
                         <div class="col-md-55" style="min-width: 400px; padding: 0px; margin: 5px;">
@@ -155,33 +155,20 @@
 <script src="{{ url_for('static', filename='vendors/datatables.net-scroller/js/dataTables.scroller.min.js') }}"></script>
 
 <script src="{{ url_for('static', filename='vendors/bootstrap-toggle/js/bootstrap-toggle.min.js') }}"></script>
+<script src="{{ url_for('static', filename='js/toogle_visualization.js') }}"></script>
+
 <script>
-    $(function() {
-      $('#toggle-visualization').change(function() {
-        let row_thumbnails = document.getElementById('thumbnails');
-        let row_list = document.getElementById('list');
+  {% if users %}
+  var toggle = new ToggleVisualization('users-toggle-visualization', 'list', 'thumbnails', true);
+  {% endif %}
 
-        if ($(this).prop('checked')) {
-          row_thumbnails.classList.remove('hidden');
-          row_list.classList.add('hidden');
-          console.log('True');
-        } else {
-          row_thumbnails.classList.add('hidden');
-          row_list.classList.remove('hidden');
-          console.log('False');
+  $(document).ready(function() {
+    $('#datatable-users').DataTable( {
+        "language": {
+            "url": "{{ url_for('static', filename='locale/datatable_{}.json'.format(locale.user_locale)) }}"
         }
-      });
-
-      $('#toggle-visualization').change();
-    });
-
-    $(document).ready(function() {
-      $('#datatable-users').DataTable( {
-          "language": {
-              "url": "{{ url_for('static', filename='locale/datatable_{}.json'.format(locale.user_locale)) }}"
-          }
-      } );
-  } )
+    } );
+} )
 </script>
 {% endblock javascripts %}
 

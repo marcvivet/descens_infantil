@@ -1,4 +1,4 @@
-from .server import run
+from appadmin.server import run
 
 if __name__ == '__main__':
     run()
