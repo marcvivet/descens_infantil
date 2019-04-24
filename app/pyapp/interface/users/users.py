@@ -13,6 +13,7 @@ from PIL import Image
 import numpy as np
 
 from pyapp.utils.blueprint_utils import roles_required_online, config
+from pyapp.utils.localization_manager import LocalizedException
 
 blp = Blueprint(
     'users',
@@ -23,12 +24,13 @@ blp = Blueprint(
     static_url_path='/static/users'
 )
 
+
 def check_file_type(filename):
     result = '.' in filename and \
            filename.rsplit('.', 1)[1].lower() in ['png', 'jpg', 'jpeg', 'gif', 'bmp']
 
     if not result:
-        raise Exception("This picture extension is not allowed!")
+        raise LocalizedException("incorrect_picture", blp=blp.name)
 
 
 def save_centered_and_resized(picture_name, upload_folder):

@@ -58,7 +58,7 @@
                                   <td>{{user.name}}</td>
                                   <td>{{user.surname}}</td>
                                   <td>{{ user.email }}</td>
-                                  <td>{{ user.phone }}</td>
+                                  <td>{{ str(user.phone).replace('None', '') }}</td>
                                   <td>{{ blocale[str(user.active).lower()] }}</td>
                                   <td><form method="post">
                                       <input type="hidden" name="action" value="edit">
@@ -98,7 +98,7 @@
                                 <p><strong>{{ blocale.about }}: </strong> {{ user.about }} </p>
                                 <ul class="list-unstyled">
                                   <li><i class="fa fa-at"></i> {{ blocale.email }}: {{ user.email }}</li>
-                                  <li><i class="fa fa-phone"></i> {{ blocale.phone }} #: {{ user.phone }}</li>
+                                  <li><i class="fa fa-phone"></i> {{ blocale.phone }} #: {{ str(user.phone).replace('None', '') }}</li>
                                   <li><i class="fa fa-hand-o-right"></i> {{ blocale.active }}: {{ blocale[str(user.active).lower()] }}</li>
                                 </ul>
                               </div>
@@ -178,7 +178,7 @@
     $(document).ready(function() {
       $('#datatable-users').DataTable( {
           "language": {
-              "url": "{{ url_for('static', filename='locale/datatable_{}.json'.format(locale['users']['iso_639_1'])) }}"
+              "url": "{{ url_for('static', filename='locale/datatable_{}.json'.format(locale.user_locale)) }}"
           }
       } );
   } )

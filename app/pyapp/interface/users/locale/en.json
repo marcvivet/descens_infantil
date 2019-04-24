@@ -13,5 +13,8 @@
     "false": "No",
     "thumbnails": "Thumbnails",
     "table": "Table",
-    "no_user": "There isn't any user. Contact to the administrator."
+    "no_user": "There isn't any user. Contact to the administrator.",
+    "view_users": "View Users",
+    "add_user": "Add new User",
+    "incorrect_picture": "This picture extension is not allowed!"
 }

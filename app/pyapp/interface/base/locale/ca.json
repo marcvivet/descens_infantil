@@ -6,5 +6,9 @@
     "login": "Iniciar Sessió",
     "copyright": "©2019 Tots els drets reservats. Descens Infantil.",
     "username": "Nom d'usuari",
-    "password": "Contrasenya"
+    "password": "Contrasenya",
+    "welcome": "Benvingut",
+    "general": "General",
+    "administration": "Administració",
+    "templates": "Pàgines d'exemple"
 }

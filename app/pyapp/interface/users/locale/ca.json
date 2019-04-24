@@ -9,9 +9,11 @@
     "edit": "Modificar",
     "delete": "Eliminar",
     "about": "Quant a",
-    "True": "Sí",
-    "False": "No",
+    "true": "Sí",
+    "false": "No",
     "thumbnails": "Vinyetes",
     "table": "Taula",
-    "no_user": "No hi ha cap usuari. Parla amb l'administrator."
+    "no_user": "No hi ha cap usuari. Parla amb l'administrator.",
+    "view_users": "Llistar usuaris",
+    "add_user": "Afegir un usuari"
 }

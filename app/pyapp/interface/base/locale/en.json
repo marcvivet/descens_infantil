@@ -6,5 +6,9 @@
     "login": "Log in",
     "copyright": "©2019 All Rights Reserved. Descens Infantil.",
     "username": "Username",
-    "password": "Password"
+    "password": "Password",
+    "welcome": "Welcome",
+    "general": "General",
+    "administration": "Administration",
+    "templates": "Page Examples"
 }

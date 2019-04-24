@@ -13,17 +13,17 @@ except ValueError:
     from models.interface_model import Language
 
 
-class LocalizationError(Exception):
+class LocalizedException(Exception):
     """Custom Exception for Augmenters."""
 
-    def __init__(self, message):
+    def __init__(self, message, blp="base"):
         """Create a new exception.
 
         Arguments:
             message (str): Exception description
 
         """
-        super().__init__(message)
+        super().__init__(LocalizationManager().get_blueprint_locale(blp)[message])
 
 
 class Singleton(type):
@@ -91,7 +91,7 @@ class LocalizationManager(metaclass=Singleton):
             self._locale[iso_639_1][blp.name] = LocaleData.create_from_file(language_file)
 
     def get_blueprint_locale(self, blp):
-        return self.locale[blp.name]
+        return self.locale[blp]
 
     @property
     def locale(self):

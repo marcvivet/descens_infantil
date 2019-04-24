@@ -85,7 +85,7 @@ def login():
             login_user(user)
             return redirect(url_for('base.route_default'))
 
-        locale = LocalizationManager().get_blueprint_locale(blp)
+        locale = LocalizationManager().get_blueprint_locale(blp.name)
         if user and not user.active:
             flash(locale.user_not_active_error, 'error')
         else:
