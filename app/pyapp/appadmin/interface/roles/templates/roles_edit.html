@@ -1,6 +1,6 @@
 {% extends "base_site.html" %}
 
-{% block title %} Roles {% endblock title %}
+{% block title %} {{ blocale.roles }} {% endblock title %}
 
 {% block stylesheets %}
   {{ super() }}
@@ -24,7 +24,7 @@
               <form class="form-horizontal form-label-left" method="post">
                 {% if role %}<input type="hidden" name="id" value="{{ role.id }}">{% endif %}
                 <div class="item form-group">
-                  <label class="control-label col-md-3 col-sm-3 col-xs-12" for="name">Name<span class="required">*</span>
+                  <label class="control-label col-md-3 col-sm-3 col-xs-12" for="name">{{ blocale.name }}<span class="required">*</span>
                   </label>
                   <div class="col-md-6 col-sm-6 col-xs-12">
                     <input {% if role %}value="{{ role.name }}"{% endif %} id="name" class="form-control col-md-7 col-xs-12" data-validate-length-range="6" name="name" placeholder="User name e.g Admin" required="required" type="text">
@@ -33,7 +33,7 @@
 
                 
                 <div class="item form-group">
-                  <label class="control-label col-md-3 col-sm-3 col-xs-12">Allowed Pages</label>
+                  <label class="control-label col-md-3 col-sm-3 col-xs-12">{{ blocale.pages }}</label>
                   <div class="col-md-6 col-sm-6 col-xs-12">
                     <select class="select2_multiple form-control col-md-7 col-xs-12" multiple="multiple" name="pages" id="pages">
                       {% if role %}
@@ -53,7 +53,7 @@
                   </div>
                 </div>
                 <div class="item form-group">
-                  <label class="control-label col-md-3 col-sm-3 col-xs-12" for="description">Description 
+                  <label class="control-label col-md-3 col-sm-3 col-xs-12" for="description">{{ blocale.description }} 
                   </label>
                   <div class="col-md-6 col-sm-6 col-xs-12">
                     <textarea id="description" name="description" class="form-control col-md-7 col-xs-12">{% if role %}{{ role.description }}{% endif %}</textarea>
@@ -61,7 +61,7 @@
                 </div>
                 <div class="form-group">
                   <div class="col-md-6 col-md-offset-3">
-                    <button id="send" type="submit" class="btn btn-success">Submit</button>
+                    <button id="send" type="submit" class="btn btn-success">{{ blocale.submit }}</button>
                   </div>
                 </div>
               </form>
@@ -76,6 +76,13 @@
 {% block javascripts %}
   {{ super() }}
   <!-- validator -->
+  <script>
+    var request = new XMLHttpRequest();
+    request.open("GET","{{ url_for('static', filename='locale/validator_{}.json'.format(locale.user_locale)) }}", false);
+    request.send(null);
+    var message_locale = JSON.parse(request.responseText);
+  </script>
+
   <script src="{{ url_for('static', filename='vendors/validator/validator.js') }}"></script>
 
   <script>

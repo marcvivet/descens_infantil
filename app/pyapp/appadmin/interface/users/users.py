@@ -19,7 +19,7 @@ blp = Blueprint(
     url_prefix='/users',
     template_folder='templates',
     static_folder='static',
-    static_url_path='/static/users'
+    static_url_path='/static'
 )
 
 

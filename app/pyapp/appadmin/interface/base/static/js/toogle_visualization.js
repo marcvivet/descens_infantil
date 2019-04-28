@@ -3,8 +3,6 @@ class ToggleVisualization {
         this._idToggle = idToggle;              
         this._checked = false;
 
-        console.log(idToggle);
-
         let divOnInput = document.getElementById(idDivOn);
         let divOffInput = document.getElementById(idDivOff);
         

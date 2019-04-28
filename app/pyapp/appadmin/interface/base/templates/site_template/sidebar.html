@@ -62,10 +62,10 @@
         </li>
         {% endif %}
         {% if current_user.has_page(['roles']) %}
-        <li><a><i class="fa fa-university"></i> Roles <span class="fa fa-chevron-down"></span></a>
+        <li><a><i class="fa fa-university"></i> {{ locale.roles.roles }} <span class="fa fa-chevron-down"></span></a>
           <ul class="nav child_menu">
-              <li><a href="/roles/view">View Roles</a></li>
-            <li><a href="/roles/add">Add new Role</a></li>
+              <li><a href="/roles/view">{{ locale.roles.view_roles }}</a></li>
+            <li><a href="/roles/add">{{ locale.roles.add_new_role }}</a></li>
           </ul>
         </li>
         {% endif %}
