@@ -10,5 +10,6 @@
     "welcome": "Welcome",
     "general": "General",
     "administration": "Administration",
-    "templates": "Page Examples"
+    "templates": "Page Examples",
+    "incorrect_picture": "This picture extension is not allowed!"
 }

@@ -53,7 +53,7 @@
                                     <td>{{role.id}}</td>
                                     <td>{{role.name}}</td>
                                     <td>{% if role.description %}{{role.description}}{% endif %}</td>
-                                    <td>{% for page in role.pages %}{{page.name}} {% endfor %}</td>
+                                    <td>{% if role.pages %}|{% for page in role.pages %}{% if page.name not in ['base', 'main'] %} {{page.name}} |{% endif %}{% endfor %}{% endif %}</td>
                                 </tr>
                                 {% endfor %}
                             </tbody>

@@ -11,6 +11,15 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
       {% endblock meta %}
 
+      <!-- Custom Favicon -->
+      <link rel="shortcut icon" href="{{ url_for('static', filename='images/favicon/icono_16_6.png') }}"/>
+      <!-- Custom Retina Favicon -->
+      <link rel="apple-touch-icon" href="{{ url_for('static', filename='images/favicon/icono_57_57.png') }}"/>
+      <link rel="apple-touch-icon" sizes="114x114" href="{{ url_for('static', filename='images/favicon/icono_114_114.png') }}"/>
+      <link rel="apple-touch-icon" sizes="72x72" href="{{ url_for('static', filename='images/favicon/icono_72_72.png') }}"/>
+      <link rel="apple-touch-icon" sizes="144x144" href="{{ url_for('static', filename='images/favicon/icono_114_114.png') }}"/>
+
+
       <title>descens infantil | {% block title %}{% endblock %}</title>
 
       {% block stylesheets %}

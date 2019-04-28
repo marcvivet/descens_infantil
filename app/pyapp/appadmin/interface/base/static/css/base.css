@@ -107,3 +107,12 @@ table.dataTable tbody tr.selected {
     -ms-transition: all 0.15s ease-in-out;
     -o-transition: all 0.15s ease-in-out;
  }
+
+ .grid {
+   width: 100%;
+ }
+
+ .grid-item {
+   width: 390px;
+   margin-bottom: 5px;
+ }

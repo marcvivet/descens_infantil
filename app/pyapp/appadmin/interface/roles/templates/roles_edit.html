@@ -27,7 +27,7 @@
                   <label class="control-label col-md-3 col-sm-3 col-xs-12" for="name">{{ blocale.name }}<span class="required">*</span>
                   </label>
                   <div class="col-md-6 col-sm-6 col-xs-12">
-                    <input {% if role %}value="{{ role.name }}"{% endif %} id="name" class="form-control col-md-7 col-xs-12" data-validate-length-range="6" name="name" placeholder="User name e.g Admin" required="required" type="text">
+                    <input {% if role %}value="{{ role.name }}"{% endif %} id="name" class="form-control col-md-7 col-xs-12" data-validate-length-range="6" name="name" placeholder="{{ blocale.name_placeholder }}" required="required" type="text">
                   </div>
                 </div>
 

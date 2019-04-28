@@ -1,4 +1,3 @@
-import sys
 import os
 import json
 
@@ -62,6 +61,9 @@ def vew_roles(action, role_id=None):
                 for page in pages:
                     role.pages.append(db.query(Page).filter(Page.id == int(page)).one())
 
+                role.pages.append(db.query(Page).filter(Page.name == "main").one())
+                role.pages.append(db.query(Page).filter(Page.name == "base").one())
+
                 role.name = data['name']
                 role.description = data['description']
 
@@ -114,6 +116,9 @@ def add_role():
 
             for page in pages:
                 new_role.pages.append(db.query(Page).filter(Page.id == page).one())
+
+            new_role.pages.append(db.query(Page).filter(Page.name == "main").one())
+            new_role.pages.append(db.query(Page).filter(Page.name == "base").one())
 
             db.add(new_role)
             db.commit()

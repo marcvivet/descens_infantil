@@ -1,4 +1,6 @@
 {% extends "base_site.html" %} {% block title %} Add new user {% endblock title %} {% block stylesheets %} {{ super() }}
+
+<link href="{{ url_for('main.static', filename='css/main.css', session=config.SESSION_UID) }}" rel="stylesheet">
 {% endblock stylesheets %} {% block content %}
 
 <div class="right_col" role="main">
@@ -21,6 +23,18 @@
                         <p class="text-muted font-13 m-b-30">
                             Tingueu en compta que aquesta és una versió preliminar i pot contenir errors.
                             Per començar sel·leccioneu alguna opció del menú lateral.
+                        </p>
+                        <p class="text-muted font-13 m-b-30">
+                            En els seus inicis l’organització del Descens infantil la feia el Club Esquí Supermolina, cap als anys 80 però el Club d’Esquí La Molina prengué el relleu . Fou amb el canvi de mil·leni que la organització caigué en mans de gent i no institucions. Gent lligada al món de la neu que de manera voluntària organitza els Descens infantils any rera any.
+                        </p>
+                        <p class="text-muted font-13 m-b-30">
+                            Ja des dels primers descens realitzats creiem que l’esperit de fomentar l’esport i l’estima per la neu des del inici és important i quelcom molt maco per a compartir amb els fills, alhora que dónes als nens la satisfacció de tenir un “premi” en recompensa a un esforç realitzat.
+                        </p>
+                        <p class="text-muted font-13 m-b-30">
+                            Aquest esperit dels seus fundadors ha durant fins al dia d’avui on un grup de 11 persones duem de manera voluntària la coordinació i organització de la cursa juntament amb el personal de l’Estació d’Esquí de La Molina i de l’Escola d’Esquí de La Molina .
+                        </p>
+                        <p class="text-muted font-13 m-b-30">
+                            <img class="mainlogo" src="{{ url_for('static', filename='images/logobw.jpg') }}">
                         </p>
                     </div>
                 </div>

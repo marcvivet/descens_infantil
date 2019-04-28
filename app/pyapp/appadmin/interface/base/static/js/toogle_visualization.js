@@ -1,11 +1,15 @@
 class ToggleVisualization {
     constructor(idToggle, idDivOff, idDivOn, checked = false) {
-        this._idToggle = idToggle;              
+        this._idToggle = idToggle;
         this._checked = false;
 
         let divOnInput = document.getElementById(idDivOn);
         let divOffInput = document.getElementById(idDivOff);
-        
+
+        $('.grid').masonry({
+            itemSelector: '.grid-item',
+            columnWidth: 400
+        });
 
         $(`#${this._idToggle}`).change(((idTog, divOn, divOff) => {
             return () => {
@@ -15,6 +19,7 @@ class ToggleVisualization {
                     divOff.classList.add('hidden');
                     localStorage.setItem(idTog, 'on');
                     this._checked = true;
+                    $('.grid').masonry('layout');
                 } else {
                     divOn.classList.add('hidden');
                     divOff.classList.remove('hidden');

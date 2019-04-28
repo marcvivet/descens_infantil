@@ -24,5 +24,6 @@
     "title_create": "Crea un rol nou",
     "user_name_exists": "Aquest nom de rol ja existeix!",
     "add_message_success": "S'ha afegit el rol correctament!",
-    "error_while_create": "S'ha produït un error en intentar afegir el nou rol. {}"
+    "error_while_create": "S'ha produït un error en intentar afegir el nou rol. {}",
+    "name_placeholder": "Nom del rol ex: Admin"
 }

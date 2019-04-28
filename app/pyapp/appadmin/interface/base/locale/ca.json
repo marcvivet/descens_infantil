@@ -10,5 +10,6 @@
     "welcome": "Benvingut",
     "general": "General",
     "administration": "Administració",
-    "templates": "Pàgines d'exemple"
+    "templates": "Pàgines d'exemple",
+    "incorrect_picture": "Aquest format d'imatge no està permes!"
 }

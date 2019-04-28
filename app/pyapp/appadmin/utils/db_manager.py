@@ -276,8 +276,11 @@ class DBManager(metaclass=NamedSingleton):
         self.delete(role)
         return name
 
-    def get_pages(self):
-        return self.query(Page).all()
+    def get_pages(self, include_all=False):
+        if include_all:
+            return self.query(Page).all()
+
+        return self.query(Page).filter(~Page.name.in_(['base', 'main'])).all()
 
     def get_page_by_name(self, page_name):
         return self.query(Page).filter_by(name=page_name).first()

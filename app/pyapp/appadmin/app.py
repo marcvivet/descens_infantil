@@ -144,11 +144,17 @@ def create_app():
         def internal_error(error):
             return render_template('errors/page_500.html'), 500
 
+        blp.errors = {
+            'access_forbidden': access_forbidden,
+            'not_found_error': not_found_error,
+            'internal_error': internal_error
+        }
+
 
     def register_template_blueprints(app):
         for module_name in ('forms', 'ui', 'tables', 'data', 'additional'):
             module = import_module(
-                'interface.zz_templates.{}.routes'.format(module_name))
+                'interface.__templates.{}.routes'.format(module_name))
             module.blueprint.db_manager = app.db_manager
             module.blueprint.config = app.config
             module.blueprint.page = app.db_manager.get_page_by_name('templates')
@@ -156,9 +162,11 @@ def create_app():
 
 
     def register_blueprints(app):
-        for module_name in (
-            'users', 'base', 'roles', 'main', 'movies', 'databases', 'search',
-                'scraping'):
+        interface_path = os.path.join(
+            os.path.dirname(os.path.abspath(__file__)), 'interface')
+        pages = [page for page in os.listdir(interface_path) if not page.startswith('__')]
+
+        for module_name in pages:
             print('Loading module: {}'.format(module_name))
             module = import_module(
                 'appadmin.interface.{}.{}'.format(module_name, module_name))

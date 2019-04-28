@@ -105,6 +105,9 @@ def main():
                 catala = language
 
         admin_role = Role('Admin')
+        developer_role = Role(
+            'Developer', description='Adds GUI templates to the interface (for development only)')
+        
         user_role = Role('User')
 
         # Adding Default users
@@ -113,7 +116,7 @@ def main():
             picture='/static/images/users/marc.jpg')
 
         user.roles.append(admin_role)
-        user.roles.append(user_role)
+        user.roles.append(developer_role)
         user.language = catala
 
         manager.add(user)
@@ -123,7 +126,6 @@ def main():
             picture='/static/images/users/xenia.jpg')
 
         user.roles.append(admin_role)
-        user.roles.append(user_role)
         user.language = catala
 
         manager.add(user)
@@ -138,7 +140,7 @@ def main():
 
         page = Page(
             'templates', description='GUI templates (for development only)')
-        page.roles.append(admin_role)
+        page.roles.append(developer_role)
         manager.add(page)
         manager.commit()
 
