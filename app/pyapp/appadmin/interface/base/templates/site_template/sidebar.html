@@ -24,12 +24,32 @@
     <div class="menu_section">
       <h3>{{ locale.base.general }}</h3>
       <ul class="nav side-menu">
+
+        <li><a><i class="fa fa-clock-o"></i>Carrera <span class="fa fa-chevron-down"></span></a>
+          <ul class="nav child_menu">
+            <li><a href="/clubs/view">Introduïr Temps</a></li>
+            <li><a href="/clubs/add">LListar participants</a></li>
+            <li><a href="/clubs/add">Resultats</a></li>
+            <li><a href="/clubs/add">Estadístiques</a></li>
+          </ul>
+        </li>
+
+        <li><a><i class="fa fa-calendar"></i>Edicions <span class="fa fa-chevron-down"></span></a>
+          <ul class="nav child_menu">
+            <li><a href="/clubs/view">Nova edició</a></li>
+            <li><a href="/clubs/add">Llistar edicions</a></li>
+            <li><a href="/clubs/add">Estadístiques</a></li>
+          </ul>
+        </li>
+
+
+
         {% if current_user.has_page(['clubs']) %}
         <li><a><i class="fa fa-institution"></i>{{ locale.clubs.clubs }} <span class="fa fa-chevron-down"></span></a>
-            <ul class="nav child_menu">
-              <li><a href="/clubs/view">{{ locale.clubs.view_clubs }}</a></li>
-              <li><a href="/clubs/add">{{ locale.clubs.add_club }}</a></li>
-            </ul>
+          <ul class="nav child_menu">
+            <li><a href="/clubs/view">{{ locale.clubs.view_clubs }}</a></li>
+            <li><a href="/clubs/add">{{ locale.clubs.add_club }}</a></li>
+          </ul>
         </li>
         {% endif %}
       </li>

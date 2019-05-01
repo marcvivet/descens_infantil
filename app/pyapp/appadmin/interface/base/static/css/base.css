@@ -141,3 +141,45 @@ table.dataTable tbody tr.selected {
   height: calc(100vh - (.5rem * 8));
   content: "";
 }
+
+/*
+.modal-backdrop {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 1040;
+  background-color: #AA0000;
+}
+
+@keyframes flickerAnimation {
+  0%   { opacity:0.5; }
+  50%  { opacity:1; }
+  100% { opacity:0.5; }
+}
+@-o-keyframes flickerAnimation{
+  0%   { opacity:0.5; }
+  50%  { opacity:1; }
+  100% { opacity:0.5; }
+}
+@-moz-keyframes flickerAnimation{
+  0%   { opacity:0.5; }
+  50%  { opacity:1; }
+  100% { opacity:0.5; }
+}
+@-webkit-keyframes flickerAnimation{
+  0%   { opacity:0.5; }
+  50%  { opacity:1; }
+  100% { opacity:0.5; }
+}
+.modal-backdrop.in {
+  filter: alpha(opacity=1);
+  opacity: 1;
+  animation-delay: 2s;
+  -webkit-animation: flickerAnimation 1s infinite;
+  -moz-animation: flickerAnimation 1s infinite;
+  -o-animation: flickerAnimation 1s infinite;
+  animation: flickerAnimation 1s infinite;
+}
+*/
