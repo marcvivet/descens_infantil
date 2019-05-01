@@ -9,7 +9,7 @@ sys.path.append(
     os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 )
 
-from appadmin.models.descens_infantil_model import db as dbd, Club, Edition, Participant, EditionParticipant
+from appadmin.models.descens_infantil_model import db as dbd, Club, Edition, Participant, EditionParticipant, Organizer
 from appadmin.models.interface_model import db as dbi, User, Role, Page, Language
 from appadmin.utils.db_manager import DBManager
 
@@ -37,9 +37,25 @@ def main():
     with open(os.path.join(data_folder, 'EDICIÓ.csv'), newline='') as csvfile:
         reader = csv.DictReader(csvfile)
         for row in reader:
+            hash_chief_of_course = Organizer.create_hash(*row['Director de la cursa'].split(' ', 1))
+            chief_of_course = manager.query(Organizer).filter(
+                Organizer.hash == hash_chief_of_course).first()
+            if not chief_of_course:
+                chief_of_course = Organizer(*row['Director de la cursa'].split(' ', 1))
+                manager.add(chief_of_course)
+                manager.flush()
+
+            hash_start_referee = Organizer.create_hash(*row['Director de la cursa02'].split(' ', 1))
+            start_referee = manager.query(
+                Organizer).filter(Organizer.hash == hash_start_referee).first()
+            if not start_referee:
+                start_referee = Organizer(*row['Director de la cursa02'].split(' ', 1))
+                manager.add(start_referee)
+                manager.flush()
+
             edition = Edition(
-                edition=int(row['EDICIÓ']), chief_of_course=row['Director de la cursa'],
-                start_referee=row['Director de la cursa02'], date=date(int(row['ANY']), 1, 1))
+                edition=int(row['EDICIÓ']), chief_of_course=chief_of_course,
+                start_referee=start_referee, date=date(int(row['ANY']), 1, 1))
             
             manager.add(edition)
             manager.commit()

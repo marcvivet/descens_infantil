@@ -1,0 +1,41 @@
+
+.container-img-club {
+    position: relative; 
+    width: 150px;
+    height: 150px;
+    border: 1px solid #E6E9ED;
+    object-fit: contain;
+    margin-bottom:  5px;
+}
+
+.img-club {
+    width: 100%; /* or any custom size */
+    height: 100%; 
+    object-fit: contain;
+}
+
+.container-img-club-mini {
+    position: relative; 
+    width: 60px;
+    height: 60px;
+    border: 1px solid #E6E9ED;
+    object-fit: contain;
+}
+
+.img-club-mini {
+    width: 100%; /* or any custom size */
+    height: 100%; 
+    object-fit: contain;
+}
+
+table.dataTable tbody td {
+    vertical-align: middle;
+}
+
+.center-element {
+    text-align: center
+}
+
+.table-buttons td {
+    padding: 2px;
+}

@@ -1,0 +1,187 @@
+{% extends "base_site.html" %}
+
+{% block title %} {{ blocale.clubs }} {% endblock title %}
+
+{% block stylesheets %}
+  {{ super() }}
+  <link href="{{ url_for('static', filename='vendors/datatables.net-bs/css/dataTables.bootstrap.min.css') }}" rel="stylesheet">
+<link href="{{ url_for('static', filename='vendors/datatables.net-buttons-bs/css/buttons.bootstrap.min.css') }}" rel="stylesheet">
+<link href="{{ url_for('static', filename='vendors/datatables.net-fixedheader-bs/css/fixedHeader.bootstrap.min.css') }}"
+    rel="stylesheet">
+<link href="{{ url_for('static', filename='vendors/datatables.net-responsive-bs/css/responsive.bootstrap.min.css') }}" rel="stylesheet">
+<link href="{{ url_for('static', filename='vendors/datatables.net-scroller-bs/css/scroller.bootstrap.min.css') }}" rel="stylesheet">
+<link href="{{ url_for('static', filename='vendors/bootstrap-toggle/css/bootstrap-toggle.min.css') }}" rel="stylesheet">
+<link href="{{ url_for('clubs.static', filename='css/clubs.css') }}" rel="stylesheet">
+{% endblock stylesheets %}
+
+{% block content %}
+  <div class="right_col" role="main">
+    <div class="">
+      <div class="page-title">
+        <div class="title_left">
+          <h3>{{ blocale.clubs }}</h3>
+        </div>
+      </div>
+
+      <div class="clearfix"></div>
+
+      <div class="row">
+          <div class="col-md-12 col-sm-12 col-xs-12">
+              <div class="x_panel">
+                  <div class="x_title">
+                      <h2></h2>
+                      {% if clubs %}
+                        <ul class="nav navbar-right panel_toolbox">
+                          <li><input id="clubs-toggle-visualization" checked type="checkbox" data-toggle="toggle" data-on="{{ blocale.thumbnails }}" data-off="{{ blocale.table }}" data-onstyle="default" data-offstyle="default"></li>
+                        </ul>
+                      {% endif %}
+                      <div class="clearfix"></div>
+                  </div>
+                  {% if clubs %}
+                  <div class="x_content hidden" id="list">
+                      <table id="datatable-clubs" class="table table-striped table-bordered">
+                          <thead>
+                              <tr>
+                                  <th>{{ blocale.actions }}</th>
+                                  <th>{{ blocale.emblem }}</th>
+                                  <th>{{ blocale.name }}</th>
+                                  <th>{{ blocale.acronym }}</th>
+                                  <th>{{ blocale.email }}</th>
+                                  <th>{{ blocale.phone }}</th>
+                                  <th>{{ blocale.about }}</th>
+                              </tr>
+                          </thead>
+                          <tbody>
+                              {% for club in clubs %}
+                              <tr id="table_row_{{ club.id }}">
+                                  <td>
+                                    <table class="table-buttons">
+                                      <tr>
+                                        <td>
+                                          <form method="post">
+                                            <input type="hidden" name="action" value="edit">
+                                            <input type="hidden" name="club_id" value="{{ club.id }}">
+                                            <button type="submit" class="btn btn-primary btn-xs">
+                                              <i class="fa fa-edit"> </i>
+                                            </button>
+                                          </form>
+                                        </td>
+                                        <td>
+                                          <form method="post">
+                                            <input type="hidden" name="action" value="delete">
+                                            <input type="hidden" name="club_id" value="{{ club.id }}">
+                                            <button type="button" onclick="buttonDelete(this);" class="btn btn-danger btn-xs">
+                                              <i class="fa fa-remove"> </i>
+                                            </button>
+                                          </form>
+                                        </td>
+                                      </tr>
+                                    </table>
+                                  </td>
+                                  <td>
+                                    <div class="container-img-club-mini">
+                                      <img src="{{ club.emblem }}?{{ club.get_update_time() }}" alt="" class="img-club-mini">
+                                    </div>
+                                  </td>
+                                  <td>{{club.name}}</td>
+                                  <td>{{club.acronym}}</td>
+                                  <td>{% if club.email %}{{ club.email }}{% endif %}</td>
+                                  <td>{% if club.phone %}{{ club.phone }}{% endif %}</td>
+                                  <td>{% if club.about %}{{ club.about }}{% endif %}</td>
+                                  
+                              </tr>
+                              {% endfor %}
+                          </tbody>
+                      </table>
+                  </div>
+
+                  <div class="x_content hidden" id="thumbnails">
+                      <div class="row">
+                        <div class="grid">
+                        {% for club in clubs %}
+                        <div class="grid-item" id="thumbnails_row_{{ club.id }}">
+                          <div class="profile_details">
+                          <div class="well profile_view" style="margin-bottom: 0px;">
+                            <div class="col-xs-12">
+                              <h4 class="brief"><i>{{ club.acronym }}</i></h4>
+                              <div class="left col-xs-7">
+                                <h2>{{ club.name }} {{ club.surname }}</h2>
+                                <p><strong>{{ blocale.about }}: </strong> {{ club.about }} </p>
+                                <ul class="list-unstyled">
+                                  <li><i class="fa fa-at"></i> {{ blocale.email }}: {% if club.email %}{{ club.email }}{% endif %}</li>
+                                  <li><i class="fa fa-phone"></i> {{ blocale.phone }} #: {% if club.phone %}{{ club.phone }}{% endif %}</li>
+                                </ul>
+                              </div>
+                              <div class="right col-xs-5 text-center container-img-club">
+                                <img src="{{ club.emblem }}?{{ club.get_update_time() }}" alt="" class="img-club">
+                              </div>
+                            </div>
+                            <div class="col-xs-12 bottom text-center">
+                              <div class="col-xs-6 emphasis">
+                                <form method="post">
+                                    <input type="hidden" name="action" value="delete">
+                                    <input type="hidden" name="club_id" value="{{ club.id }}">
+                                    <button type="button" onclick="buttonDelete(this);" class="btn btn-danger btn-xs">
+                                        <i class="fa fa-remove"> </i> {{ blocale.delete }}
+                                    </button>
+                                </form>
+                              </div>
+                              <div class="col-xs-6 emphasis">
+                                <form method="post">
+                                    <input type="hidden" name="action" value="edit">
+                                    <input type="hidden" name="club_id" value="{{ club.id }}">
+                                    <button type="submit" class="btn btn-primary btn-xs">
+                                        <i class="fa fa-edit"> </i> {{ blocale.edit }}
+                                    </button>
+                                </form>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                        </div>
+                        {% endfor %}
+                      </div>
+                      </div>
+                  </div>
+
+                  {% else %}
+                  <div class="x_content"  id="thumbnails">
+                    <p class="text-muted font-13 m-b-30">
+                        {{ blocale.no_club }}
+                    </p>
+                  </div>
+                  {% endif %}
+              </div>
+          </div>
+      </div>
+    </div>
+  </div>
+{% endblock content %}
+
+{% block javascripts %}
+  {{ super() }}
+  <script src="{{ url_for('static', filename='vendors/datatables.net/js/jquery.dataTables.min.js') }}"></script>
+<script src="{{ url_for('static', filename='vendors/datatables.net-bs/js/dataTables.bootstrap.min.js') }}"></script>
+<script src="{{ url_for('static', filename='vendors/datatables.net-buttons/js/dataTables.buttons.min.js') }}"></script>
+<script src="{{ url_for('static', filename='vendors/datatables.net-buttons-bs/js/buttons.bootstrap.min.js') }}"></script>
+<script src="{{ url_for('static', filename='vendors/datatables.net-buttons/js/buttons.flash.min.js') }}"></script>
+<script src="{{ url_for('static', filename='vendors/datatables.net-buttons/js/buttons.html5.min.js') }}"></script>
+<script src="{{ url_for('static', filename='vendors/datatables.net-buttons/js/buttons.print.min.js') }}"></script>
+<script src="{{ url_for('static', filename='vendors/datatables.net-fixedheader/js/dataTables.fixedHeader.min.js') }}"></script>
+<script src="{{ url_for('static', filename='vendors/datatables.net-keytable/js/dataTables.keyTable.min.js') }}"></script>
+<script src="{{ url_for('static', filename='vendors/datatables.net-responsive/js/dataTables.responsive.min.js') }}"></script>
+<script src="{{ url_for('static', filename='vendors/datatables.net-responsive-bs/js/responsive.bootstrap.js') }}"></script>
+<script src="{{ url_for('static', filename='vendors/datatables.net-scroller/js/dataTables.scroller.min.js') }}"></script>
+
+<script src="{{ url_for('static', filename='vendors/bootstrap-toggle/js/bootstrap-toggle.min.js') }}"></script>
+<script src="{{ url_for('static', filename='vendors/masonry-layout/dist/masonry.pkgd.min.js') }}"></script>
+<script src="{{ url_for('static', filename='js/toogle_visualization.js') }}"></script>
+<script src="{{ url_for('clubs.static', filename='js/clubs.js') }}"></script>
+
+<script>
+  $(document).ready(function() {
+    setupPage("{{ locale.user_locale }}", {% if clubs %}true{% else %}false{% endif %});
+  });
+</script>
+{% endblock javascripts %}
+
