@@ -37,7 +37,7 @@
                 <label class="control-label col-md-3 col-sm-3 col-xs-12" for="name">{{ blocale.name }} <span class="required">*</span>
                 </label>
                 <div class="col-md-6 col-sm-6 col-xs-12">
-                  <input {% if user %}value="{{ user.name }}" {% endif %} id="name" class="form-control col-md-7 col-xs-12"
+                  <input {% if user and user.name %}value="{{ user.name }}" {% endif %} id="name" class="form-control col-md-7 col-xs-12"
                     data-validate-length-range="6" name="name" placeholder="{{ blocale.placeholder_name }}" required="required" type="text">
                 </div>
               </div>
@@ -45,7 +45,7 @@
                 <label class="control-label col-md-3 col-sm-3 col-xs-12" for="surname">{{ blocale.surname }} <span class="required">*</span>
                 </label>
                 <div class="col-md-6 col-sm-6 col-xs-12">
-                  <input {% if user %}value="{{ user.surname }}" {% endif %} id="surname" class="form-control col-md-7 col-xs-12"
+                  <input {% if user and user.surname %}value="{{ user.surname }}" {% endif %} id="surname" class="form-control col-md-7 col-xs-12"
                     data-validate-length-range="6" name="surname" placeholder="{{ blocale.placeholder_surname }}" required="required"
                     type="text">
                 </div>
@@ -101,7 +101,7 @@
                 <label class="control-label col-md-3 col-sm-3 col-xs-12" for="telephone">{{ blocale.phone }}
                 </label>
                 <div class="col-md-6 col-sm-6 col-xs-12">
-                  <input {% if user %}value="{{ user.phone }}" {% endif %} type="tel" id="phone" name="phone"
+                  <input {% if user and user.phone %}value="{{ user.phone }}" {% endif %} type="tel" id="phone" name="phone"
                     data-validate-length-range="8,20" class="form-control col-md-7 col-xs-12">
                 </div>
               </div>
@@ -146,7 +146,7 @@
                 <label class="control-label col-md-3 col-sm-3 col-xs-12" for="about">{{ blocale.about }}
                 </label>
                 <div class="col-md-6 col-sm-6 col-xs-12">
-                  <textarea id="about" name="about" class="form-control col-md-7 col-xs-12">{% if user %}{{ user.about }}{% endif %}</textarea>
+                  <textarea id="about" name="about" class="form-control col-md-7 col-xs-12">{% if user and user.about %}{{ user.about }}{% endif %}</textarea>
                 </div>
               </div>
               <div class="form-group">

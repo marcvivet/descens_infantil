@@ -1,17 +1,18 @@
 import sys
 import os
+import json
 
-from flask import Blueprint, render_template, request, redirect
+from flask import Blueprint, render_template, request, redirect, Response
 from flask_login import current_user
 from flask_login import login_required
 
 from PIL import Image
 import numpy as np
 
-from appadmin.models.interface_model import User, Role, Language
+from appadmin.models.descens_infantil_model import Club
 from appadmin.utils.blueprint_utils import roles_required_online, config
 from appadmin.utils.localization_manager import LocalizedException, LocalizationManager
-from appadmin.utils.image_utils import upload_square_picture
+from appadmin.utils.image_utils import upload_small_picture
 
 
 blp = Blueprint(
@@ -28,57 +29,32 @@ blp = Blueprint(
 @roles_required_online(blp)
 def add():
     db = blp.db_manager
-
     locm = LocalizationManager().get_blueprint_locale(blp.name)
 
     state = None
-    user = None
+    club = None
     message = None
     
-    page_type = 'new_user'
+    page_type = 'new_club'
     page_title = locm.add_user
-
-    if current_user.has_role('Admin'):
-        roles_available = db.get_roles()
-    else:
-        roles_available = current_user.roles
 
     if request.method == 'POST':
         try:
             data = request.form
-            roles = request.form.getlist('roles')
-            
-            if db.query(User).filter(User.name == data['username']).count():
-                raise LocalizedException(locm.user_exists, blp=blp.name)
+            emblem = '/static/images/clubs/NO_LOGO.jpg'
 
-            picture = '/static/images/user.png'
             # check if the post request has the file part
-            if 'picture' in request.files:
-                file = request.files['picture']
+            if 'emblem' in request.files:
+                file = request.files['emblem']
+                emblem = upload_small_picture(blp, file, data['acronym'])
 
-                picture = upload_square_picture(blp, file, data['username'])
+            new_club = Club(name=data['name'], acronym=data['acronym'], email=data['email'],
+                            phone=data['phone'], about=data['about'], emblem=emblem)
 
-            if request.form.get('active'):
-                active = True
-            else:
-                active = False
-
-            new_user = User(data['username'], password=data['password'],
-                            name=data['name'], surname=data['surname'], email=data['email'],
-                            phone=data['phone'], about=data['about'], active=active,
-                            picture=picture)
-
-            language = db.query(Language).filter(Language.iso_639_1 == data['language']).one()
-            new_user.language = language
-
-            db.add(new_user)
-
-            for role in roles:
-                new_user.roles.append(db.query(Role).filter(Role.name == role).one())
-
-            db.add(new_user)
+            db.add(new_club)
             db.commit()
-            message = locm.user_added
+
+            message = locm.club_added
             state = 'success'
         except Exception as e:
             db.rollback()
@@ -87,86 +63,55 @@ def add():
             state = 'error'
             message = f'{locm.error_while_adding}. {error_msg}'
 
-    return render_template('user_edit.html', **locals())
+    return render_template('club_edit.html', **locals())
 
 
 @blp.route('/view', methods=['GET', 'POST'])
 @roles_required_online(blp)
 def view():
     db = blp.db_manager
-
     locm = LocalizationManager().get_blueprint_locale(blp.name)
 
     state = None
     message = None
-    user = None
+    club = None
 
-    page_type = 'users'
+    page_type = 'clubs'
     page_title = locm.edit_user
-
-    if current_user.has_role('Admin'):
-        roles_available = db.get_roles()
-    else:
-        roles_available = current_user.roles
 
     if request.method == 'POST':
         try:
             data = request.form
-            user = db.query(User).get(int(data['user_id']))
-            user_roles = user.list_roles()
+            club = db.query(Club).get(int(data['club_id']))
 
             if 'action' in data:              
-                if data['action'] == 'delete':
-                    message = locm.can_not_delete.format(user.username)
-
-                    user_to_delete = db.query(User).get(int(data['user_id']))
-                    db.delete(user_to_delete)
-
-                    db.commit()
-                    message = locm.user_deleted.format(user.username)
-                else:
-                    message = locm.can_not_edit.format(user.username)
-                    return render_template('user_edit.html', str=str, **locals())
+                if data['action'] == 'edit':
+                    message = locm.can_not_edit.format(club.name)
+                    return render_template('club_edit.html', str=str, **locals())
             else:
-                message = locm.error_on_edit.format(user.username)
+                message = locm.error_on_edit.format(club.name)
                 data = request.form
-                roles = request.form.getlist('roles')
+                emblem = '/static/images/clubs/NO_LOGO.jpg'
 
-                picture = None
                 # check if the post request has the file part
-                if 'picture' in request.files:
-                    file = request.files['picture']
+                if 'emblem' in request.files:
+                    file = request.files['emblem']
+                    emblem = upload_small_picture(blp, file, data['acronym'])
 
-                    picture = upload_square_picture(blp, file, user.username)
+                if emblem:
+                    club.emblem = emblem
+                    club.mark_as_updated()
 
-                if picture:
-                    user.picture = picture
-                    user.mark_as_updated()
-
-                if request.form.get('active'):
-                    active = True
-                else:
-                    active = False
-
-                if data['password']:
-                    user.setPassword(data['password'])
-
-                user.name = data['name']
-                user.surname = data['surname']
-                user.email = data['email']
-                user.phone = data['phone']
-                user.about = data['about']
-                user.active = active
-
-                user.roles = []
-                for role in roles:
-                    user.roles.append(db.query(Role).filter(Role.name == role).one())
-
+                club.name = data['name']
+                club.acronym = data['acronym']
+                club.email = data['email']
+                club.phone = data['phone']
+                club.about = data['about']
                 db.commit()
-                message = locm.user_edited.format(user.username)
+                message = locm.user_edited.format(club.name)
             
             state = 'success'
-            return redirect('/users/view')
+            return redirect('/clubs/view')
         except Exception as e:
             db.rollback()
             error_msg = locm.exception.format(e)
@@ -174,60 +119,37 @@ def view():
             state = 'error'
             message = locm.error_during_edit.format(error_msg)
 
-    users = db.query(User).filter(User.system == False).order_by(User.name).order_by(User.surname).all()
-    return render_template('user_view.html', str=str, **locals())
+    clubs = db.query(Club).order_by(Club.name).all()
+    return render_template('club_view.html', str=str, **locals())
 
 
-@blp.route('/profile', methods=['GET', 'POST'])
-@login_required
-def profile():
+@blp.route('/communicate', methods=['POST'])
+@roles_required_online(blp)
+def communicate():
+    message = None
+    response = None
+    status = 200
     db = blp.db_manager
     locm = LocalizationManager().get_blueprint_locale(blp.name)
-    
-    state = None
-    message = None
-    user = db.query(User).filter(User.id == current_user.id).one()
 
-    page_type = 'profile'
-    page_title = locm.edit_profile
+    try:
+        json_data = json.loads(request.data.decode('utf-8'), encoding='utf8')
 
-    if request.method == 'POST':
-        try:
-            data = request.form
-
-            picture = None
-            # check if the post request has the file part
-            if 'picture' in request.files:
-                file = request.files['picture']
-                picture = upload_square_picture(blp, file, user.username)
-
-            if picture:
-                user.picture = picture
-                user.mark_as_updated()
-
-            user.name = data['name']
-            user.surname = data['surname']
-            user.about = data['about']
-            user.email = data['email']
-            user.phone = data['phone']
-            user.about = data['about']
-
-            language = db.query(Language).filter(Language.iso_639_1 == data['language']).one()
-            user.language = language
-
-            if data['password']:
-                user.setPassword(data['password'])
-
+        if json_data['action'] == 'delete':
+            message = locm.can_not_delete.format(json_data['club_id'])
+            club = db.query(Club).get(int(json_data['club_id']))
+            db.delete(club)
             db.commit()
-            message = locm.profile_edited
-            state = 'success'
+            message = locm.club_deleted.format(club.name)
 
-            return redirect('/users/profile')
-        except Exception as e:
-            db.rollback()
-            error_msg = 'Exception: {}'.format(e)
-            print(error_msg)
-            state = 'error'
-            message = locm.profile_error.format(error_msg)
+        if not response:
+            response = json.dumps({'message': message})
+    except Exception as e:
+        db.rollback()
+        error_msg = locm.exception.format(e)
+        print(error_msg)
+        state = 'error'
+        response = locm.error_during_edit.format(error_msg)
+        status = 500
 
-    return render_template('user_edit.html', **locals())
+    return Response(response, status=status)

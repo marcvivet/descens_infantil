@@ -145,9 +145,9 @@ def create_app():
             return render_template('errors/page_500.html'), 500
 
         blp.errors = {
-            'access_forbidden': access_forbidden,
-            'not_found_error': not_found_error,
-            'internal_error': internal_error
+            'access_forbidden': lambda : access_forbidden(None),
+            'not_found_error': lambda : not_found_error(None),
+            'internal_error': lambda : internal_error(None)
         }
 
 

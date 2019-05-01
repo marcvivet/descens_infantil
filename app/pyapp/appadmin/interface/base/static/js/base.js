@@ -1,4 +1,7 @@
 class Page {
+    static _locale = null;
+    static _loading = false;
+
     constructor(title) {
         this.title = title;
     }
@@ -16,7 +19,7 @@ class Page {
         return this._title;
     }
 
-    set loading(value) {
+    static setLoading(value) {
         var page_loading = document.getElementById('page_loading');
 
         if (value) {
@@ -25,15 +28,19 @@ class Page {
                 page_loading.style.pointerEvents = 'auto';
             }
             
-            this._loading = true;
+            Page._loading = true;
         } else {
             if (page_loading) {
                 page_loading.style.opacity = 0;
                 page_loading.style.pointerEvents = 'none';
             }
             
-            this._loading = false;
+            Page._loading = false;
         }
+    }
+
+    set loading(value) {
+        Page.setLoading(value);
     }
 
     get loading() {
@@ -51,8 +58,12 @@ class Page {
     }
 
     static showSuccess(message) {
+        if (Page._locale == null) {
+            Page.setLocale();
+        }
+
         new PNotify({
-            title: 'Success!',
+            title: Page._locale.success,
             text: message,
             type: 'success',
             styling: 'bootstrap3'
@@ -60,8 +71,12 @@ class Page {
     }
 
     static showInfo(message) {
+        if (Page._locale == null) {
+            Page.setLocale();
+        }
+
         new PNotify({
-            title: 'Information',
+            title: Page._locale.information,
             text: message,
             type: 'info',
             styling: 'bootstrap3'
@@ -69,14 +84,88 @@ class Page {
     }
     
     static showError(message) {
+        if (Page._locale == null) {
+            Page.setLocale();
+        }
+
         new PNotify({
-            title: 'Error!',
+            title: Page._locale.error,
             text: message,
             type: 'error',
             styling: 'bootstrap3'
         });
     
         console.log(message);
+    }
+
+    static setLocale(locale = "ca") {
+        var request = new XMLHttpRequest();
+        request.open("GET","/static/locale/base_" + locale + ".json", false);
+        request.send(null);
+        Page._locale = JSON.parse(request.responseText);
+    }
+
+    /**
+     * Performs an asynchronous request.
+     * @param {dict} data Data that needs to be transmitted.
+     * @param {str} url URL of the web service.
+     * @param {function} callback Function that will be called after receiving the response.
+     * @param {function} callback_error Function that will be called if an error is produced.
+     * @param {boolean} async If false the operations is done synchronously.
+     */
+    static httpRequest(data, url, callback = null, callback_error = null, async = true) {
+        if (Page._locale == null) {
+            Page.setLocale();
+        }
+
+        var xmlhttp;
+        if (window.XMLHttpRequest) {
+            // code for IE7+, Firefox, Chrome, Opera, Safari
+            xmlhttp = new XMLHttpRequest();
+        } else {
+            // code for IE6, IE5
+            xmlhttp = new ActiveXObject("Microsoft.XMLHTTP");
+        }
+
+        if ( async ) {
+            xmlhttp.timeout = 10000; // Set timeout to 10 seconds (10000 milliseconds)
+            xmlhttp.ontimeout = (function (paramCallback_timeout) {
+                return function () {
+                    if (paramCallback_timeout) {
+                        paramCallback_timeout(408, Page._locale.error_timeout);
+                    } else {
+                        Page.showError(Page._locale.error_timeout);
+                    }
+                };
+            })(callback_error);
+        }
+        xmlhttp.onreadystatechange = (function (paramxmlhttp, paramCallback, paramCallbackError) {
+            return function () {
+                if (paramxmlhttp.readyState === 4) {
+                    if (paramxmlhttp.status === 200) {
+                        try {
+                            var response = JSON.parse(paramxmlhttp.responseText);
+
+                            if (paramCallback) {
+                                paramCallback(response);
+                            }
+                        } catch (err) {
+                            Page.showError(err);
+                        }
+                    } else {
+                        if (paramCallbackError) {
+                            paramCallbackError(paramxmlhttp.status, paramxmlhttp.responseText);
+                        } else {
+                            Page.showError(paramxmlhttp.responseText);
+                        }
+                    }
+                }
+            }
+        })(xmlhttp, callback, callback_error);
+
+        xmlhttp.open("POST", encodeURI(url), async);
+        xmlhttp.setRequestHeader('Content-Type', 'application/json');
+        xmlhttp.send(JSON.stringify(data));
     }
 }
 
@@ -179,7 +268,8 @@ class PageDialog {
 
         this.div_modal_dialog = document.createElement("div");
         this.div_modal_dialog.classList.add('modal-dialog');
-        this.div_modal_dialog.classList.add('modal-sm');
+        this.div_modal_dialog.classList.add('modal-dialog-centered')
+        //this.div_modal_dialog.classList.add('modal-sm');
 
         this.div_modal_content = document.createElement("div");
         this.div_modal_content.classList.add('modal-content');

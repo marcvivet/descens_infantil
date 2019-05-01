@@ -2,6 +2,7 @@ import hashlib
 from unidecode import unidecode
 from datetime import date, time
 from flask_sqlalchemy import SQLAlchemy
+from urllib.parse import quote_plus
 
 db = SQLAlchemy()
 
@@ -16,8 +17,11 @@ class Participant(db.Model):
     surnames = db.Column(db.String(64), nullable=False)
     birthday = db.Column(db.Date(), nullable=False)
 
+    edition_participants = db.relationship(
+        'EditionParticipant', backref='participants', cascade="all,delete")
+
     __table_args__ = (
-            db.UniqueConstraint('name', 'surnames', 'birthday', name='edition_participants_uc'),)
+        db.UniqueConstraint('name', 'surnames', 'birthday', name='edition_participants_uc'),)
 
     def __init__(self, name: str = None, surnames: str = None, birthday: date = None):
         if name:
@@ -53,6 +57,9 @@ class Edition(db.Model):
     participants = db.relationship(
         'Participant', secondary='edition_participants', order_by='Participant.id')
 
+    edition_participants = db.relationship(
+        'EditionParticipant', backref='editions', cascade="all,delete")
+
     def __init__(
             self, edition: int = None, chief_of_course: str = None,
             start_referee: str = None, finish_referee: str = None, date: date = None):
@@ -71,30 +78,50 @@ class Club(db.Model):
     __tablename__ = "clubs"
 
     id = db.Column(db.Integer(), db.Sequence('clubs_id_seq'), primary_key=True)
-    club = db.Column(db.String(8), nullable=False)
+    acronym = db.Column(db.String(8), nullable=False, unique=True)
     name = db.Column(db.String(128), nullable=False)
-    logo = db.Column(db.String(256), nullable=True)
+    emblem = db.Column(db.String(256), nullable=True)
+    about = db.Column(db.String(256), nullable=True)
+    email = db.Column(db.String(32), nullable=True)
+    phone = db.Column(db.String(20), nullable=True)
 
-    members = db.relationship(
-        'Participant', secondary='edition_participants', order_by='Participant.id')
+    edition_participants = db.relationship('EditionParticipant', backref='clubs')
+
+    time_created = db.Column(
+        db.DateTime(timezone=True), server_default=db.func.now())
+    time_updated = db.Column(
+        db.DateTime(timezone=True), onupdate=db.func.now())
 
     def __init__(
-            self, id: int = None, club: str = None, name: str = None, logo: str = None):
+            self, id: int = None, acronym: str = None, name: str = None, emblem: str = None, about: str = None, email: str = None, phone: str = None):
         self.id = id if id else self.id
         
-        if club:
-            self.club = club.upper()
+        if acronym:
+            self.acronym = acronym.upper()
 
         if name:
             self.name = name.title()
 
-        if not logo:
-            logo = 'NO_LOGO.png'
+        self.about = about
+        self.email = email
+        self.phone = phone
 
-        self.logo = logo
+        if not emblem:
+            emblem = '/static/images/clubs/NO_LOGO.jpg'
+
+        self.emblem = emblem
+
+    def get_update_time(self):
+        if self.time_updated:
+            return quote_plus(str(self.time_updated))
+        else:
+            return 'none'
+
+    def mark_as_updated(self):
+        self.time_updated = db.func.now()
 
     def __repr__(self):
-        return f'<Club: [{self.id}, {self.club}, {self.name}, {self.logo}]>'
+        return f'<Club: [{self.id}, {self.acronym}, {self.name}]>'
 
 
 class EditionParticipant(db.Model):
@@ -110,7 +137,7 @@ class EditionParticipant(db.Model):
 
     club_id = db.Column(
         db.Integer(), db.ForeignKey(
-            'clubs.id', ondelete='CASCADE', onupdate='CASCADE'))
+            'clubs.id', ondelete='SET NULL', onupdate='CASCADE'), nullable=True)
 
     bib_number = db.Column(db.Integer)
     category = db.Column(db.Integer)

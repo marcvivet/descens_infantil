@@ -22,15 +22,14 @@ def main():
     manager.create_all(dbd.Model)
     manager.create_all(dbi.Model)
 
-
     with open(os.path.join(data_folder, 'CLUBS.csv'), newline='') as csvfile:
         reader = csv.DictReader(csvfile)
         for row in reader:
-            logo = None
+            emblem = None
             if os.path.exists(os.path.join(club_image_folder, f"{row['CLUB'].upper()}.jpg")):
-                logo = f"{row['CLUB'].upper()}.jpg"
+                emblem = f"/static/images/clubs/{row['CLUB'].upper()}.jpg"
 
-            club = Club(id=int(row['ID_CLUB']), club=row['CLUB'], name=row['NOM'], logo=logo)
+            club = Club(id=int(row['ID_CLUB']), acronym=row['CLUB'], name=row['NOM'], emblem=emblem)
             manager.add(club)
             manager.commit()
 

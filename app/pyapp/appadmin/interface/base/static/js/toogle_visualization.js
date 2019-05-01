@@ -2,6 +2,7 @@ class ToggleVisualization {
     constructor(idToggle, idDivOff, idDivOn, checked = false) {
         this._idToggle = idToggle;
         this._checked = false;
+        this._dirty = false;
 
         let divOnInput = document.getElementById(idDivOn);
         let divOffInput = document.getElementById(idDivOff);
@@ -26,6 +27,11 @@ class ToggleVisualization {
                     localStorage.setItem(idTog, 'off');
                     this._checked = false;
                 }
+
+                if (this.dirty) {
+                    this.dirty = false;
+                    location.reload();
+                }
             }
         })(idToggle, divOnInput, divOffInput));
 
@@ -41,6 +47,18 @@ class ToggleVisualization {
         }
     }
 
+    get dirty() {
+        return this._dirty;
+    }
+
+    set dirty(value) {
+        this._dirty = value;
+    }
+
+    isDirty() {
+        this._dirty = true;
+    }
+
     get checked() {
         return this._checked;
     }
@@ -53,5 +71,9 @@ class ToggleVisualization {
             this._checked = false;
             $(`#${this._idToggle}`).bootstrapToggle('off');
         }
+    }
+
+    update() {
+        $('.grid').masonry('layout');
     }
 }

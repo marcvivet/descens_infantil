@@ -116,3 +116,28 @@ table.dataTable tbody tr.selected {
    width: 390px;
    margin-bottom: 5px;
  }
+
+@media (min-width: 400px)
+.modal-dialog-centered {
+  width: auto;
+  margin: 0px auto;
+  min-height: calc(100% - (1.75rem * 8));
+}
+.modal-dialog-centered {
+  max-width: 350px;  
+  margin: 0px auto;
+  display: -ms-flexbox;
+  display: flex;
+  -ms-flex-align: center;
+  align-items: center;
+  min-height: calc(100% - (.5rem * 8));
+}
+@media (min-width: 400px)
+.modal-dialog-centered::before {
+  height: calc(100vh - (1.75rem * 8));
+}
+.modal-dialog-centered::before {
+  display: block;
+  height: calc(100vh - (.5rem * 8));
+  content: "";
+}
