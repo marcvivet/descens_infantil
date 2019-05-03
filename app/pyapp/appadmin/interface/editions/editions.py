@@ -9,7 +9,7 @@ from flask_login import login_required
 from PIL import Image
 import numpy as np
 
-from appadmin.models.descens_infantil_model import Edition
+from appadmin.models.descens_infantil_model import Edition, Organizer
 from appadmin.utils.blueprint_utils import roles_required_online, config
 from appadmin.utils.localization_manager import LocalizedException, LocalizationManager
 from appadmin.utils.image_utils import upload_small_picture
@@ -25,6 +25,18 @@ blp = Blueprint(
 )
 
 
+def get_organizer(full_name: str) -> Organizer:
+    organizer = None
+    if full_name:
+        hash = Organizer.create_hash(*full_name.split(' ', 1))
+        organizer = manager.query(Organizer).filter(
+            Organizer.hash == hash).first()
+        if not organizer:
+            organizer = Organizer(*full_name.split(' ', 1))
+            manager.add(organizer)
+            manager.flush()
+
+
 @blp.route('/add', methods=['GET', 'POST'])
 @roles_required_online(blp)
 def add():
@@ -36,19 +48,21 @@ def add():
     message = None
     
     page_type = 'new_edition'
-    page_title = locm.add_user
+    page_title = locm.add_edition
 
     if request.method == 'POST':
         try:
             data = request.form
-            emblem = '/static/images/editions/NO_LOGO.jpg'
+            picture = '/static/images/NO_IMAGE.jpg'
 
             # check if the post request has the file part
-            if 'emblem' in request.files:
-                file = request.files['emblem']
-                emblem = upload_small_picture(blp, file, data['acronym'])
+            if 'picture' in request.files:
+                file = request.files['picture']
+                picture = upload_small_picture(blp, file, data['year'])
 
-            new_edition = edition(name=data['name'], acronym=data['acronym'], email=data['email'],
+
+
+            new_edition = Edition(name=data['name'], acronym=data['acronym'], email=data['email'],
                             phone=data['phone'], about=data['about'], emblem=emblem)
 
             db.add(new_edition)
@@ -82,16 +96,16 @@ def view():
     if request.method == 'POST':
         try:
             data = request.form
-            edition = db.query(edition).get(int(data['edition_id']))
+            edition = db.query(Edition).get(int(data['edition_id']))
 
             if 'action' in data:              
                 if data['action'] == 'edit':
                     message = locm.can_not_edit.format(edition.name)
-                    return render_template('edition_edit.html', str=str, **locals())
+                    return render_template('edition_edit.html', **locals())
             else:
                 message = locm.error_on_edit.format(edition.name)
                 data = request.form
-                emblem = '/static/images/editions/NO_LOGO.jpg'
+                emblem = '/static/images/NO_IMAGE.jpg'
 
                 # check if the post request has the file part
                 if 'emblem' in request.files:
@@ -119,8 +133,8 @@ def view():
             state = 'error'
             message = locm.error_during_edit.format(error_msg)
 
-    editions = db.query(edition).order_by(edition.name).all()
-    return render_template('edition_view.html', str=str, **locals())
+    editions = db.query(Edition).order_by(Edition.edition.desc()).all()
+    return render_template('edition_view.html', **locals())
 
 
 @blp.route('/communicate', methods=['POST'])
@@ -135,9 +149,18 @@ def communicate():
     try:
         json_data = json.loads(request.data.decode('utf-8'), encoding='utf8')
 
+        if json_data['action'] == 'get_organizers':
+            message = Organizer.get_organizers()
+
+        if json_data['action'] == 'get_next_edition':
+            message = Edition.get_next_edition()
+
+        if json_data['action'] == 'get_next_year':
+            message = Edition.get_next_year()
+
         if json_data['action'] == 'delete':
             message = locm.can_not_delete.format(json_data['edition_id'])
-            edition = db.query(edition).get(int(json_data['edition_id']))
+            edition = db.query(Edition).get(int(json_data['edition_id']))
             db.delete(edition)
             db.commit()
             message = locm.edition_deleted.format(edition.name)

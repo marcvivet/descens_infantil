@@ -41,7 +41,7 @@ def add():
     if request.method == 'POST':
         try:
             data = request.form
-            emblem = '/static/images/clubs/NO_LOGO.jpg'
+            emblem = '/static/images/NO_IMAGE.jpg'
 
             # check if the post request has the file part
             if 'emblem' in request.files:
@@ -87,11 +87,11 @@ def view():
             if 'action' in data:              
                 if data['action'] == 'edit':
                     message = locm.can_not_edit.format(club.name)
-                    return render_template('club_edit.html', str=str, **locals())
+                    return render_template('club_edit.html', **locals())
             else:
                 message = locm.error_on_edit.format(club.name)
                 data = request.form
-                emblem = '/static/images/clubs/NO_LOGO.jpg'
+                emblem = '/static/images/NO_IMAGE.jpg'
 
                 # check if the post request has the file part
                 if 'emblem' in request.files:
@@ -120,7 +120,7 @@ def view():
             message = locm.error_during_edit.format(error_msg)
 
     clubs = db.query(Club).order_by(Club.name).all()
-    return render_template('club_view.html', str=str, **locals())
+    return render_template('club_view.html', **locals())
 
 
 @blp.route('/communicate', methods=['POST'])

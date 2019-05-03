@@ -7,7 +7,7 @@
     <ul class="nav navbar-nav navbar-right">
       <li class="">
         <a href="javascript:;" class="user-profile dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
-          <img src="{{ current_user.picture }}?{{ current_user.get_update_time() }}" alt="">{{ current_user.username }}
+          <img src="{{ current_user.picture }}?{{ current_user.updated }}" alt="">{{ current_user.username }}
           <span class=" fa fa-angle-down"></span>
         </a>
         <ul class="dropdown-menu dropdown-usermenu pull-right">

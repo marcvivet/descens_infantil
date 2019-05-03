@@ -12,11 +12,7 @@
     "picture": "Picture",
     "roles": "Roles",
     "active": "Active",
-    "edit": "Edit",
-    "delete": "Delete",
     "about": "About",
-    "cancel": "Cancel",
-    "submit": "Submit",
     "true": "Yes",
     "false": "No",
     "thumbnails": "Thumbnails",
@@ -41,5 +37,4 @@
     "placeholder_username": "User name e.g jon",
     "placeholder_name": "User name e.g Jon",
     "placeholder_surname": "User surname e.g Doe"
-
 }

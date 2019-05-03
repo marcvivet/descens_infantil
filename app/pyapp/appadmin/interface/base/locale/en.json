@@ -11,5 +11,12 @@
     "general": "General",
     "administration": "Administration",
     "templates": "Page Examples",
-    "incorrect_picture": "This picture extension is not allowed!"
+    "incorrect_picture": "This picture extension is not allowed!",
+    "actions": "Actions",
+    "edit": "Edit",
+    "delete": "Delete",  
+    "cancel": "Cancel",
+    "submit": "Submit",
+    "thumbnails": "Thumbnails",
+    "table": "Table"
 }

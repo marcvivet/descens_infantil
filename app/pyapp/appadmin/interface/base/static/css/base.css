@@ -142,6 +142,92 @@ table.dataTable tbody tr.selected {
   content: "";
 }
 
+
+.container-img-square {
+  position: relative; 
+  width: 150px;
+  height: 150px;
+  border: 1px solid #E6E9ED;
+  object-fit: contain;
+  margin-bottom:  5px;
+}
+
+.img-square {
+  width: 100%; /* or any custom size */
+  height: 100%; 
+  object-fit: contain;
+}
+
+.container-img-square-mini {
+  position: relative; 
+  width: 60px;
+  height: 60px;
+  border: 1px solid #E6E9ED;
+  object-fit: contain;
+}
+
+.img-square-mini {
+  width: 100%; /* or any custom size */
+  height: 100%; 
+  object-fit: contain;
+}
+
+table.dataTable tbody td {
+  vertical-align: middle;
+}
+
+.center-element {
+  text-align: center
+}
+
+.table-buttons td {
+  padding: 2px;
+}
+
+.datepicker table tr td span.active,
+.datepicker table tr td span.focused,
+.datepicker table tr td span.focused:hover
+{
+    background-image: linear-gradient(to bottom,#4C59BA,#4C59BA);
+}
+
+.tt-query { /* UPDATE: newer versions use tt-input instead of tt-query */
+    box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
+}
+
+.tt-hint {
+    color: #999;
+}
+
+.tt-menu { /* UPDATE: newer versions use tt-menu instead of tt-dropdown-menu */
+    width: 100%;
+    margin-top: 0px;
+    padding: 8px 0;
+    background-color: #fff;
+    border: 1px solid #ccc;
+    border: 1px solid rgba(0, 0, 0, 0.2);
+    border-top: 0px;
+    border-radius: 8px;
+    border-top-left-radius: 0px;
+    border-top-right-radius: 0px;
+    box-shadow: 0 5px 10px rgba(0,0,0,.2);
+}
+
+.tt-suggestion {
+    padding: 6px 12px;
+    font-size: 14px;
+    line-height: 1.42857143;
+}
+
+.tt-suggestion:hover {
+    background-color: #4C59BA;
+    color: #fff;
+}
+
+.twitter-typeahead {
+	width: 100%;
+}
+
 /*
 .modal-backdrop {
   position: fixed;

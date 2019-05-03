@@ -15,6 +15,12 @@ class Organizer(db.Model):
 
     name = db.Column(db.String(32), nullable=False)
     surnames = db.Column(db.String(64), nullable=False)
+    picture = db.Column(db.String(256), nullable=True)
+
+    time_created = db.Column(
+        db.DateTime(timezone=True), server_default=db.func.now())
+    time_updated = db.Column(
+        db.DateTime(timezone=True), onupdate=db.func.now())
 
     editions_as_chief_of_course = db.relationship(
         'Edition', backref='organizers_chief_of_course', foreign_keys='Edition.chief_of_course_id')
@@ -26,7 +32,7 @@ class Organizer(db.Model):
     __table_args__ = (
         db.UniqueConstraint('name', 'surnames', name='organizers_uc'),)
 
-    def __init__(self, name: str = None, surnames: str = None):
+    def __init__(self, name: str = None, surnames: str = None, picture: str = None):
         if name:
             self.name = name.strip().title()
 
@@ -37,15 +43,47 @@ class Organizer(db.Model):
 
         self.hash = Organizer.create_hash(self.name, self.surnames)
 
+        if not picture:
+            picture = '/static/images/NO_IMAGE.jpg'
+
+        self.picture = picture
+
     def __repr__(self):
         return f'<Organizer: [{self.id}, {self.name}, {self.surnames}]>'
+
+    @property
+    def full_name(self):
+        return f'{self.name} {self.surnames}'
+
+    @property
+    def updated(self):
+        if self.time_updated:
+            return quote_plus(str(self.time_updated))
+        else:
+            return 'none'
 
     @staticmethod
     def create_hash(name, surnames):
         return int(
             hashlib.sha256(
-                f'{unidecode(name)}_{unidecode(surnames)}'.encode(
+                f'{unidecode(name.strip().title())}_{unidecode(surnames.strip().title())}'.encode(
                     'utf-8')).hexdigest(), 16) % (2 ** 63)
+
+    @staticmethod
+    def create_hash_from_full_name(full_name):
+        elements = full_name.strip().title().split(' ')
+        all_surnames = [surname for surname in elements[1:] if surname != '']
+        surnames = ' '.join(all_surnames)
+        name = elements[0]
+
+        return Organizer.create_hash(name, surnames)
+
+    @staticmethod
+    def get_organizers():
+        sql_query = "SELECT printf('%s %s', organizers.name, organizers.surnames) "\
+                    "FROM organizers"
+        
+        return [name[0] for name in db.session.execute(sql_query).fetchall()]
 
 
 class Participant(db.Model):
@@ -57,6 +95,12 @@ class Participant(db.Model):
     name = db.Column(db.String(32), nullable=False)
     surnames = db.Column(db.String(64), nullable=False)
     birthday = db.Column(db.Date(), nullable=False)
+    picture = db.Column(db.String(256), nullable=True)
+
+    time_created = db.Column(
+        db.DateTime(timezone=True), server_default=db.func.now())
+    time_updated = db.Column(
+        db.DateTime(timezone=True), onupdate=db.func.now())
 
     edition_participants = db.relationship(
         'EditionParticipant', backref='participants', cascade="all,delete")
@@ -64,7 +108,9 @@ class Participant(db.Model):
     __table_args__ = (
         db.UniqueConstraint('name', 'surnames', 'birthday', name='participants_uc'),)
 
-    def __init__(self, name: str = None, surnames: str = None, birthday: date = None):
+    def __init__(
+            self, name: str = None, surnames: str = None, birthday: date = None,
+            picture: str = None):
         if name:
             self.name = name.strip().title()
 
@@ -75,6 +121,11 @@ class Participant(db.Model):
 
         self.birthday = birthday
 
+        if not picture:
+            picture = '/static/images/NO_IMAGE.jpg'
+
+        self.picture = picture
+
         self.hash = int(
             hashlib.sha256(
                 f'{unidecode(self.name)}_{unidecode(self.surnames)}_'\
@@ -83,14 +134,23 @@ class Participant(db.Model):
 
     def __repr__(self):
         return f'<Participant: [{self.id}, {self.name}, {self.surnames}, {self.birthday}]>'
+
+    @property
+    def updated(self):
+        if self.time_updated:
+            return quote_plus(str(self.time_updated))
+        else:
+            return 'none'
             
 
 class Edition(db.Model):
     __tablename__ = "editions"
 
     id = db.Column(db.Integer(), db.Sequence('editions_id_seq'), primary_key=True)
-    edition = db.Column(db.Integer, nullable=True)
-    date = db.Column(db.Date(), nullable=True)
+    edition = db.Column(db.Integer, nullable=False, unique=True)
+    date = db.Column(db.Date(), nullable=False)
+    picture = db.Column(db.String(256), nullable=True)
+
     chief_of_course_id = db.Column(
         db.Integer(), db.ForeignKey(
             'organizers.id', ondelete='SET NULL', onupdate='CASCADE'), nullable=True)
@@ -101,6 +161,11 @@ class Edition(db.Model):
         db.Integer(), db.ForeignKey(
             'organizers.id', ondelete='SET NULL', onupdate='CASCADE'), nullable=True)
 
+    time_created = db.Column(
+        db.DateTime(timezone=True), server_default=db.func.now())
+    time_updated = db.Column(
+        db.DateTime(timezone=True), onupdate=db.func.now())
+
     chief_of_course = db.relationship(
         'Organizer', foreign_keys=[chief_of_course_id], uselist=False)
     start_referee = db.relationship('Organizer', foreign_keys=[start_referee_id], uselist=False)
@@ -110,11 +175,11 @@ class Edition(db.Model):
         'Participant', secondary='edition_participants', order_by='Participant.id')
 
     edition_participants = db.relationship(
-        'EditionParticipant', backref='editions', cascade="all,delete")
+        'EditionParticipant', backref='editions', cascade="all,delete", lazy='dynamic')
 
     def __init__(
             self, edition: int = None, date: date = None, chief_of_course: Organizer = None,
-            start_referee: Organizer = None, finish_referee: Organizer = None):
+            start_referee: Organizer = None, finish_referee: Organizer = None, picture: str = None):
 
         self.date = date
         self.edition = edition
@@ -123,8 +188,52 @@ class Edition(db.Model):
         self.start_referee_id = None if not start_referee else start_referee.id
         self.finish_referee_id = None if not finish_referee else finish_referee.id
 
+        if not picture:
+            picture = '/static/images/NO_IMAGE.jpg'
+
+        self.picture = picture
+
     def __repr__(self):
         return f'<Edition: [{self.id}, {self.date}, {self.edition}]>'
+
+    @property
+    def year(self):
+        return self.date.year
+
+    @property
+    def updated(self):
+        if self.time_updated:
+            return quote_plus(str(self.time_updated))
+        else:
+            return 'none'
+
+    @property
+    def number_of_participants(self):
+        return len(self.participants)
+
+    @property
+    def number_of_clubs(self):
+        sql_query = "SELECT COUNT(DISTINCT(edition_participants.club_id)) AS clubs " \
+                    "FROM edition_participants " \
+                    "JOIN editions ON editions.id = edition_participants.edition_id " \
+                    f"WHERE editions.id = {self.id}"
+        
+        return db.session.execute(sql_query).fetchone()[0]
+
+    @staticmethod
+    def get_next_edition():
+        sql_query = "SELECT MAX(editions.edition) "\
+                    "FROM editions"
+        
+        return db.session.execute(sql_query).fetchone()[0] + 1
+
+    @staticmethod
+    def get_next_year():
+        sql_query = "SELECT STRFTIME(\"%Y\", MAX(editions.date)) "\
+                    "FROM editions"
+        
+        return int(db.session.execute(sql_query).fetchone()[0]) + 1
+
 
 class Club(db.Model):
     __tablename__ = "clubs"
@@ -160,11 +269,12 @@ class Club(db.Model):
         self.phone = phone
 
         if not emblem:
-            emblem = '/static/images/clubs/NO_LOGO.jpg'
+            emblem = '/static/images/NO_IMAGE.jpg'
 
         self.emblem = emblem
 
-    def get_update_time(self):
+    @property
+    def updated(self):
         if self.time_updated:
             return quote_plus(str(self.time_updated))
         else:

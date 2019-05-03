@@ -8,7 +8,7 @@
   <!-- menu profile quick info -->
   <div class="profile clearfix">
     <div class="profile_pic">
-      <img src="{{ current_user.picture }}?{{ current_user.get_update_time() }}" alt="..." class="img-circle profile_img">
+      <img src="{{ current_user.picture }}?{{ current_user.updated }}" alt="..." class="img-circle profile_img">
     </div>
     <div class="profile_info">
       <span>{{ locale.base.welcome }},</span>
@@ -34,16 +34,14 @@
           </ul>
         </li>
 
-        <li><a><i class="fa fa-calendar"></i>Edicions <span class="fa fa-chevron-down"></span></a>
+        {% if current_user.has_page(['editions']) %}
+        <li><a><i class="fa fa-calendar"></i>{{ locale.editions.editions }} <span class="fa fa-chevron-down"></span></a>
           <ul class="nav child_menu">
-            <li><a href="/clubs/view">Nova edició</a></li>
-            <li><a href="/clubs/add">Llistar edicions</a></li>
-            <li><a href="/clubs/add">Estadístiques</a></li>
+            <li><a href="/editions/view">{{ locale.editions.view_editions }}</a></li>
+            <li><a href="/editions/add">{{ locale.editions.add_edition }}</a></li>
           </ul>
         </li>
-
-
-
+        {% endif %}
         {% if current_user.has_page(['clubs']) %}
         <li><a><i class="fa fa-institution"></i>{{ locale.clubs.clubs }} <span class="fa fa-chevron-down"></span></a>
           <ul class="nav child_menu">

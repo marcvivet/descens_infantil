@@ -1,5 +1,5 @@
 class ToggleVisualization {
-    constructor(idToggle, idDivOff, idDivOn, checked = false) {
+    constructor(idToggle, idDivOff, idDivOn, checked = false, columnWidth = 400) {
         this._idToggle = idToggle;
         this._checked = false;
         this._dirty = false;
@@ -9,7 +9,7 @@ class ToggleVisualization {
 
         $('.grid').masonry({
             itemSelector: '.grid-item',
-            columnWidth: 400
+            columnWidth: columnWidth
         });
 
         $(`#${this._idToggle}`).change(((idTog, divOn, divOff) => {

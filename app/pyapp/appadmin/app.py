@@ -128,7 +128,8 @@ def create_app():
 
         @blp.context_processor
         def inject_blp_locale():
-            return dict(blocale=LocalizationManager().get_blueprint_locale(blp.name))
+            return dict(
+                blocale=LocalizationManager().get_blueprint_locale(blp.name), str=str, len=len)
 
         @blp.errorhandler(403)
         def access_forbidden(error):

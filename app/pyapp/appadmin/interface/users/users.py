@@ -126,7 +126,7 @@ def view():
                     message = locm.user_deleted.format(user.username)
                 else:
                     message = locm.can_not_edit.format(user.username)
-                    return render_template('user_edit.html', str=str, **locals())
+                    return render_template('user_edit.html', **locals())
             else:
                 message = locm.error_on_edit.format(user.username)
                 data = request.form
@@ -175,7 +175,7 @@ def view():
             message = locm.error_during_edit.format(error_msg)
 
     users = db.query(User).filter(User.system == False).order_by(User.name).order_by(User.surname).all()
-    return render_template('user_view.html', str=str, **locals())
+    return render_template('user_view.html', **locals())
 
 
 @blp.route('/profile', methods=['GET', 'POST'])

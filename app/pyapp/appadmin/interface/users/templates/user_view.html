@@ -31,7 +31,7 @@
                       <h2></h2>
                       {% if users %}
                         <ul class="nav navbar-right panel_toolbox">
-                          <li><input id="users-toggle-visualization" checked type="checkbox" data-toggle="toggle" data-on="{{ blocale.thumbnails }}" data-off="{{ blocale.table }}" data-onstyle="default" data-offstyle="default"></li>
+                          <li><input id="users-toggle-visualization" checked type="checkbox" data-toggle="toggle" data-on="{{ locale.base.thumbnails }}" data-off="{{ locale.base.table }}" data-onstyle="default" data-offstyle="default"></li>
                         </ul>
                       {% endif %}
                       <div class="clearfix"></div>
@@ -47,8 +47,8 @@
                                   <th>{{ blocale.email }}</th>
                                   <th>{{ blocale.phone }}</th>
                                   <th>{{ blocale.active }}</th>
-                                  <th data-sortable="false" style="width: 20px;">{{ blocale.edit }}</th>
-                                  <th data-sortable="false" style="width: 20px;">{{ blocale.delete }}</th>
+                                  <th data-sortable="false" style="width: 20px;">{{ locale.edit }}</th>
+                                  <th data-sortable="false" style="width: 20px;">{{ locale.delete }}</th>
                               </tr>
                           </thead>
                           <tbody>
@@ -99,7 +99,7 @@
                                 </ul>
                               </div>
                               <div class="right col-xs-5 text-center">
-                                <img src="{{ user.picture }}?{{ user.get_update_time() }}" width="150px" alt="" class="img-circle img-responsive">
+                                <img src="{{ user.picture }}?{{ user.updated }}" width="150px" alt="" class="img-circle img-responsive">
                               </div>
                             </div>
                             <div class="col-xs-12 bottom text-center">
@@ -108,7 +108,7 @@
                                     <input type="hidden" name="action" value="delete">
                                     <input type="hidden" name="user_id" value="{{ user.id }}">
                                     <button type="submit" class="btn btn-danger btn-xs">
-                                        <i class="fa fa-remove"> </i> {{ blocale.delete }}
+                                        <i class="fa fa-remove"> </i> {{ locale.delete }}
                                     </button>
                                 </form>
                               </div>
@@ -117,7 +117,7 @@
                                     <input type="hidden" name="action" value="edit">
                                     <input type="hidden" name="user_id" value="{{ user.id }}">
                                     <button type="submit" class="btn btn-primary btn-xs">
-                                        <i class="fa fa-edit"> </i> {{ blocale.edit }}
+                                        <i class="fa fa-edit"> </i> {{ locale.edit }}
                                     </button>
                                 </form>
                               </div>

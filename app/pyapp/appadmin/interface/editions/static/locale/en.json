@@ -1,6 +1,6 @@
 {
     "are_you_sure": "Are you sure?",
-    "warning_message": "Deleting a club will alter the data from other tables.",
+    "warning_message": "Deleting an edition will also remove all the times related to that edition.",
     "cancel": "Cancel",
     "proceed": "Proceed"
 }

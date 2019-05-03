@@ -1,6 +1,6 @@
 {
     "are_you_sure": "Estàs segur?",
-    "warning_message": "Eliminar un club pot afectarar les dades d'altres taules de la base de dades.",
+    "warning_message": "Eliminar una edició també inclou eliminar tots els temps d'aquell any.",
     "cancel": "Cancel·lar",
     "proceed": "Continuar"
 }

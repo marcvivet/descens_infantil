@@ -1,0 +1,46 @@
+.grid-item-edition {
+    width: 460px;
+    height: 300px;
+}
+
+.container-img-square {
+    position: relative; 
+    width: 250px;
+    height: 200px;
+    border: 1px solid #E6E9ED;
+    border-radius: 10px;
+    overflow: hidden;
+    object-fit: contain;
+    margin-right: 5px;
+    margin-bottom: 20px;
+    padding: 0px;
+    float: right;
+  }
+  
+  .img-square {
+    width: 100%; /* or any custom size */
+    height: 100%; 
+    object-fit: cover;
+    margin:  0px;
+    padding: 0px;
+  }
+
+.profile_details .profile_view .right {
+    margin-top: 0px;
+    padding: 0px;
+}
+
+.container-img-square-mini {
+    position: relative; 
+    width: 60px;
+    height: 60px;
+    border: 1px solid #E6E9ED;
+    border-radius: 10px;
+    overflow: hidden;
+  }
+
+  .img-square-mini {
+    width: 100%; /* or any custom size */
+    height: 100%; 
+    object-fit: cover;
+  }

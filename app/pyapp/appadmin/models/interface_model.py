@@ -233,7 +233,8 @@ class User(db.Model, UserMixin):
     def mark_as_updated(self):
         self.time_updated = db.func.now()
 
-    def get_update_time(self):
+    @property
+    def updated(self):
         if self.time_updated:
             return quote_plus(str(self.time_updated))
         else:

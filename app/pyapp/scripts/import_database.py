@@ -16,7 +16,9 @@ from appadmin.utils.db_manager import DBManager
 
 def main():
     data_folder = '/home/marc/local.x86_64/src/descens_infantil/extract/data'
-    club_image_folder = '/home/marc/local.x86_64/src/descens_infantil/app/pyapp/appadmin/interface/base/static/images/clubs'
+    image_folder = '/home/marc/local.x86_64/src/descens_infantil/app/pyapp/appadmin/interface/base/static/images'
+    club_image_folder = os.path.join(image_folder, 'clubs')
+    edition_image_folder = os.path.join(image_folder, 'editions')
 
     manager = DBManager(clean=True)
     manager.create_all(dbd.Model)
@@ -37,25 +39,33 @@ def main():
     with open(os.path.join(data_folder, 'EDICIÓ.csv'), newline='') as csvfile:
         reader = csv.DictReader(csvfile)
         for row in reader:
-            hash_chief_of_course = Organizer.create_hash(*row['Director de la cursa'].split(' ', 1))
-            chief_of_course = manager.query(Organizer).filter(
-                Organizer.hash == hash_chief_of_course).first()
-            if not chief_of_course:
-                chief_of_course = Organizer(*row['Director de la cursa'].split(' ', 1))
-                manager.add(chief_of_course)
-                manager.flush()
+            picture = None
+            if os.path.exists(os.path.join(edition_image_folder, f"{row['ANY'].upper()}.jpg")):
+                picture = f"/static/images/editions/{row['ANY'].upper()}.jpg"
 
-            hash_start_referee = Organizer.create_hash(*row['Director de la cursa02'].split(' ', 1))
-            start_referee = manager.query(
-                Organizer).filter(Organizer.hash == hash_start_referee).first()
-            if not start_referee:
-                start_referee = Organizer(*row['Director de la cursa02'].split(' ', 1))
-                manager.add(start_referee)
-                manager.flush()
+            chief_of_course = None
+            if row['Director de la cursa']:
+                hash_chief_of_course = Organizer.create_hash(*row['Director de la cursa'].split(' ', 1))
+                chief_of_course = manager.query(Organizer).filter(
+                    Organizer.hash == hash_chief_of_course).first()
+                if not chief_of_course:
+                    chief_of_course = Organizer(*row['Director de la cursa'].split(' ', 1))
+                    manager.add(chief_of_course)
+                    manager.flush()
+
+            start_referee = None
+            if row['Director de la cursa02']:
+                hash_start_referee = Organizer.create_hash(*row['Director de la cursa02'].split(' ', 1))
+                start_referee = manager.query(
+                    Organizer).filter(Organizer.hash == hash_start_referee).first()
+                if not start_referee:
+                    start_referee = Organizer(*row['Director de la cursa02'].split(' ', 1))
+                    manager.add(start_referee)
+                    manager.flush()
 
             edition = Edition(
                 edition=int(row['EDICIÓ']), chief_of_course=chief_of_course,
-                start_referee=start_referee, date=date(int(row['ANY']), 1, 1))
+                start_referee=start_referee, date=date(int(row['ANY']), 1, 1), picture=picture)
             
             manager.add(edition)
             manager.commit()

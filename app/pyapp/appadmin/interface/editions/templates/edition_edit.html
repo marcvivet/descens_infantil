@@ -4,6 +4,10 @@
 
 {% block stylesheets %}
 {{ super() }}
+<link href="{{ url_for('static', filename='vendors/bootstrap-datepicker/dist/css/bootstrap-datepicker.min.css') }}" rel="stylesheet">
+{% block extrastyles %}
+<link href="{{ url_for('editions.static', filename='css/editions_edit.css') }}" rel="stylesheet">
+{% endblock extrastyles %}
 {% endblock stylesheets %}
 
 {% block content %}
@@ -22,66 +26,59 @@
         <div class="x_panel">
           <div class="x_content">
             <form class="form-horizontal form-label-left" method="post" enctype="multipart/form-data">
-              {% if club %}<input type="hidden" name="club_id" value="{{ club.id }}">{% endif %}
+              {% if edition %}<input type="hidden" name="edition_id" value="{{ edition.id }}">{% endif %}
               <div class="item form-group">
-                <label class="control-label col-md-3 col-sm-3 col-xs-12" for="name">{{ blocale.name }} <span class="required">*</span>
+                <label class="control-label col-md-3 col-sm-3 col-xs-12" for="edition">{{ blocale.edition }} <span class="required">*</span>
                 </label>
                 <div class="col-md-6 col-sm-6 col-xs-12">
-                  <input {% if club %}value="{{ club.name }}" {% endif %} id="name" class="form-control col-md-7 col-xs-12"
-                    data-validate-length-range="6" name="name" placeholder="{{ blocale.placeholder_name }}" required="required" type="text">
+                  <input {% if edition and edition.edition %}value="{{ edition.edition }}" {% endif %} type="number" id="edition" name="edition" class="form-control col-md-7 col-xs-12" required="required">
                 </div>
               </div>
+
               <div class="item form-group">
-                <label class="control-label col-md-3 col-sm-3 col-xs-12" for="acronym">{{ blocale.acronym }} <span class="required">*</span>
+                <label class="control-label col-md-3 col-sm-3 col-xs-12" for="year">{{ blocale.year }} <span class="required">*</span>
                 </label>
                 <div class="col-md-6 col-sm-6 col-xs-12">
-                  <input {% if club %}value="{{ club.acronym }}" {% endif %} id="acronym" class="form-control col-md-7 col-xs-12"
-                    data-validate-length-range="6" name="acronym" placeholder="{{ blocale.placeholder_acronym }}" required="required"
-                    type="text">
+                  <input {% if edition %}value="{{ edition.year }}" {% endif %} id="year" type="number" class="date-own form-control col-md-7 col-xs-12" name="year" required="required">
                 </div>
               </div>
+              
               <div class="item form-group">
-                <label class="control-label col-md-3 col-sm-3 col-xs-12" for="email">{{ blocale.email }}
+                <label class="control-label col-md-3 col-sm-3 col-xs-12" for="chief_of_course">{{ blocale.chief_of_course }}
+                </label>
+                <div class="col-md-6 col-sm-6 col-xs-12" id="chief_of_course_div">
+                  <input {% if edition and edition.chief_of_course %}value="{{ edition.chief_of_course.full_name }}" {% endif %} type="text" id="chief_of_course" name="chief_of_course" class="form-control col-md-7 col-xs-12">
+                </div>
+              </div>
+
+              <div class="item form-group">
+                <label class="control-label col-md-3 col-sm-3 col-xs-12" for="start_referee">{{ blocale.start_referee }}
+                </label>
+                <div class="col-md-6 col-sm-6 col-xs-12" id="start_referee_div">
+                  <input {% if edition and edition.start_referee %}value="{{ edition.start_referee.full_name }}" {% endif %} type="text" id="start_referee" name="start_referee" class="form-control col-md-7 col-xs-12">
+                </div>
+              </div>
+
+              <div class="item form-group">
+                <label class="control-label col-md-3 col-sm-3 col-xs-12" for="finish_referee">{{ blocale.finish_referee }}
+                </label>
+                <div class="col-md-6 col-sm-6 col-xs-12" id="finish_referee_div">
+                  <input {% if edition and edition.finish_referee %}value="{{ edition.finish_referee.full_name }}" {% endif %} type="text" id="finish_referee" name="finish_referee" class="form-control col-md-7 col-xs-12">
+                </div>
+              </div>
+
+              <div class="item form-group">
+                <label class="control-label col-md-3 col-sm-3 col-xs-12" for="picture">{{ blocale.picture }}
                 </label>
                 <div class="col-md-6 col-sm-6 col-xs-12">
-                  <input {% if club and club.email %}value="{{ club.email }}" {% endif %} type="email" id="email" name="email"
-                    class="form-control col-md-7 col-xs-12">
+                  <input type="file" name="picture" class="form-control col-md-7 col-xs-12">
                 </div>
               </div>
-              <div class="item form-group">
-                <label class="control-label col-md-3 col-sm-3 col-xs-12" for="email">{{ blocale.confirm_email }}
-                </label>
-                <div class="col-md-6 col-sm-6 col-xs-12">
-                  <input {% if club and club.email %}value="{{ club.email }}" {% endif %} type="email" id="email2" name="confirm_email"
-                    data-validate-linked="email" class="form-control col-md-7 col-xs-12">
-                </div>
-              </div>
-              <div class="item form-group">
-                <label class="control-label col-md-3 col-sm-3 col-xs-12" for="telephone">{{ blocale.phone }}
-                </label>
-                <div class="col-md-6 col-sm-6 col-xs-12">
-                  <input {% if club and club.phone %}value="{{ club.phone }}" {% endif %} type="tel" id="phone" name="phone"
-                    data-validate-length-range="8,20" class="form-control col-md-7 col-xs-12">
-                </div>
-              </div>
-              <div class="item form-group">
-                <label class="control-label col-md-3 col-sm-3 col-xs-12" for="emblem">{{ blocale.emblem }}
-                </label>
-                <div class="col-md-6 col-sm-6 col-xs-12">
-                  <input type="file" name="emblem" class="form-control col-md-7 col-xs-12">
-                </div>
-              </div>
-              <div class="item form-group">
-                <label class="control-label col-md-3 col-sm-3 col-xs-12" for="about">{{ blocale.about }}
-                </label>
-                <div class="col-md-6 col-sm-6 col-xs-12">
-                  <textarea id="about" name="about" class="form-control col-md-7 col-xs-12">{% if club and club.about %}{{ club.about }}{% endif %}</textarea>
-                </div>
-              </div>
+
               <div class="form-group">
                 <div class="col-md-6 col-md-offset-3">
-                  <button type="submit" class="btn btn-primary">{{ blocale.cancel }}</button>
-                  <button id="send" type="submit" class="btn btn-success">{{ blocale.submit }}</button>
+                  <button type="submit" class="btn btn-primary">{{ locale.cancel }}</button>
+                  <button id="send" type="submit" class="btn btn-success">{{ locale.submit }}</button>
                 </div>
               </div>
             </form>
@@ -95,6 +92,7 @@
 
 {% block javascripts %}
 {{ super() }}
+<script src="{{ url_for('static', filename='vendors/bootstrap-datepicker/dist/js/bootstrap-datepicker.min.js') }}"></script>
 <script>
     var request = new XMLHttpRequest();
     request.open("GET","{{ url_for('static', filename='locale/validator_{}.json'.format(locale.user_locale)) }}", false);
@@ -103,4 +101,12 @@
 </script>
 <!-- validator -->
 <script src="{{ url_for('static', filename='vendors/validator/validator.js') }}"></script>
+<script src="{{ url_for('static', filename='vendors/typeahead.js/dist/typeahead.jquery.min.js') }}"></script>
+<script src="{{ url_for('editions.static', filename='js/editions_edit.js') }}"></script>
+<script>
+  $(document).ready(function() {
+    setupPage("{{ locale.user_locale }}", {% if edition %}true{% else %}false{% endif %});
+  });
+</script>
+
 {% endblock javascripts %}
