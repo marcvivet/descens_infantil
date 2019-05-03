@@ -136,8 +136,8 @@ def communicate():
         json_data = json.loads(request.data.decode('utf-8'), encoding='utf8')
 
         if json_data['action'] == 'delete':
-            message = locm.can_not_delete.format(json_data['club_id'])
-            club = db.query(Club).get(int(json_data['club_id']))
+            message = locm.can_not_delete.format(json_data['id'])
+            club = db.query(Club).get(int(json_data['id']))
             db.delete(club)
             db.commit()
             message = locm.club_deleted.format(club.name)

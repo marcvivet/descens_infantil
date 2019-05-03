@@ -1,0 +1,59 @@
+{% extends "base_site.html" %} {% block title %} Add new user {% endblock title
+%} {% block stylesheets %} {{ super() }}
+
+<link
+  href="{{ url_for('main.static', filename='css/statistics.css', session=config.SESSION_UID) }}"
+  rel="stylesheet"
+/>
+{% endblock stylesheets %} {% block content %}
+
+<div class="right_col" role="main">
+  <div class="">
+    <div class="page-title">
+      <div class="title_left">
+        <h3>{{ blocale.editions_title }}</h3>
+      </div>
+    </div>
+    <div class="clearfix"></div>
+
+    <div class="row">
+      <div class="col-md-6 col-sm-6 col-xs-12">
+        <div class="x_panel">
+          <div class="x_title">
+            <h2>{{ blocale.participants_per_year }}</h2>
+            <div class="clearfix"></div>
+          </div>
+          <div class="x_content">
+            <div class="x_content">
+              <canvas id="number_of_participants"></canvas>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-md-6 col-sm-6 col-xs-12">
+        <div class="x_panel">
+          <div class="x_title">
+            <h2>{{blocale.clubs_per_year}}</h2>
+            <div class="clearfix"></div>
+          </div>
+          <div class="x_content">
+            <div class="x_content">
+              <canvas id="number_of_clubs"></canvas>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="clearfix"></div>
+
+  </div>
+</div>
+{% endblock content %} {% block javascripts %} {{ super() }}
+
+<script src="{{ url_for('static', filename='vendors/Chart.js/dist/Chart.min.js') }}"></script>
+<script src="{{ url_for('statistics.static', filename='js/statistics_editions.js') }}"></script>
+
+<!-- validator -->
+{% endblock javascripts %}

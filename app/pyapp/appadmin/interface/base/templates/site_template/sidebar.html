@@ -25,7 +25,7 @@
       <h3>{{ locale.base.general }}</h3>
       <ul class="nav side-menu">
 
-        <li><a><i class="fa fa-clock-o"></i>Carrera <span class="fa fa-chevron-down"></span></a>
+        <li><a><i class="fa fa-trophy"></i>Carrera <span class="fa fa-chevron-down"></span></a>
           <ul class="nav child_menu">
             <li><a href="/clubs/view">Introduïr Temps</a></li>
             <li><a href="/clubs/add">LListar participants</a></li>
@@ -34,6 +34,14 @@
           </ul>
         </li>
 
+        {% if current_user.has_page(['organizers']) %}
+        <li><a><i class="fa fa-sitemap"></i>{{ locale.organizers.organizers }} <span class="fa fa-chevron-down"></span></a>
+          <ul class="nav child_menu">
+            <li><a href="/organizers/view">{{ locale.organizers.view_organizers }}</a></li>
+            <li><a href="/organizers/add">{{ locale.organizers.add_organizers }}</a></li>
+          </ul>
+        </li>
+        {% endif %}
         {% if current_user.has_page(['editions']) %}
         <li><a><i class="fa fa-calendar"></i>{{ locale.editions.editions }} <span class="fa fa-chevron-down"></span></a>
           <ul class="nav child_menu">
@@ -47,6 +55,13 @@
           <ul class="nav child_menu">
             <li><a href="/clubs/view">{{ locale.clubs.view_clubs }}</a></li>
             <li><a href="/clubs/add">{{ locale.clubs.add_club }}</a></li>
+          </ul>
+        </li>
+        {% endif %}
+        {% if current_user.has_page(['statistics']) %}
+        <li><a><i class="fa fa-bar-chart"></i>{{ locale.statistics.statistics }} <span class="fa fa-chevron-down"></span></a>
+          <ul class="nav child_menu">
+            <li><a href="/statistics/editions">{{ locale.statistics.editions }}</a></li>
           </ul>
         </li>
         {% endif %}

@@ -1,0 +1,11 @@
+{
+    "statistics": "Estadístiques",
+    "editions": "Edicions",
+    "editions_title": "Estadístiques sobre les edicions",
+    "participants_per_year": "Participants per any",
+    "clubs_per_year": "Nombre de clubs per any",
+    "exception": "Excepció: {}",
+    "number_participants": "Nombre de participants",
+    "number_clubs": "Nombre de clubs",
+    "year": "Any"
+}

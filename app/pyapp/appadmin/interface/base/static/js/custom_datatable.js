@@ -58,7 +58,7 @@ class CustomDataTable {
         Page.setLoading(true);
         Page.httpRequest({
             action: "delete",
-            club_id: this._selected_id
+            id: this._selected_id
         }, `/${this._page}/communicate`, (response) => { this._update(response) });  
     }
 

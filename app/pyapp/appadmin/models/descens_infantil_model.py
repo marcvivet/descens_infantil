@@ -220,6 +220,9 @@ class Edition(db.Model):
         
         return db.session.execute(sql_query).fetchone()[0]
 
+    def mark_as_updated(self):
+        self.time_updated = db.func.now()
+
     @staticmethod
     def get_next_edition():
         sql_query = "SELECT MAX(editions.edition) "\
@@ -233,6 +236,64 @@ class Edition(db.Model):
                     "FROM editions"
         
         return int(db.session.execute(sql_query).fetchone()[0]) + 1
+
+
+    @staticmethod
+    def get_number_of_participants_per_edition():
+        sql_query = "SELECT strftime(\"%Y\", editions.date) AS year, "\
+                    "COUNT(edition_participants.participant_id) AS participants " \
+                    "FROM edition_participants " \
+                    "JOIN editions ON editions.id = edition_participants.edition_id " \
+                    "GROUP BY editions.id " \
+                    "ORDER BY year ASC" \
+
+        years = []
+        participants = []
+        rows = db.session.execute(sql_query).fetchall()
+
+        if not rows:
+            return {
+                'years': [],
+                'participants': []
+            }
+
+        for row in rows:
+            years.append(int(row['year']))
+            participants.append(int(row['participants']))
+
+        return {
+            'years': years,
+            'participants': participants
+        }
+
+
+    @staticmethod
+    def get_number_of_clubs_per_edition():
+        sql_query = "SELECT strftime(\"%Y\", editions.date) AS year, "\
+                    "COUNT(DISTINCT(edition_participants.club_id)) AS clubs " \
+                    "FROM edition_participants " \
+                    "JOIN editions ON editions.id = edition_participants.edition_id " \
+                    "GROUP BY editions.id " \
+                    "ORDER BY year ASC" \
+
+        years = []
+        clubs = []
+        rows = db.session.execute(sql_query).fetchall()
+
+        if not rows:
+            return {
+                'years': [],
+                'clubs': []
+            }
+
+        for row in rows:
+            years.append(int(row['year']))
+            clubs.append(int(row['clubs']))
+
+        return {
+            'years': years,
+            'clubs': clubs
+        }
 
 
 class Club(db.Model):

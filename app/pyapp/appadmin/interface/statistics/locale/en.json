@@ -1,0 +1,11 @@
+{
+    "statistics": "Statistics",
+    "editions": "Editions",
+    "editions_title": "Statistics about Editions",
+    "participants_per_year": "Participants over years",
+    "clubs_per_year": "Number of clubs over years",
+    "exception": "Exception: {}",
+    "number_participants": "Number of participants",
+    "number_clubs": "Number of clubs",
+    "year": "Year"
+}
