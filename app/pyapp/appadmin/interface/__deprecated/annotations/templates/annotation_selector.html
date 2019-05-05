@@ -81,7 +81,7 @@
 {% block javascripts %}
   {{ super()}}
   <script src="{{ url_for('static', filename='vendors/chroma/chroma.min.js') }}"></script>
-  <script src="{{ url_for('static', filename='vendors/Chart.js/dist/Chart.min.js') }}"></script>
+  <script src="{{ url_for('static', filename='vendors/chart.js/dist/Chart.min.js') }}"></script>
   <script src="{{ url_for('static', filename='js/annotation_selectors.js') }}"></script>
   <script>  
       {% if (type == 'correct' and sum_total != sum_user) or (type == 'revise' and sum_user != 0) %}

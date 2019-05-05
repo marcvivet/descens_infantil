@@ -1,11 +1,16 @@
 {
     "statistics": "Statistics",
     "editions": "Editions",
+    "organizers": "Organizers",
     "editions_title": "Statistics about Editions",
+    "organizers_title": "Statistics about Organizers",
     "participants_per_year": "Participants over years",
     "clubs_per_year": "Number of clubs over years",
     "exception": "Exception: {}",
     "number_participants": "Number of participants",
     "number_clubs": "Number of clubs",
-    "year": "Year"
+    "year": "Year",
+    "times_as_chief_of_course": "Editions as Chief of Course",
+    "times_as_start_referee": "Editions as Start Referee",
+    "times_as_finish_referee": "Editions as Finish Referee"
 }

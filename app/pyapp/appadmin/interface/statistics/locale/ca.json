@@ -1,11 +1,16 @@
 {
     "statistics": "Estadístiques",
     "editions": "Edicions",
+    "organizers": "Organitzdors",
     "editions_title": "Estadístiques sobre les edicions",
+    "organizers_title": "Estadístiques sobre els organitzadors",
     "participants_per_year": "Participants per any",
     "clubs_per_year": "Nombre de clubs per any",
     "exception": "Excepció: {}",
     "number_participants": "Nombre de participants",
     "number_clubs": "Nombre de clubs",
-    "year": "Any"
+    "year": "Any",
+    "times_as_chief_of_course": "Participacions com a Director de Cursa",
+    "times_as_start_referee": "Participacions com a Jutge de Sortida",
+    "times_as_finish_referee": "Participacions com a Jutge d'Arribada"
 }

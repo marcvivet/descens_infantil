@@ -119,6 +119,45 @@ class Organizer(db.Model):
         
         return [name[0] for name in db.session.execute(sql_query).fetchall()]
 
+    @staticmethod
+    def get_times_as_job(job):
+        sql_query = "SELECT COUNT(*) AS count, " \
+                    "printf('%s %s', organizers.name, organizers.surnames) AS organizer "\
+                    "FROM organizers " \
+                    f"JOIN editions ON editions.{job}_id = organizers.id " \
+                    "GROUP BY organizers.id"\
+
+        count = []
+        organizer = []
+        rows = db.session.execute(sql_query).fetchall()
+
+        if not rows:
+            return {
+                'count': [],
+                'organizer': []
+            }
+
+        for row in rows:
+            count.append(int(row['count']))
+            organizer.append(row['organizer'])
+
+        return {
+            'count': count,
+            'organizer': organizer
+        }
+
+    @staticmethod
+    def get_times_as_chief_of_course():
+        return Organizer.get_times_as_job('chief_of_course')
+
+    @staticmethod
+    def get_times_as_start_referee():
+        return Organizer.get_times_as_job('start_referee')
+
+    @staticmethod
+    def get_times_as_finish_referee():
+        return Organizer.get_times_as_job('finish_referee')
+
 
 class Participant(db.Model):
     __tablename__ = "participants"

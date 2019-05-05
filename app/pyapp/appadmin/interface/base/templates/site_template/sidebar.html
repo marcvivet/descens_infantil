@@ -61,6 +61,7 @@
         {% if current_user.has_page(['statistics']) %}
         <li><a><i class="fa fa-bar-chart"></i>{{ locale.statistics.statistics }} <span class="fa fa-chevron-down"></span></a>
           <ul class="nav child_menu">
+            <li><a href="/statistics/organizers">{{ locale.statistics.organizers }}</a></li>
             <li><a href="/statistics/editions">{{ locale.statistics.editions }}</a></li>
           </ul>
         </li>
