@@ -16,6 +16,7 @@ class Organizer(db.Model):
     name = db.Column(db.String(32), nullable=False)
     surnames = db.Column(db.String(64), nullable=False)
     picture = db.Column(db.String(256), nullable=True)
+    about = db.Column(db.String(256), nullable=True)
 
     time_created = db.Column(
         db.DateTime(timezone=True), server_default=db.func.now())
@@ -32,7 +33,8 @@ class Organizer(db.Model):
     __table_args__ = (
         db.UniqueConstraint('name', 'surnames', name='organizers_uc'),)
 
-    def __init__(self, name: str = None, surnames: str = None, picture: str = None):
+    def __init__(
+            self, name: str = None, surnames: str = None, picture: str = None, about: str = None):
         if name:
             self.name = name.strip().title()
 
@@ -42,6 +44,8 @@ class Organizer(db.Model):
             self.surnames = ' '.join(all_surnames)
 
         self.hash = Organizer.create_hash(self.name, self.surnames)
+
+        self.about = about
 
         if not picture:
             picture = '/static/images/NO_IMAGE.jpg'
@@ -61,6 +65,36 @@ class Organizer(db.Model):
             return quote_plus(str(self.time_updated))
         else:
             return 'none'
+
+    @property
+    def times_as_chief_of_course(self):
+        sql_query = "SELECT COUNT(*) "\
+                    "FROM organizers "\
+                    "JOIN editions ON editions.chief_of_course_id = organizers.id "\
+                    f"WHERE organizers.id = {self.id}"
+
+        return db.session.execute(sql_query).fetchone()[0]
+
+    @property
+    def times_as_start_referee(self):
+        sql_query = "SELECT COUNT(*) "\
+                    "FROM organizers "\
+                    "JOIN editions ON editions.start_referee_id = organizers.id "\
+                    f"WHERE organizers.id = {self.id}"
+
+        return db.session.execute(sql_query).fetchone()[0]
+
+    @property
+    def times_as_finish_referee(self):
+        sql_query = "SELECT COUNT(*) "\
+                    "FROM organizers "\
+                    "JOIN editions ON editions.finish_referee_id = organizers.id "\
+                    f"WHERE organizers.id = {self.id}"
+
+        return db.session.execute(sql_query).fetchone()[0]
+
+    def mark_as_updated(self):
+        self.time_updated = db.func.now()
 
     @staticmethod
     def create_hash(name, surnames):
