@@ -18,5 +18,6 @@
     "cancel": "Cancel·la",
     "submit": "Envia",
     "thumbnails": "Miniatures",
-    "table": "Taula"
+    "table": "Taula",
+    "exception": "S'ha produït un error: {}"
 }

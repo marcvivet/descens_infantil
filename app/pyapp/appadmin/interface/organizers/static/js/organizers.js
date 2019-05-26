@@ -32,7 +32,16 @@ function setupPage(locale, add_toogle) {
 
     let order = [[ 5, "asc" ], [ 6, "asc" ]];
 
-    datatable = new CustomDataTable('organizers', locale, add_toogle, columnDefs, columnsStyle, order, 470);
+    datatable = new CustomDataTable(
+        {
+            page: 'organizers',
+            locale: locale,
+            addToggle: add_toogle,
+            columnDefs: columnDefs,
+            columnsStyle: columnsStyle,
+            order: order,
+            columnWidth: 470
+        });
 }
 
 function clickOnDelete(id) {

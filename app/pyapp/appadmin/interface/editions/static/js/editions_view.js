@@ -27,8 +27,15 @@ function setupPage(locale, add_toogle) {
     ];
 
     let order = [[ 2, "desc" ]];
-    datatable = new CustomDataTable(
-        'editions', locale, add_toogle, columnDefs, columnsStyle, order, 470);
+    datatable = new CustomDataTable({
+        page: 'editions',
+        locale: locale,
+        addToggle: add_toogle,
+        columnDefs: columnDefs,
+        columnsStyle: columnsStyle,
+        order: order,
+        columnWidth: 470
+    });
 }
 
 function clickOnDelete(id) {

@@ -30,26 +30,27 @@ class Singleton(type):
         if not cls._instance:
             cls._instance = \
                 super(Singleton, cls).__call__(*args, **kwargs)
-
+        
+        # REMOVE THIS AT THE END
+        cls._instance.reload()
         return cls._instance
 
 
 class LocaleData:
-    def __init__(self, locale: dict):
-        self._locale = locale
+    def __init__(self, file_path: str):
+        self._locale = None
+        self._file = file_path
+
+        self.reload()
+
+    def reload(self):
+        if os.path.exists(self._file):
+            with open(self._file, 'r') as read_fp:
+                self._locale = json.load(read_fp)
 
     @property
     def locale(self):
         return self._locale
-
-    @classmethod
-    def create_from_file(cls, language_file):
-        locale = {}
-        if os.path.exists(language_file):
-            with open(language_file, 'r') as read_fp:
-                locale = json.load(read_fp)
-
-        return cls(locale)
 
     def __getitem__(self, key):
         if key in self._locale:
@@ -86,10 +87,15 @@ class LocalizationManager(metaclass=Singleton):
         try:
             for iso_639_1 in self._locale:
                 language_file = os.path.join(blp.root_path, 'locale', f'{iso_639_1}.json')
-                self._locale[iso_639_1][blp.name] = LocaleData.create_from_file(language_file)
+                self._locale[iso_639_1][blp.name] = LocaleData(language_file)
         except:
             self._logger.error("Error while parsing locale JSON for blueprint %s, language %s", blp.name, iso_639_1)
             raise
+
+    def reload(self):
+        for iso_6369, data in self._locale.items():
+            for _, locale_data in data.items():
+                locale_data.reload()
 
     def get_blueprint_locale(self, blp):
         return self.locale[blp]

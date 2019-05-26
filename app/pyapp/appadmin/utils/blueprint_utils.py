@@ -5,10 +5,11 @@ sys.path.append(os.path.join(os.path.dirname(__file__), "../"))
 
 import json
 
-from flask import current_app
+from flask import current_app, Response
 from flask_login import current_user
 from functools import wraps
 from flask_user.access import is_authenticated, is_confirmed_email
+from appadmin.utils.localization_manager import LocalizationManager
 
 ROOT_FILE_PATH = os.path.abspath(os.path.dirname(os.path.dirname(__file__)))
 
@@ -45,6 +46,19 @@ def roles_required_online(blp):
             return func(*args, **kwargs)
         return decorated_view
     return wrapper
+
+
+def safe_response(func):
+    @wraps(func)
+    def decorated_view(*args, **kwargs):
+        try:
+            return func(*args, **kwargs)
+        except Exception as ex:
+            error_msg = LocalizationManager().get_blueprint_locale('base').exception.format(ex)
+            current_app.logger.error(error_msg)
+            current_app.db_manager.rollback()
+            return Response(error_msg, status=500)
+    return decorated_view
 
 """
 def localizable(blp):

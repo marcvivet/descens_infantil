@@ -3,6 +3,12 @@
     // Hover to view descriptions of existing attributes.
     // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
     "version": "0.2.0",
+    "compounds": [
+        {
+            "name": "Debug Python javascipt",
+            "configurations": ["Flask", "DEBUG Javascript" ]
+        }
+    ],
     "configurations": [
         {
             "name": "Flask",
@@ -15,7 +21,36 @@
             "console": "integratedTerminal"
         },
         {
-            "name": "Python: Current File (Integrated Terminal)",
+            "name": "Import DB",
+            "type": "python",
+            "request": "launch",
+            "env": {
+                "PYTHONPATH": "${workspaceFolder}/app/pyapp"
+            },
+            "program": "${workspaceFolder}/app/pyapp/scripts/import_database.py",
+            "console": "integratedTerminal"
+        },
+        {
+            "name": "Flask Javascript",
+            "type": "chrome",
+            "request": "launch",
+            "url": "http://0.0.0.0:10001",
+            "webRoot": "${workspaceFolder}app/pyapp/appadmin/interface",
+            "pathMapping": {
+                "/static/*": "${workspaceFolder}app/pyapp/appadmin/interface/base/static/*",
+                "/race/static/*": "${workspaceFolder}app/pyapp/appadmin/interface/race/static/*",
+                "/roles/static/*": "${workspaceFolder}app/pyapp/appadmin/interface/roles/static/*",
+                "/statistics/static/*": "${workspaceFolder}app/pyapp/appadmin/interface/statistics/static/*",
+                "/users/static/*": "${workspaceFolder}app/pyapp/appadmin/interface/users/static/*",
+                "/editions/static/*": "${workspaceFolder}app/pyapp/appadmin/interface/editions/static/*",
+                "/main/static/*": "${workspaceFolder}app/pyapp/appadmin/interface/main/static/*",
+                "/roles/static/*": "${workspaceFolder}app/pyapp/appadmin/interface/roles/static/*",
+                "/organizers/static/*": "${workspaceFolder}app/pyapp/appadmin/interface/organizers/static/*",
+                "/clubs/static/*": "${workspaceFolder}app/pyapp/appadmin/interface/clubs/static/*"
+            }
+        },
+        {
+            "name": "Python: Current File",
             "type": "python",
             "request": "launch",
             "program": "${file}",

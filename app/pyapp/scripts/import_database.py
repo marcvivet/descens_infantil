@@ -106,10 +106,10 @@ def main():
                 participant,
                 club,
                 bib_number=int(row['DORSAL']),
-                penalized=row['PENALITZACIÓ'] == 1,
-                desqualified=row['DSQ'] == 1,
-                not_arrived=row['DNF'] == 1,
-                not_come_out=row['DNS'] == 1,
+                penalized=row['PENALITZACIÓ'] == '1',
+                disqualified=row['DSQ'] == '1',
+                not_arrived=row['DNF'] == '1',
+                not_came_out=row['DNS'] == '1',
                 time=time(0, minutes, seconds, macroseconds)
             )
 

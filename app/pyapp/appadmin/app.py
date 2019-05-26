@@ -22,7 +22,8 @@ ROOT_FILE_PATH = os.path.abspath(os.path.dirname(__file__))
 
 
 def id_generator(size=16, chars=string.ascii_uppercase + string.digits):
-    return ''.join(random.choice(chars) for _ in range(size))
+    # return ''.join(random.choice(chars) for _ in range(size))
+    return "1234"
 
 
 class ConfigClass(object):
@@ -188,6 +189,9 @@ def create_app():
     app.config.from_object(__name__+'.ConfigClass')
     app.config['SQLALCHEMY_DATABASE_URI'] = app.db_manager.data_base_local_path
 
+    app.jinja_env.auto_reload = True
+    app.config['TEMPLATES_AUTO_RELOAD'] = True
+
     register_blueprints(app)
     register_template_blueprints(app)
 
@@ -203,7 +207,7 @@ def create_app():
     if not os.path.isdir(UPLOAD_FOLDER_FOR_DATABASES):
         os.makedirs(UPLOAD_FOLDER_FOR_DATABASES)
 
-    app.permanent_session_lifetime = timedelta(minutes=30)
+    app.permanent_session_lifetime = timedelta(hours=24)
 
     app.is_configured = True
 

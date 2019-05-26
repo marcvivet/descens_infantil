@@ -18,5 +18,6 @@
     "cancel": "Cancel",
     "submit": "Submit",
     "thumbnails": "Thumbnails",
-    "table": "Table"
+    "table": "Table",
+    "exception": "An error has been occurred: {}"
 }

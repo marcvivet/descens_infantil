@@ -1,6 +1,6 @@
 import hashlib
 from unidecode import unidecode
-from datetime import date, time
+from datetime import date, time, datetime, timedelta
 from flask_sqlalchemy import SQLAlchemy
 from urllib.parse import quote_plus
 
@@ -248,7 +248,7 @@ class Edition(db.Model):
         'Participant', secondary='edition_participants', order_by='Participant.id')
 
     edition_participants = db.relationship(
-        'EditionParticipant', backref='editions', cascade="all,delete", lazy='dynamic')
+        'EditionParticipant', backref='editions', cascade="all,delete")
 
     def __init__(
             self, edition: int = None, date: date = None, chief_of_course: Organizer = None,
@@ -368,6 +368,79 @@ class Edition(db.Model):
             'clubs': clubs
         }
 
+    @staticmethod
+    def get_editions():
+        sql_query = "SELECT editions.id AS id, strftime(\"%Y\", editions.date) AS year " \
+                    "FROM editions " \
+                    "ORDER BY year DESC"
+
+        query = db.session.execute(sql_query)
+        keys = query.keys()
+
+        return [dict(zip(keys, row)) for row in query.fetchall()]
+
+    
+    @staticmethod
+    def get_participants(edition_id: int):
+        sql_query = "SELECT "\
+                    "participants.id AS id, " \
+                    "printf(\"%s?stam%s\", participants.picture, " \
+                    "strftime(\"%Y%m%d%H%M%S\", participants.time_updated)) AS picture, " \
+                    "participants.surnames AS surnames, " \
+                    "participants.name AS name, " \
+                    "participants.birthday AS birthday, " \
+                    "edition_participants.bib_number AS bib_number, " \
+                    "edition_participants.category AS category, " \
+                    "edition_participants.penalized AS penalized, " \
+                    "edition_participants.disqualified AS disqualified, " \
+                    "edition_participants.not_arrived AS not_arrived, " \
+                    "edition_participants.not_came_out AS not_came_out, " \
+                    "edition_participants.time AS time, " \
+                    "edition_participants.time AS time_final, " \
+                    "clubs.id AS club_id, " \
+                    "clubs.name AS club_name, " \
+                    "editions.id AS edition_id, " \
+                    "editions.date AS edition_date " \
+                    "FROM edition_participants " \
+                    "JOIN participants ON participants.id = edition_participants.participant_id " \
+                    "JOIN editions ON editions.id = edition_participants.edition_id " \
+                    "JOIN clubs ON clubs.id = edition_participants.club_id " \
+                    f"WHERE editions.id = {edition_id} "\
+                    "ORDER BY participants.surnames, participants.name ASC"
+
+        penalizations = Edition.get_penalizations(edition_id)
+        query = db.session.execute(sql_query)
+        keys = query.keys()
+
+        result = [dict(zip(keys, row)) for row in query.fetchall()]
+        for element in result:
+            element['time'] = element['time'][3:-4]
+            if element['category'] in penalizations and element['penalized'] == 1:
+                element['time_final'] = (
+                    datetime.strptime(element['time_final'], "%H:%M:%S.%f") +
+                    penalizations[element['category']]).strftime("%H:%M:%S.%f")
+            element['time_final'] = element['time_final'][3:-4]
+
+        return result
+
+    @staticmethod
+    def get_penalizations(edition_id: int):
+        sql_query = "SELECT edition_participants.category AS category, " \
+                    "    MAX(edition_participants.time) AS time " \
+                    "FROM edition_participants " \
+                    "JOIN editions ON editions.id = edition_participants.edition_id " \
+                    "WHERE editions.id = 10 AND " \
+                    "    edition_participants.penalized = 0 AND " \
+                    "    edition_participants.disqualified = 0 AND " \
+                    "    edition_participants.not_arrived = 0 AND " \
+                    "    edition_participants.not_came_out = 0 " \
+                    "GROUP BY edition_participants.category " \
+                    "ORDER BY edition_participants.category ASC "
+
+        query = db.session.execute(sql_query)
+        t0 = datetime.strptime("00:00:00.00000","%H:%M:%S.%f")
+        return {row['category']: (datetime.strptime(row['time'], "%H:%M:%S.%f") - t0)
+                for row in query.fetchall()}
 
 class Club(db.Model):
     __tablename__ = "clubs"
@@ -420,6 +493,16 @@ class Club(db.Model):
     def __repr__(self):
         return f'<Club: [{self.id}, {self.acronym}, {self.name}]>'
 
+    @staticmethod
+    def get_clubs():
+        sql_query = "SELECT clubs.id AS id, clubs.name AS name " \
+                    "FROM clubs " \
+                    "ORDER BY clubs.name"
+
+        query = db.session.execute(sql_query)
+        keys = query.keys()
+        return [dict(zip(keys, row)) for row in query.fetchall()]
+
 
 class EditionParticipant(db.Model):
     __tablename__ = "edition_participants"
@@ -439,9 +522,9 @@ class EditionParticipant(db.Model):
     bib_number = db.Column(db.Integer)
     category = db.Column(db.Integer)
     penalized = db.Column(db.Boolean)
-    desqualified = db.Column(db.Boolean)
+    disqualified = db.Column(db.Boolean)
     not_arrived = db.Column(db.Boolean)
-    not_come_out = db.Column(db.Boolean)
+    not_came_out = db.Column(db.Boolean)
 
     time = db.Column(db.Time(), nullable=True)
 
@@ -453,7 +536,7 @@ class EditionParticipant(db.Model):
     club = db.relationship('Club', uselist=False)
 
     __table_args__ = (
-         db.UniqueConstraint('edition_id', 'participant_id', name='edition_participants_uc'),)
+        db.UniqueConstraint('edition_id', 'participant_id', name='edition_participants_uc'),)
 
     def __init__(
             self,
@@ -462,9 +545,9 @@ class EditionParticipant(db.Model):
             club: Club,
             bib_number: int = None,
             penalized: bool = False,
-            desqualified: bool = False,
+            disqualified: bool = False,
             not_arrived: bool = False,
-            not_come_out: bool = False,
+            not_came_out: bool = False,
             time: time = None
         ):
 
@@ -476,9 +559,9 @@ class EditionParticipant(db.Model):
 
         self.bib_number = bib_number
         self.penalized = penalized
-        self.desqualified = desqualified
+        self.disqualified = disqualified
         self.not_arrived = not_arrived
-        self.not_come_out = not_come_out
+        self.not_came_out = not_came_out
         self.time = time        
 
     @property
@@ -490,18 +573,18 @@ class EditionParticipant(db.Model):
         self.penalized = value
 
     @property
-    def desqualify(self):
-        return self.desqualified
+    def disqualify(self):
+        return self.disqualified
         
-    @desqualify.setter
-    def desqualify(self, value: bool):
+    @disqualify.setter
+    def disqualify(self, value: bool):
         if not value:
-            self.desqualified = False
+            self.disqualified = False
             return
 
-        self.desqualified = True
+        self.disqualified = True
         self.not_arrived = False
-        self.not_come_out = False
+        self.not_came_out = False
 
     @property
     def not_arrive(self):
@@ -530,5 +613,3 @@ class EditionParticipant(db.Model):
         self.desqualified = False
         self.not_arrived = False
         self.not_came_out = True
-
-

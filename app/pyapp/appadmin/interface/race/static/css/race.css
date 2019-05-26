@@ -1,0 +1,89 @@
+:root {
+    --transition-time: 0.30s;
+}
+
+.container-img-square {
+    position: relative; 
+    width: 150px;
+    height: 150px;
+    border: 1px solid #E6E9ED;
+    object-fit: contain;
+    margin-bottom:  5px;
+    border-radius: 50%;
+    overflow: hidden;
+    margin-bottom: 10px;
+    float: right;
+}
+
+.profile_details .profile_view .right {
+    margin-top: 0px;
+    padding: 0px;
+}
+
+.grid-item {
+    width: 460px;
+    height: 220px;
+}
+
+.top_search {
+    width: 200px;
+}
+
+.select_edition {
+    width: 130px;
+    float: right;
+    margin-right: 0px;
+    padding-right: 0px;
+    padding-left: 0px;
+}
+
+.input-group {
+    float: right;
+}
+
+.group-select {
+    float: right;
+}
+
+
+.label_edition_select {
+    margin-top: 7px;
+    padding-right: 15px;
+}
+
+.opacity_0 {
+    opacity: 0;
+    -webkit-transition: all var(--transition-time) ease-in-out;
+    -moz-transition: all var(--transition-time) ease-in-out;
+    -ms-transition: all var(--transition-time) ease-in-out;
+    -o-transition: all var(--transition-time) ease-in-out;
+    transition: all var(--transition-time) ease-in-out;
+}
+
+.div-time-small {
+    box-shadow: rgba(0, 0, 0, 0.075) 0px 1px 1px 0px inset;
+    color: rgb(85, 85, 85);
+    height: 34px;
+    text-decoration: none solid rgb(85, 85, 85);
+    text-size-adjust: 100%;
+    vertical-align: middle;
+    column-rule-color: rgb(85, 85, 85);
+    caret-color: rgb(85, 85, 85);
+    border: 1px solid rgb(204, 204, 204);
+    font: normal normal 400 normal 14px / 20px "Helvetica Neue", Roboto, Arial, "Droid Sans", sans-serif;
+    outline: rgb(85, 85, 85) none 0px;
+    padding: 6px 12px;
+    transition: border-color 0.15s ease-in-out 0s, box-shadow 0.15s ease-in-out 0s;
+
+    background-color: white;
+    display: inline-flex;
+    border: 1px solid #ccc;
+    color: #555;
+}
+
+.div-time-small input {
+    border: none;
+    color: rgb(85, 85, 85);
+    text-align: center;
+    width: 35px;
+}

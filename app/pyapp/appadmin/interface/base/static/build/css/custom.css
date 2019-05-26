@@ -1377,11 +1377,26 @@ table.jambo_table tbody tr.selected td {
     width: 40%;
     float: left
 }
+
 .dataTables_filter {
-    width: 50%;
+    width: 25%;
     float: right;
-    text-align: right
+    text-align: right;
 }
+
+#custom-datatable_filter label{
+    width: 100%;
+    float: right;
+    text-align: right;
+}
+
+#custom-datatable_filter input{
+    width: 70%;
+    float: right;
+}
+
+#custom-datatable_filter > label > input
+
 .dataTables_info {
     width: 60%;
     float: left

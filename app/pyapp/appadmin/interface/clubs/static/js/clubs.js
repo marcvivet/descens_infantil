@@ -27,7 +27,14 @@ function setupPage(locale, add_toogle) {
 
     let order = [[ 2, "asc" ]];
 
-    datatable = new CustomDataTable('clubs', locale, add_toogle, columnDefs, columnsStyle, order);
+    datatable = new CustomDataTable({
+        page: 'clubs',
+        locale: locale,
+        addToggle: add_toogle,
+        columnDefs: columnDefs,
+        columnsStyle: columnsStyle,
+        order: order
+    });
 }
 
 function clickOnDelete(id) {

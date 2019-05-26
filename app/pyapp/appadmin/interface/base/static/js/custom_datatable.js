@@ -1,5 +1,14 @@
 class CustomDataTable {
-    constructor(page, locale, addToggle, columnDefs = null, columnsStyle = null, order = null, columnWidth = 400) {
+    constructor(config) {
+        let page = config.page === undefined? null : config.page;
+        let locale = config.locale === undefined? 'en' : config.locale;
+        let addToggle = config.addToggle === undefined? false : config.addToggle;
+        let columnDefs = config.columnDefs === undefined? null : config.columnDefs;
+        let columnsStyle = config.columnsStyle === undefined? null : config.columnsStyle;
+        let order = config.order === undefined? null : config.order;
+        let columnWidth = config.columnWidth === undefined? 400 : config.columnWidth;
+        let buttons = config.buttons === undefined? null: config.buttons;
+
         let request = new XMLHttpRequest();
         request.open("GET",`/${page}/static/locale/` + locale + ".json", false);
         request.send(null);
@@ -13,6 +22,7 @@ class CustomDataTable {
         this._toggle = null;
 
         let datatable_config = {
+            //"bInfo": true,
             "bStateSave": true,
             "autoWidth": false,
             "responsive": true,
@@ -20,6 +30,11 @@ class CustomDataTable {
                 "url": "/static/locale/datatable_" + locale + ".json"
             }
         };
+
+        if (buttons != null) {
+            datatable_config['dom'] = "Blfrtip";
+            datatable_config['buttons'] = buttons;
+        }
 
         if (columnDefs != null) {
             datatable_config['columnDefs'] = columnDefs;
@@ -43,8 +58,10 @@ class CustomDataTable {
         });
 
         if (addToggle) {
-            this._toggle = new ToggleVisualization(
+             this._toggle = new ToggleVisualization(
                 'toggle-visualization', 'list', 'thumbnails', true, columnWidth);
+        } else {
+
         }
     }
 
@@ -64,18 +81,26 @@ class CustomDataTable {
 
     _update(response) {
         Page.setLoading(false);
-        let thumbnail = document.getElementById(`thumbnails_row_${ this._selected_id }`);
-        thumbnail.parentElement.removeChild(thumbnail);
+
+        if (this._toggle) {
+            let thumbnail = document.getElementById(`thumbnails_row_${ this._selected_id }`);
+            thumbnail.parentElement.removeChild(thumbnail);
+        }
 
         let table_element = document.getElementById(`table_row_${ this._selected_id }`);
         if (!table_element) {
-            this._toggle.isDirty();
+            if (this._toggle) {
+                this._toggle.isDirty();
+            }
         } else {
             this._table.row(table_element).remove().draw();
         }
 
         this._selected_id = null;
         Page.showSuccess(response.message);
-        this._toggle.update();
+
+        if (this._toggle) {
+            this._toggle.update();
+        }
     }
 }
