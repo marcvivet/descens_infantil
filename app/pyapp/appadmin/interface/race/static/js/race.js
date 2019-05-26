@@ -88,7 +88,7 @@ class ViewParticipantsPageRow extends PageRow {
         "className": "center-element"
       },
       {
-        "targets": [4, 5, 6, 7, 8, 9, 10],
+        "targets": [4, 5, 6, 7, 8, 9],
         "searchable": false,
         "sortable": true,
         "className": "center-element"
@@ -105,12 +105,12 @@ class ViewParticipantsPageRow extends PageRow {
       {"width": "50px"},  // 06 - category
       {"width": "50px"},  // 07 - penalized
       {"width": "50px"},  // 08 - status
-      {"width": "125px"}, // 09 - time
-      {"width": "125px"}  // 10 - final time
+      {"width": "125px"} // 09 - time
+      //{"width": "125px"}  // 10 - final time
     ];
 
     let exportOptions = {
-      columns: [1, 2, 5, 6, 7, 8, 9, 10]
+      columns: [1, 2, 5, 6, 7, 8, 9]
     }
 
     let buttons = [{
@@ -233,10 +233,46 @@ class ViewParticipantsPageRow extends PageRow {
       });
   }
 
+  getStatus(disqualified, not_arrived, not_come_out) {
+    let status = `${this._locale.race.participant_ok}`;
+
+    if (disqualified) {
+      status = `${this._locale.race.participant_disqualified}`;
+    }
+
+    if (not_arrived) {
+      status = `${this._locale.race.participant_not_arrived}`;
+    }
+
+    if (not_come_out) {
+      status = `${this._locale.race.participant_not_come_out}`;
+    }
+
+    return status;
+  }
+
+  splitStatus(status) {
+    let disqualified = false;
+    let not_arrived = false;
+    let not_come_out = false;
+
+    if (status == `${this._locale.race.participant_disqualified}`) {
+      disqualified = true;
+    }
+
+    if (status == `${this._locale.race.participant_not_arrived}`) {
+      not_arrived = true;
+    }
+
+    if (status == `${this._locale.race.participant_not_come_out}`) {
+      not_come_out = true;
+    }
+
+    return [disqualified, not_arrived, not_come_out];
+  }
+
   genRaceStatus(disqualified, not_arrived, not_come_out) {
     let status = `<span class="label label-success">${this._locale.race.participant_ok}</span>`;
-
-    console.log(not_come_out);
 
     if (disqualified) {
       status = `<span class="label label-danger">${this._locale.race.participant_disqualified}</span>`;
@@ -272,14 +308,14 @@ class ViewParticipantsPageRow extends PageRow {
     let innerHtml = `<td>
         <table class="table-buttons" id="actions_${id}">
           <tr>
-            <td>
-              <button type="button" onclick="clickOnEdit('${id}');"
+            <td id="button_1_${id}">
+              <button type="button" tooltip="${this._locale.race.tooltip_edit}" tooltip-position="bottom" onclick="clickOnEdit('${id}');"
                       class="btn btn-primary btn-xs">
                 <i class="fa fa-edit"> </i>
               </button>
             </td>
-            <td>
-              <button type="button" onclick="clickOnDelete('${id}');"
+            <td id="button_2_${id}">
+              <button type="button" tooltip="${this._locale.race.tooltip_delete}" tooltip-position="bottom" onclick="clickOnDelete('${id}');"
                       class="btn btn-danger btn-xs">
                 <i class="fa fa-remove"> </i>
               </button>
@@ -296,20 +332,83 @@ class ViewParticipantsPageRow extends PageRow {
       <td id="penalized_${id}">${penalized}</td>
       <td id="status_${id}">${status}</td>
       <td id="time_${id}">${participant.time}</td>
-      <td id="time_final_${id}">${participant.time_final}</td>
     `;
+
+    //<!--<td id="time_final_${id}">${participant.time_final}</td>-->
 
     tr.innerHTML = innerHtml;
     return tr;
   }
 
-  clickOnEdit(id) {
+  restoreRow(id) {
+    let participant = this._participants_data[id];
+
+    let button1Td = document.getElementById(`button_1_${id}`);
+    button1Td.innerHTML = `
+      <button type="button" tooltip="${this._locale.race.tooltip_edit}" tooltip-position="bottom" onclick="clickOnEdit('${id}');"
+              class="btn btn-primary btn-xs">
+        <i class="fa fa-edit"> </i>
+      </button>`;
+
+    let button2Td = document.getElementById(`button_2_${id}`);
+    button2Td.innerHTML = `
+    <button type="button" tooltip="${this._locale.race.tooltip_delete}" tooltip-position="bottom" onclick="clickOnDelete('${id}');"
+            class="btn btn-danger btn-xs">
+      <i class="fa fa-remove"> </i>
+    </button>`;
+
+    document.getElementById(`surnames_${id}`).innerHTML = participant.surnames;
+    document.getElementById(`name_${id}`).innerHTML = participant.name;
+    document.getElementById(`club_name_${id}`).innerHTML = participant.club_name;
+    document.getElementById(`birthday_${id}`).innerHTML = participant.birthday;
+    document.getElementById(`bib_number_${id}`).innerHTML = participant.bib_number;
+
+    let penalized = '<span class="hidden">0</span>';
+    if (participant.penalized == 1) {
+      penalized = '<span class="glyphicon glyphicon-remove text-danger" /><span class="hidden">1</span>'
+    }
+    document.getElementById(`penalized_${id}`).innerHTML = penalized;
+
+    document.getElementById(`status_${id}`).innerHTML = this.genRaceStatus(
+      participant.disqualified, participant.not_arrived, participant.not_come_out);
+    document.getElementById(`time_${id}`).innerHTML = participant.time;
+  }
+
+  saveRow(id) {
+    let data = {
+      surname: document.getElementById(`form_surnames_${id}`).value,
+      name: document.getElementById(`form_name_${id}`).value/*,
+
+      club_id: document.getElementById(`form_club_${id}`).innerHTML = participant.club_name;
+    document.getElementById(`birthday_${id}`).innerHTML = participant.birthday;
+    document.getElementById(`bib_number_${id}`).innerHTML = participant.bib_number;
+     */
+    };
+  }
+
+  editRow(id) {
+    let participant = this._participants_data[id];
+
+    let button1Td = document.getElementById(`button_1_${id}`);
+    button1Td.innerHTML = `
+    <button type="button" tooltip="${this._locale.race.tooltip_save}" tooltip-position="bottom" onclick="clickOnSave('${id}');"
+      class="btn btn-success btn-xs">
+      <i class="fa fa-save"> </i>
+    </button>`;
+
+    let button2Td = document.getElementById(`button_2_${id}`);
+    button2Td.innerHTML = `
+    <button type="button" tooltip="${this._locale.race.tooltip_cancel}" tooltip-position="bottom" onclick="clickOnCancel('${id}');"
+      class="btn btn-warning btn-xs">
+      <i class="fa fa-undo"> </i>
+    </button>`;
+
     // SURNAMES
     let surnamesTd = document.getElementById(`surnames_${id}`);
-    let surnamesValue = surnamesTd.innerText;
+    let surnamesValue = participant.surnames;
     surnamesTd.innerHTML = `
       <input
-        value=${surnamesValue}
+        value="${surnamesValue}"
         placeholder="${this._locale.race.place_holder_surnames}"
         id="form_surnames_${id}"
         class="form-control" style="width: 100%" data-validate-length-range="6"
@@ -317,7 +416,7 @@ class ViewParticipantsPageRow extends PageRow {
 
     // NAME
     let nameTd = document.getElementById(`name_${id}`);
-    let nameValue = nameTd.innerText;
+    let nameValue = participant.name;
     nameTd.innerHTML = `
       <input
         value=${nameValue}
@@ -332,7 +431,7 @@ class ViewParticipantsPageRow extends PageRow {
     selectClub.id = `form_club_${id}`;
     selectClub.classList.add('form-control');
     selectClub.style.width = '100%';
-    let currId = this._participants_data[id].club_id;
+    let currId = participant.club_id;
     this._clubs.forEach(element => {
       let option = document.createElement('option');
       option.value = element.id;
@@ -350,7 +449,7 @@ class ViewParticipantsPageRow extends PageRow {
 
     // BIRTHDAY
     let birthdayTd = document.getElementById(`birthday_${id}`);
-    let birthdayValue = birthdayTd.innerText;
+    let birthdayValue = participant.birthday;
     birthdayTd.innerHTML = `
       <input
         value=${birthdayValue}
@@ -378,7 +477,7 @@ class ViewParticipantsPageRow extends PageRow {
 
     // BIB NUMBER
     let bib_numberTd = document.getElementById(`bib_number_${id}`);
-    let bib_numberValue = bib_numberTd.innerText;
+    let bib_numberValue = participant.bib_number;
     bib_numberTd.innerHTML = `
       <input
         value=${bib_numberValue}
@@ -389,7 +488,6 @@ class ViewParticipantsPageRow extends PageRow {
 
     // PENALIZED
     let penalized_Td = document.getElementById(`penalized_${id}`);
-    let penalized_Value = penalized_Td.innerText;
     penalized_Td.innerHTML = `
       <input id="form_penalized_${id}" type="checkbox" data-toggle="toggle"
       data-on="${ this._locale.race.yes }" data-off="${ this._locale.race.no }"
@@ -418,15 +516,22 @@ class ViewParticipantsPageRow extends PageRow {
     selectStatus.classList.add('form-control');
     selectStatus.style.width = '125px';
 
+    let currStatus = this.getStatus(
+      participant.disqualified, participant.not_arrived, participant.not_come_out);
+
+    console.log(currStatus);
+
     let status = [
       this._locale.race.participant_ok, this._locale.race.participant_disqualified,
       this._locale.race.participant_not_arrived, this._locale.race.participant_not_come_out];
+
+    console.log(participant);
 
     status.forEach(element => {
       let option = document.createElement('option');
       option.text = element;
 
-      if (statusTd.innerText == element) {
+      if (currStatus == element) {
         option.selected = true;
       }
 
@@ -438,7 +543,7 @@ class ViewParticipantsPageRow extends PageRow {
 
     // TIME
     let timeTd = document.getElementById(`time_${id}`);
-    let timeValue = timeTd.innerText;
+    let timeValue = participant.time;
     const regex = /^(\d\d):(\d\d).(\d\d)/gm;
 
     let m;
@@ -477,22 +582,20 @@ class ViewParticipantsPageRow extends PageRow {
     }
 
     timeTd.innerHTML = `<div class="div-time-small">
-      <input type="number" min="0" max="59" value="${minutes}"    placeholder="00" onfocus="this.select();" onkeypress="removeZerosTime(this)" onkeyup="changeTime(this)" onchange="changeTime(this)">:
-      <input type="number" min="0" max="59" value="${seconds}"    placeholder="00" onfocus="this.select();" onkeypress="removeZerosTime(this)" onkeyup="changeTime(this)" onchange="changeTime(this)">.
-      <input type="number" min="0" max="99" value="${centesimal}" placeholder="00" onfocus="this.select();" onkeypress="removeZerosTime(this)" onkeyup="changeTime(this)" onchange="changeTime(this)">
+      <span tooltip="${this._locale.race.tooltip_minutes}" tooltip-position='bottom' class="input">
+        <input id="time_minutes_${id}" type="number" min="0" max="59" value="${minutes}" placeholder="00" onfocus="this.select();" onkeypress="removeZerosTime(this)" onkeyup="changeTime(this)" onchange="changeTime(this)">
+      </span>:
+      <span tooltip="${this._locale.race.tooltip_seconds}" tooltip-position='bottom' class="input">
+        <input id="time_seconds_${id}" type="number" min="0" max="59" value="${seconds}"    placeholder="00" onfocus="this.select();" onkeypress="removeZerosTime(this)" onkeyup="changeTime(this)" onchange="changeTime(this)">
+      </span>.
+      <span tooltip="${this._locale.race.tooltip_hundredths}" of a second' tooltip-position='bottom' class="input">
+        <input id="time_hundredths_${id}" type="number" min="0" max="99" value="${centesimal}" placeholder="00" onfocus="this.select();" onkeypress="removeZerosTime(this)" onkeyup="changeTime(this)" onchange="changeTime(this)">
+      </span>
     </div>`;
-
-    // timeTd.innerHTML = `
-    //   <input
-    //     value=${timeValue}
-    //     placeholder="${this._locale.race.place_time_number}"
-    //     id="form_time_${id}"
-    //     class="form-control" style="width: 100%"
-    //     required="required" type="time" step="0.01" max="23">`;
   }
 
   clickOnDelete(id) {
-    console.log(`Delete ${id}`)
+    this._datatable.clickOnDelete(id);
   }
 }
 
@@ -523,50 +626,17 @@ function clickOnDelete(id) {
 }
 
 function clickOnEdit(id) {
-  row_participants.clickOnEdit(id);
+  row_participants.editRow(id);
+}
+
+function clickOnSave(id) {
+  row_participants.saveRow(id);
+}
+
+function clickOnCancel(id) {
+  row_participants.restoreRow(id);
 }
 
 function setupPage(locale) {
-
   row_participants = new ViewParticipantsPageRow(locale);
-
-
-
-
-
-  //mainDiv.classList.remove('hidden');
-
-  /*
-  let columnDefs = [
-      {
-          "targets": [7],
-          "searchable": false,
-          "sortable": false
-      },
-      {
-          "targets": [0, 1],
-          "searchable": false,
-          "sortable": false,
-          "className": "center-element"
-      },
-      {
-          "targets": [2, 3, 4],
-          "className": "center-element"
-      }
-  ];
-
-  let columnsStyle = [
-      { "width": "50px" },
-      { "width": "60px" },
-      { "width": "70px" },
-      { "width": "70px" },
-      { "width": "70px" },
-      { "width": "20%" },
-      { "width": "20%" },
-      { "width": "60%" },
-  ];
-
-  let order = [[ 5, "asc" ], [ 6, "asc" ]];
-
-  datatable = new CustomDataTable('organizers', locale, add_toogle, columnDefs, columnsStyle, order, 470);*/
 }

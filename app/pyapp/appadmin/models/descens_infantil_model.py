@@ -613,3 +613,12 @@ class EditionParticipant(db.Model):
         self.desqualified = False
         self.not_arrived = False
         self.not_came_out = True
+
+    @staticmethod
+    def delete(participant_id, edition_id):
+        sql_query = "DELETE " \
+                    "FROM edition_participants " \
+                    f"WHERE edition_id = {edition_id} AND participant_id = {participant_id}"
+        
+        query = db.session.execute(sql_query)
+        db.commit()

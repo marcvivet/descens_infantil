@@ -87,3 +87,7 @@
     text-align: center;
     width: 35px;
 }
+
+.div-time-small input:hover {
+    color: black;
+}

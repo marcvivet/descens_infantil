@@ -1,6 +1,6 @@
 {
     "are_you_sure": "Are you sure?",
-    "warning_message": "Deleting a organizer will alter the data from other tables.",
+    "warning_message": "You are about to delete a participant and the changes will be permanent.",
     "cancel": "Cancel",
     "proceed": "Proceed"
 }
