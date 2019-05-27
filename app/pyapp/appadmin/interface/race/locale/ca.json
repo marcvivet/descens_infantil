@@ -30,7 +30,11 @@
     "yes": "Yes",
     "no": "No",
     "delete_successful": "Participant {} deleted successfully",
-    "can_not_delete": "Can not delete participant with id {} on edition {}",
+    "participant_updated": "Participant {} {} updated correctly",
+    "race": "Race",
+    "enter_times": "Enter Times",
+    "list_participants": "List Participants",
+    "results": "Results",
 
     "edit": "Edit",
     "delete": "Delete",

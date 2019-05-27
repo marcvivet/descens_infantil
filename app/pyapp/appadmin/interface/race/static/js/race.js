@@ -3,17 +3,19 @@ let datatable = null;
 
 class ViewParticipantsPageRow extends PageRow {
 
-  constructor(locale_id) {
+  constructor(locale_id, page_type) {
     super({
       title: "none",
       rowId: 'participants_row'
     });
 
+    this._page_type = page_type;
     this._participants_data = null;
     this._template = document.getElementById('list').innerHTML;
     this._locale_id = locale_id;
     this._datatable = null;
     this._clubs = null;
+    this._clubs_lut = null;
 
     Page.httpRequest({
       action: "get_locale",
@@ -25,6 +27,10 @@ class ViewParticipantsPageRow extends PageRow {
       action: "get_clubs",
     }, `/race/communicate`, (response) => {
       this._clubs = response.data;
+      this._clubs_lut = {};
+      for (let i = 0; i < this._clubs.length; ++i) {
+        this._clubs_lut[this._clubs[i].id] = this._clubs[i].name;
+      }
     });
 
     this._page = new Page();
@@ -77,40 +83,46 @@ class ViewParticipantsPageRow extends PageRow {
 
   setLocale(locale) {
     this._locale = locale;
-    this.title = this._locale.race.participants_for_edition + this.editionYear;
+    this.title = this._locale.race[this._page_type] + ' ' + this.editionYear;
   }
 
-  createTable(id) {
-    let columnDefs = [{
-        "targets": [0],
+  createTable() {
+    if (this._page_type == 'results') {
+      this.createTableResults();
+    } else {
+      this.createTableDefault();
+    }
+  }
+
+  createTableResults() {
+    let columnDefs = [
+      {
+        "targets": [3, 5, 6, 7, 8],
         "searchable": false,
-        "sortable": false,
+        "sortable": true,
         "className": "center-element"
       },
       {
-        "targets": [4, 5, 6, 7, 8, 9],
-        "searchable": false,
-        "sortable": true,
+        "targets": [4],
         "className": "center-element"
       }
     ];
 
     let columnsStyle = [
-      {"width": "50px"},  // 00 - actions
-      {"width": "20%"},   // 01 - surnames
-      {"width": "15%"},   // 02 - name
-      {"width": "25%"},   // 03 - club name
-      {"width": "100px"}, // 04 - birthday
-      {"width": "50px"},  // 05 - bib number
-      {"width": "50px"},  // 06 - category
-      {"width": "50px"},  // 07 - penalized
-      {"width": "50px"},  // 08 - status
-      {"width": "125px"} // 09 - time
-      //{"width": "125px"}  // 10 - final time
+      {"width": "20%"},    // 00 - surnames
+      {"width": "15%"},    // 01 - name
+      {"width": "25%"},    // 02 - club name
+      {"width": "100px"},  // 03 - birthday
+      {"width": "50px"},   // 04 - bib number
+      {"width": "50px"},   // 05 - category
+      {"width": "50px"},   // 06 - penalized
+      {"width": "50px"},   // 07 - status
+      {"width": "125px"},  // 08 - time
+      {"width": "125px"}   // 09 - final time
     ];
 
     let exportOptions = {
-      columns: [1, 2, 5, 6, 7, 8, 9]
+      columns: [0, 1, 4, 5, 6, 7, 8, 9]
     }
 
     let buttons = [{
@@ -151,7 +163,57 @@ class ViewParticipantsPageRow extends PageRow {
     ];
 
     let order = [
-      [6, "asc"]
+      [4, "asc"]
+    ];
+
+    this._datatable = new CustomDataTable({
+      page: 'race',
+      locale: this._locale_id,
+      columnDefs: columnDefs,
+      columnsStyle: columnsStyle,
+      order: order,
+      buttons: buttons
+    });
+
+    this.title = this._locale.race.participants_for_edition + this.editionYear;
+  }
+
+  createTableDefault() {
+    let columnDefs = [{
+        "targets": [0],
+        "searchable": false,
+        "sortable": false,
+        "className": "center-element"
+      },
+      {
+        "targets": [5],
+        "className": "center-element"
+      },
+      {
+        "targets": [4, 6, 7, 8, 9],
+        "searchable": false,
+        "sortable": true,
+        "className": "center-element"
+      }
+    ];
+
+    let columnsStyle = [
+      {"width": "50px"},  // 00 - actions
+      {"width": "20%"},   // 01 - surnames
+      {"width": "15%"},   // 02 - name
+      {"width": "25%"},   // 03 - club name
+      {"width": "100px"}, // 04 - birthday
+      {"width": "50px"},  // 05 - bib number
+      {"width": "50px"},  // 06 - category
+      {"width": "50px"},  // 07 - penalized
+      {"width": "50px"},  // 08 - status
+      {"width": "125px"} // 09 - time
+    ];
+
+    let buttons = null;
+
+    let order = [
+      [5, "asc"]
     ];
 
     this._datatable = new CustomDataTable({
@@ -305,8 +367,10 @@ class ViewParticipantsPageRow extends PageRow {
       penalized = '<span class="glyphicon glyphicon-remove text-danger" /><span class="hidden">1</span>'
     }
 
-    let innerHtml = `<td>
-        <table class="table-buttons" id="actions_${id}">
+    let innerHtml = '';
+
+    if (this._page_type != 'results') {
+      innerHtml += `<td><table class="table-buttons" id="actions_${id}">
           <tr>
             <td id="button_1_${id}">
               <button type="button" tooltip="${this._locale.race.tooltip_edit}" tooltip-position="bottom" onclick="clickOnEdit('${id}');"
@@ -322,7 +386,10 @@ class ViewParticipantsPageRow extends PageRow {
             </td>
           </tr>
         </table>
-      </td>
+        </td>`;
+    }
+
+    innerHtml += `
       <td id="surnames_${id}">${participant.surnames}</td>
       <td id="name_${id}">${participant.name}</td>
       <td id="club_name_${id}">${participant.club_name}</td>
@@ -331,10 +398,11 @@ class ViewParticipantsPageRow extends PageRow {
       <td id="category_${id}">${participant.category}</td>
       <td id="penalized_${id}">${penalized}</td>
       <td id="status_${id}">${status}</td>
-      <td id="time_${id}">${participant.time}</td>
-    `;
+      <td id="time_${id}">${participant.time}</td>`;
 
-    //<!--<td id="time_final_${id}">${participant.time_final}</td>-->
+    if (this._page_type == 'results') {
+      innerHtml += `<td id="time_final_${id}">${participant.time_final}</td>`;
+    }
 
     tr.innerHTML = innerHtml;
     return tr;
@@ -375,15 +443,75 @@ class ViewParticipantsPageRow extends PageRow {
   }
 
   saveRow(id) {
-    let data = {
-      surname: document.getElementById(`form_surnames_${id}`).value,
-      name: document.getElementById(`form_name_${id}`).value/*,
+    let elements = document.getElementsByName(`form_${id}`);
 
-      club_id: document.getElementById(`form_club_${id}`).innerHTML = participant.club_name;
-    document.getElementById(`birthday_${id}`).innerHTML = participant.birthday;
-    document.getElementById(`bib_number_${id}`).innerHTML = participant.bib_number;
-     */
+    for (let i = 0; i < elements.length; ++i) {
+      elements[i].disabled = true;
+    }
+
+    let participant = this._participants_data[id];
+
+    let club_select = document.getElementById(`form_club_${id}`);
+    let status_select = document.getElementById(`form_status_${id}`);
+
+    let status = status_select.options[status_select.selectedIndex].value;
+    let disqualified;
+    let not_arrived;
+    let not_come_out;
+
+    [disqualified, not_arrived, not_come_out] = this.splitStatus(status);
+
+    let data = {
+      participant_id: parseInt(participant.id),
+      edition_id: parseInt(participant.edition_id),
+      surnames: document.getElementById(`form_surnames_${id}`).value,
+      name: document.getElementById(`form_name_${id}`).value,
+      club_id: parseInt(club_select.options[club_select.selectedIndex].value),
+      birthday: document.getElementById(`form_birthday_${id}`).value,
+      bib_number: parseInt(document.getElementById(`form_bib_number_${id}`).value),
+      penalized: document.getElementById(`form_penalized_${id}`).checked,
+      disqualified: disqualified,
+      not_arrived: not_arrived, 
+      not_come_out: not_come_out,
+      category: parseInt(document.getElementById(`category_${id}`).innerText),
+      minutes: parseInt(document.getElementById(`time_minutes_${id}`).value),
+      seconds: parseInt(document.getElementById(`time_seconds_${id}`).value),
+      hundreds: parseInt(document.getElementById(`time_hundredths_${id}`).value)
     };
+
+    Page.httpRequest({
+      action: "update_participant",
+      participant_data: data
+    }, `/race/communicate`, ((participantId, participantData) => {
+      return (response) => {
+        Number.prototype.pad = function(size) {
+          var s = String(this);
+          while (s.length < (size || 2)) {s = "0" + s;}
+          return s;
+        }
+
+        this._participants_data[id].surnames = participantData.surnames;
+        this._participants_data[id].name = participantData.name;
+        this._participants_data[id].club_id = participantData.club_id;
+        this._participants_data[id].club_name = this._clubs_lut[participantData.club_id];
+        this._participants_data[id].birthday = participantData.birthday;
+        this._participants_data[id].bib_number = participantData.bib_number;
+        this._participants_data[id].penalized = participantData.penalized;
+        this._participants_data[id].disabled = participantData.disqualified;
+        this._participants_data[id].not_arrived = participantData.not_arrived;
+        this._participants_data[id].not_come_out = participantData.not_come_out;
+        this._participants_data[id].category = participantData.category;
+        this._participants_data[id].time = `${participantData.minutes.pad()}:${participantData.seconds.pad()}.${participantData.hundreds.pad()}`;
+        Page.showSuccess(response.message);
+        this.restoreRow(id)
+      }
+    })(id, data), (status, responseText) => {
+      Page.showError(responseText);
+      let elements = document.getElementsByName(`form_${id}`);
+      for (let i = 0; i < elements.length; ++i) {
+        elements[i].disabled = false;
+      }
+    });
   }
 
   editRow(id) {
@@ -391,14 +519,14 @@ class ViewParticipantsPageRow extends PageRow {
 
     let button1Td = document.getElementById(`button_1_${id}`);
     button1Td.innerHTML = `
-    <button type="button" tooltip="${this._locale.race.tooltip_save}" tooltip-position="bottom" onclick="clickOnSave('${id}');"
+    <button name="form_${id}" type="button" tooltip="${this._locale.race.tooltip_save}" tooltip-position="bottom" onclick="clickOnSave('${id}');"
       class="btn btn-success btn-xs">
       <i class="fa fa-save"> </i>
     </button>`;
 
     let button2Td = document.getElementById(`button_2_${id}`);
     button2Td.innerHTML = `
-    <button type="button" tooltip="${this._locale.race.tooltip_cancel}" tooltip-position="bottom" onclick="clickOnCancel('${id}');"
+    <button name="form_${id}" type="button" tooltip="${this._locale.race.tooltip_cancel}" tooltip-position="bottom" onclick="clickOnCancel('${id}');"
       class="btn btn-warning btn-xs">
       <i class="fa fa-undo"> </i>
     </button>`;
@@ -407,7 +535,7 @@ class ViewParticipantsPageRow extends PageRow {
     let surnamesTd = document.getElementById(`surnames_${id}`);
     let surnamesValue = participant.surnames;
     surnamesTd.innerHTML = `
-      <input
+      <input name="form_${id}"
         value="${surnamesValue}"
         placeholder="${this._locale.race.place_holder_surnames}"
         id="form_surnames_${id}"
@@ -418,7 +546,7 @@ class ViewParticipantsPageRow extends PageRow {
     let nameTd = document.getElementById(`name_${id}`);
     let nameValue = participant.name;
     nameTd.innerHTML = `
-      <input
+      <input name="form_${id}"
         value=${nameValue}
         placeholder="${this._locale.race.place_holder_name}"
         id="form_name_${id}"
@@ -429,6 +557,7 @@ class ViewParticipantsPageRow extends PageRow {
     let clubTd = document.getElementById(`club_name_${id}`);
     let selectClub = document.createElement('select');
     selectClub.id = `form_club_${id}`;
+    selectClub.name = `form_${id}`;
     selectClub.classList.add('form-control');
     selectClub.style.width = '100%';
     let currId = participant.club_id;
@@ -451,7 +580,7 @@ class ViewParticipantsPageRow extends PageRow {
     let birthdayTd = document.getElementById(`birthday_${id}`);
     let birthdayValue = participant.birthday;
     birthdayTd.innerHTML = `
-      <input
+      <input name="form_${id}"
         value=${birthdayValue}
         placeholder="${this._locale.race.place_holder_birthday}"
         id="form_birthday_${id}"
@@ -479,7 +608,7 @@ class ViewParticipantsPageRow extends PageRow {
     let bib_numberTd = document.getElementById(`bib_number_${id}`);
     let bib_numberValue = participant.bib_number;
     bib_numberTd.innerHTML = `
-      <input
+      <input name="form_${id}"
         value=${bib_numberValue}
         placeholder="${this._locale.race.place_holder_bib_number}"
         id="form_bib_number_${id}"
@@ -489,7 +618,7 @@ class ViewParticipantsPageRow extends PageRow {
     // PENALIZED
     let penalized_Td = document.getElementById(`penalized_${id}`);
     penalized_Td.innerHTML = `
-      <input id="form_penalized_${id}" type="checkbox" data-toggle="toggle"
+      <input name="form_${id}" id="form_penalized_${id}" type="checkbox" data-toggle="toggle"
       data-on="${ this._locale.race.yes }" data-off="${ this._locale.race.no }"
       data-onstyle="danger" data-offstyle="default" data-size="small">`;
 
@@ -513,19 +642,16 @@ class ViewParticipantsPageRow extends PageRow {
     let statusTd = document.getElementById(`status_${id}`);
     let selectStatus = document.createElement('select');
     selectStatus.id = `form_status_${id}`;
+    selectStatus.name = `form_${id}`;
     selectStatus.classList.add('form-control');
     selectStatus.style.width = '125px';
 
     let currStatus = this.getStatus(
       participant.disqualified, participant.not_arrived, participant.not_come_out);
 
-    console.log(currStatus);
-
     let status = [
       this._locale.race.participant_ok, this._locale.race.participant_disqualified,
       this._locale.race.participant_not_arrived, this._locale.race.participant_not_come_out];
-
-    console.log(participant);
 
     status.forEach(element => {
       let option = document.createElement('option');
@@ -583,13 +709,13 @@ class ViewParticipantsPageRow extends PageRow {
 
     timeTd.innerHTML = `<div class="div-time-small">
       <span tooltip="${this._locale.race.tooltip_minutes}" tooltip-position='bottom' class="input">
-        <input id="time_minutes_${id}" type="number" min="0" max="59" value="${minutes}" placeholder="00" onfocus="this.select();" onkeypress="removeZerosTime(this)" onkeyup="changeTime(this)" onchange="changeTime(this)">
+        <input name="form_${id}" id="time_minutes_${id}" type="number" min="0" max="59" value="${minutes}" placeholder="00" onfocus="this.select();" onkeypress="removeZerosTime(this)" onkeyup="changeTime(this)" onchange="changeTime(this)">
       </span>:
       <span tooltip="${this._locale.race.tooltip_seconds}" tooltip-position='bottom' class="input">
-        <input id="time_seconds_${id}" type="number" min="0" max="59" value="${seconds}"    placeholder="00" onfocus="this.select();" onkeypress="removeZerosTime(this)" onkeyup="changeTime(this)" onchange="changeTime(this)">
+        <input name="form_${id}" id="time_seconds_${id}" type="number" min="0" max="59" value="${seconds}"    placeholder="00" onfocus="this.select();" onkeypress="removeZerosTime(this)" onkeyup="changeTime(this)" onchange="changeTime(this)">
       </span>.
       <span tooltip="${this._locale.race.tooltip_hundredths}" of a second' tooltip-position='bottom' class="input">
-        <input id="time_hundredths_${id}" type="number" min="0" max="99" value="${centesimal}" placeholder="00" onfocus="this.select();" onkeypress="removeZerosTime(this)" onkeyup="changeTime(this)" onchange="changeTime(this)">
+        <input name="form_${id}" id="time_hundredths_${id}" type="number" min="0" max="99" value="${centesimal}" placeholder="00" onfocus="this.select();" onkeypress="removeZerosTime(this)" onkeyup="changeTime(this)" onchange="changeTime(this)">
       </span>
     </div>`;
   }
@@ -637,6 +763,6 @@ function clickOnCancel(id) {
   row_participants.restoreRow(id);
 }
 
-function setupPage(locale) {
-  row_participants = new ViewParticipantsPageRow(locale);
+function setupPage(locale, page_type) {
+  row_participants = new ViewParticipantsPageRow(locale, page_type);
 }

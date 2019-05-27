@@ -25,15 +25,15 @@
       <h3>{{ locale.base.general }}</h3>
       <ul class="nav side-menu">
 
-        <li><a><i class="fa fa-trophy"></i>Carrera <span class="fa fa-chevron-down"></span></a>
+        {% if current_user.has_page(['race']) %}
+        <li><a><i class="fa fa-trophy"></i>{{ locale.race.race }} <span class="fa fa-chevron-down"></span></a>
           <ul class="nav child_menu">
-            <li><a href="/race/view">Introduïr Temps</a></li>
-            <li><a href="/race/view">LListar participants</a></li>
-            <li><a href="/race/add">Resultats</a></li>
-            <li><a href="/race/add">Estadístiques</a></li>
+            <li><a href="/race/enter_times">{{ locale.race.enter_times }}</a></li>
+            <li><a href="/race/list_participants">{{ locale.race.list_participants }}</a></li>
+            <li><a href="/race/results">{{ locale.race.results }}</a></li>
           </ul>
         </li>
-
+        {% endif %}
         {% if current_user.has_page(['organizers']) %}
         <li><a><i class="fa fa-sitemap"></i>{{ locale.organizers.organizers }} <span class="fa fa-chevron-down"></span></a>
           <ul class="nav child_menu">

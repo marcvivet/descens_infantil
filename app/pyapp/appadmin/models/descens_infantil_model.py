@@ -208,6 +208,31 @@ class Participant(db.Model):
     def __repr__(self):
         return f'<Participant: [{self.id}, {self.name}, {self.surnames}, {self.birthday}]>'
 
+    def set_data(
+            self, name: str = None, surnames: str = None, birthday: date = None,
+            picture: str = None):
+        if name:
+            self.name = name.strip().title()
+
+        if surnames:
+            all_surnames = surnames.strip().title().split(' ')
+            all_surnames = [surname for surname in all_surnames if surname != '']
+            self.surnames = ' '.join(all_surnames)
+
+        if birthday:
+            if isinstance(birthday, str):
+                birthday = datetime.strptime(birthday, '%Y-%m-%d').date()
+            self.birthday = birthday
+
+        if picture:
+            self.picture = picture
+
+        self.hash = int(
+            hashlib.sha256(
+                f'{unidecode(self.name)}_{unidecode(self.surnames)}_'\
+                    f'{self.birthday.strftime("%Y-%m-%d")}'.encode(
+                    'utf-8')).hexdigest(), 16) % (2 ** 63)
+
     @property
     def updated(self):
         if self.time_updated:
@@ -613,6 +638,9 @@ class EditionParticipant(db.Model):
         self.desqualified = False
         self.not_arrived = False
         self.not_came_out = True
+
+    def set_time(self, minutes: int, seconds: int, hundredths: int):
+        self.time = time(0, minutes, seconds, hundredths * 10000)
 
     @staticmethod
     def delete(participant_id, edition_id):

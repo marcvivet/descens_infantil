@@ -25,11 +25,28 @@ blp = Blueprint(
 )
 
 
-@blp.route('/view', methods=['GET', 'POST'])
+@blp.route('/enter_times', methods=['GET', 'POST'])
 @roles_required_online(blp)
-def view():
+def enter_times():
+    page_type = 'enter_times'
     editions = Edition.get_editions()
-    return render_template('participant_view.html', **locals())
+    return render_template('race.html', **locals())
+
+
+@blp.route('/list_participants', methods=['GET', 'POST'])
+@roles_required_online(blp)
+def list_participants():
+    page_type = 'list_participants'
+    editions = Edition.get_editions()
+    return render_template('race.html', **locals())
+
+
+@blp.route('/results', methods=['GET', 'POST'])
+@roles_required_online(blp)
+def results():
+    page_type = 'results'
+    editions = Edition.get_editions()
+    return render_template('race.html', **locals())
 
 
 @blp.route('/communicate', methods=['POST'])
@@ -60,18 +77,32 @@ def communicate():
     if json_data['action'] == 'get_clubs':
         response['data'] = Club.get_clubs()
 
+    if json_data['action'] == 'update_participant':
+        data = json_data['participant_data']
+        edition_participant = db.query(
+            EditionParticipant).get([data['edition_id'], data['participant_id']])
+        edition_participant.set_time(data['minutes'], data['seconds'], data['hundreds'])
+        edition_participant.club_id = data['club_id']
+        edition_participant.penalized = data['penalized']
+        edition_participant.disqualified = data['disqualified']
+        edition_participant.not_arrived = data['not_arrived']
+        edition_participant.not_come_out = data['not_come_out']
+        edition_participant.category = data['category']
+
+        participant = edition_participant.participant
+        participant.set_data(data['name'], data['surnames'], data['birthday'])
+        db.commit()
+        response['message'] = locm.participant_updated.format(data['name'], data['surnames'])
+
     if json_data['action'] == 'delete':
         participant_id, edition_id = json_data['id'].split('_')
 
-        response['message'] = locm.can_not_delete.format(participant_id, edition_id)
         edition_participant = db.query(
             EditionParticipant).get([int(edition_id), int(participant_id)])
-        message_success = locm.delete_successful.format(
-            f'{edition_participant.participant.name} {edition_participant.participant.surnames}')
-
         db.delete(edition_participant)
         db.commit()
-        response['message'] = message_success
+        response['message'] = locm.delete_successful.format(
+            f'{edition_participant.participant.name} {edition_participant.participant.surnames}')
 
     response['elapsed_time'] = time() - start
     return Response(json.dumps(response), status=200)
