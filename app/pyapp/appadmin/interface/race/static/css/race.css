@@ -60,6 +60,7 @@
     transition: all var(--transition-time) ease-in-out;
 }
 
+.div-time-big,
 .div-time-small {
     box-shadow: rgba(0, 0, 0, 0.075) 0px 1px 1px 0px inset;
     color: rgb(85, 85, 85);
@@ -81,6 +82,7 @@
     color: #555;
 }
 
+.div-time-big input,
 .div-time-small input {
     border: none;
     color: rgb(85, 85, 85);
@@ -88,6 +90,66 @@
     width: 35px;
 }
 
+.div-time-big input:hover,
 .div-time-small input:hover {
     color: black;
+}
+
+.toolbar-button {
+    width: 150px;
+}
+
+@font-face {
+    font-family: bib_number;
+    /*src: url(../fonts/62DRAGZ.otf) format("opentype");*/
+    /*src: url(../fonts/pitstop-695c.ttf);*/
+    src: url(../fonts/JerseyLetters.ttf);
+}
+
+@font-face {
+    font-family: crono;
+    /*src: url(../fonts/62DRAGZ.otf) format("opentype");*/
+    /*src: url(../fonts/pitstop-695c.ttf);*/
+    src: url(../fonts/DigitalDismay.otf);
+}
+
+.bib_number {
+    font-family: bib_number;
+    font-size: 150px;
+    width: 100%;
+    color: black;
+    text-align: center;
+    margin-top: -50px;
+    margin-bottom: -20px;
+}
+.container-img-square-race {
+    position: relative; 
+    width: 100%;
+    height: 150px;
+    object-fit: contain;
+    align-content: center;
+  }
+  
+  .img-square-race {
+    width: 100%; /* or any custom size */
+    height: 100%; 
+    object-fit: contain;
+  }
+
+.club-info {
+    border: 1px solid rgb(204, 204, 204);
+    border-radius: 10px;
+    padding: 5px;
+}
+
+.div-time-big {
+    font: normal normal 400 normal 100px / 150px crono;
+    height: auto;
+    color: rgb(153, 0, 0)
+}
+
+.div-time-big input {
+    width: 110px;
+    color: rgb(153, 0, 0)
+
 }
