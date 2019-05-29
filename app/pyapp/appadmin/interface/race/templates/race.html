@@ -2,18 +2,19 @@
 endblock title %} {% block stylesheets %}
 {{ super() }}
 <link href="{{ url_for('static', filename='vendors/datatables.net-bs/css/dataTables.bootstrap.min.css') }}"
-      rel="stylesheet" />
+  rel="stylesheet" />
 <link href="{{ url_for('static', filename='vendors/datatables.net-buttons-bs/css/buttons.bootstrap.min.css') }}"
-      rel="stylesheet" />
+  rel="stylesheet" />
 <link href="{{ url_for('static', filename='vendors/datatables.net-fixedheader-bs/css/fixedHeader.bootstrap.min.css') }}"
-      rel="stylesheet" />
+  rel="stylesheet" />
 <link href="{{ url_for('static', filename='vendors/datatables.net-responsive-bs/css/responsive.bootstrap.min.css') }}"
-      rel="stylesheet" />
+  rel="stylesheet" />
 <link href="{{ url_for('static', filename='vendors/datatables.net-scroller-bs/css/scroller.bootstrap.min.css') }}"
-      rel="stylesheet" />
+  rel="stylesheet" />
 <link href="{{ url_for('static', filename='vendors/bootstrap-toggle/css/bootstrap-toggle.min.css') }}"
-      rel="stylesheet" />
-<link href="{{ url_for('static', filename='vendors/bootstrap-datepicker/dist/css/bootstrap-datepicker.min.css') }}" rel="stylesheet">
+  rel="stylesheet" />
+<link href="{{ url_for('static', filename='vendors/bootstrap-datepicker/dist/css/bootstrap-datepicker.min.css') }}"
+  rel="stylesheet">
 {% block extrastyles %}
 <link href="{{ url_for('race.static', filename='css/race.css') }}" rel="stylesheet" />
 {% endblock extrastyles %} {% endblock stylesheets %} {% block content %}
@@ -49,65 +50,53 @@ endblock title %} {% block stylesheets %}
       <div class="row">
         <div class="col-md-12 col-sm-12 col-xs-12">
           <div class="x_panel">
-            <div class="x_title">
-              <h2>Dades del participant</h2>
-              <ul class="nav navbar-right panel_toolbox">
-                <li>
-                  <div class="btn-toolbar" role="group">
-                    <button type="button" class="btn btn-default btn-lg toolbar-button">
-                      <span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span> Previous
-                    </button>
-                    <button type="button" class="btn btn-default btn-lg toolbar-button">
-                      Next <span class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span>
-                    </button>
-                  </div>
-                </li>
-              </ul>
-              <div class="clearfix"></div>
-            </div>
             <div class="x_content">
-              <div class="col-md-3 col-sm-3 col-xs-12 profile_left">
+              <div class="col-md-2 col-sm-2 col-xs-12 profile_left">
                 <div class="bib_number">
                   23
                 </div>
                 <div class="club-info">
                   <div class="container-img-square-race text-center">
-                      <img src="/static/images/clubs/CASTE.jpg?none" alt="" class="img-square-race">                   
+                    <img src="/static/images/clubs/CASTE.jpg?none" alt="" class="img-square-race">
                   </div>
                   <h4 class="text-center">Centre Exc. Castellar</h4>
                 </div>
-                <h3>Pepita Joselita</h3>
-
-                <ul class="list-unstyled user_data">
-                  <li><i class="fa fa-map-marker user-profile-icon"></i> Birthday: 2015-15-02
-                  </li>
-
-                  <li>
-                    <i class="fa fa-briefcase user-profile-icon"></i> Categoria: 1
-                  </li>
-                </ul>
               </div>
-              <div class="col-md-9 col-sm-9 col-xs-12">
-
+              <div class="col-md-10 col-sm-10 col-xs-12 profile_details">
                 <div class="profile_title">
                   <div class="col-md-6">
                     <h2>Pepita Joselita</h2>
                   </div>
-                </div>
-                <div>
-                  <div class="div-time-big">
-                    <span class="input">
-                      <input name="form__1" id="time_minutes_1" type="number" min="0" max="59" value="01" placeholder="00" onfocus="this.select();" onkeypress="removeZerosTime(this)" onkeyup="changeTime(this)" onchange="changeTime(this)">
-                    </span>:
-                    <span class="input">
-                      <input name="form__1" id="time_seconds_1" type="number" min="0" max="59" value="22"    placeholder="00" onfocus="this.select();" onkeypress="removeZerosTime(this)" onkeyup="changeTime(this)" onchange="changeTime(this)">
-                    </span>.
-                    <span class="input">
-                      <input name="form__1" id="time_hundredths__1" type="number" min="0" max="99" value="69" placeholder="00" onfocus="this.select();" onkeypress="removeZerosTime(this)" onkeyup="changeTime(this)" onchange="changeTime(this)">
-                    </span>
+                  <div class="col-md-6">
+                    <div class="btn-toolbar navbar-right" role="group">
+                      <button type="button" class="btn btn-default btn-lg toolbar-button">
+                        <span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span>
+                      </button>
+                      <button type="button" class="btn btn-default btn-lg toolbar-button">
+                        <span class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span>
+                      </button>
+                    </div>
                   </div>
-
-              
+                </div>
+                <div class="col-md-12 col-sm-12 col-xs-12">
+                  <div class="col-md-9 col-sm-9 col-xs-12 custom-div">
+                    <div class="div-time-big">
+                      <span class="input">
+                        <input name="form__1" id="time_minutes_1" type="number" min="0" max="59" value="01"
+                          placeholder="00" onfocus="this.select();" onkeypress="removeZerosTime(this)"
+                          onkeyup="changeTime(this)" onchange="changeTime(this)">
+                      </span>:
+                      <span class="input">
+                        <input name="form__1" id="time_seconds_1" type="number" min="0" max="59" value="22"
+                          placeholder="00" onfocus="this.select();" onkeypress="removeZerosTime(this)"
+                          onkeyup="changeTime(this)" onchange="changeTime(this)">
+                      </span>.
+                      <span class="input">
+                        <input name="form__1" id="time_hundredths__1" type="number" min="0" max="99" value="69"
+                          placeholder="00" onfocus="this.select();" onkeypress="removeZerosTime(this)"
+                          onkeyup="changeTime(this)" onchange="changeTime(this)">
+                      </span>
+                    </div>
                     <div class="checkbox">
                       <label>
                         <input type="checkbox" data-toggle="toggle">
@@ -131,63 +120,70 @@ endblock title %} {% block stylesheets %}
                         <input type="checkbox" data-toggle="toggle">
                         Option two is disabled
                       </label>
-       
+                    </div>
+                  </div>
+                  <div class="col-md-3 col-sm-3 col-xs-12">
+                    <ul class="list-group list-group-custom">
+                      <li class="list-group-item"><i class="fa fa-map-marker user-profile-icon"></i> Birthday: 2015-15-02</li>
+                      <li class="list-group-item"><i class="fa fa-briefcase user-profile-icon"></i> Categoria: 1</li>
+                    </ul>
                   </div>
                 </div>
               </div>
             </div>
           </div>
         </div>
-      </div>     
-      {% endif %}
+      </div>
+    </div>
+    {% endif %}
 
-      <div class="clearfix"></div>
+    <div class="clearfix"></div>
 
-      <div class="row  opacity_0" id="participants_row">
-        <div class="col-md-12 col-sm-12 col-xs-12">
-          <div class="x_panel">
-            <div class="x_title">
-              <h2 id="h2_title"></h2>
-              <div class="clearfix"></div>
-            </div>
+    <div class="row  opacity_0" id="participants_row">
+      <div class="col-md-12 col-sm-12 col-xs-12">
+        <div class="x_panel">
+          <div class="x_title">
+            <h2 id="h2_title"></h2>
+            <div class="clearfix"></div>
+          </div>
 
-            <div class="x_content" id="list">
-              <table id="custom-datatable" class="table table-striped table-bordered">
-                <thead>
-                  <tr>
-                    {% if page_type != 'results' %}
-                    <th class="noExport">{{ locale.actions }}</th>
-                    {% endif %}
-                    <th>{{ blocale.surnames }}</th>
-                    <th>{{ blocale.name }}</th>
-                    <th class="noExport">{{ blocale.club_name }}</th>
-                    <th class="noExport">{{ blocale.birthday }}</th>
-                    <th>{{ blocale.bib_number }}</th>
-                    <th>{{ blocale.category }}</th>
-                    <th>{{ blocale.penalized }}</th>
-                    <th>{{ blocale.race_status }}</th>
-                    <th>{{ blocale.time }}</th>
-                    {% if page_type == 'results' %}
-                    <th>{{ blocale.time_final }}</th>
-                    {% endif %}
-                  </tr>
-                </thead>
-                <tbody id="table_body">
-                  
-                </tbody>
-              </table>
-            </div>
+          <div class="x_content" id="list">
+            <table id="custom-datatable" class="table table-striped table-bordered">
+              <thead>
+                <tr>
+                  {% if page_type != 'results' %}
+                  <th class="noExport">{{ locale.actions }}</th>
+                  {% endif %}
+                  <th>{{ blocale.surnames }}</th>
+                  <th>{{ blocale.name }}</th>
+                  <th class="noExport">{{ blocale.club_name }}</th>
+                  <th class="noExport">{{ blocale.birthday }}</th>
+                  <th>{{ blocale.bib_number }}</th>
+                  <th>{{ blocale.category }}</th>
+                  <th>{{ blocale.penalized }}</th>
+                  <th>{{ blocale.race_status }}</th>
+                  <th>{{ blocale.time }}</th>
+                  {% if page_type == 'results' %}
+                  <th>{{ blocale.time_final }}</th>
+                  {% endif %}
+                </tr>
+              </thead>
+              <tbody id="table_body">
+
+              </tbody>
+            </table>
           </div>
         </div>
       </div>
     </div>
-
-    <div class="loading" id="page_loading">
-      <i class="fa fa-spinner fa-spin"></i>
-    </div>
-
-    <div class="clearfix"></div>
   </div>
+
+  <div class="loading" id="page_loading">
+    <i class="fa fa-spinner fa-spin"></i>
+  </div>
+
+  <div class="clearfix"></div>
+</div>
 </div>
 {% endblock content %} {% block javascripts %}
 {{ super() }}
@@ -215,14 +211,15 @@ endblock title %} {% block stylesheets %}
 
 <script src="{{ url_for('static', filename='vendors/bootstrap-toggle/js/bootstrap-toggle.min.js') }}"></script>
 <script src="{{ url_for('static', filename='vendors/masonry-layout/dist/masonry.pkgd.min.js') }}"></script>
-<script src="{{ url_for('static', filename='vendors/bootstrap-datepicker/dist/js/bootstrap-datepicker.min.js') }}"></script>
+<script
+  src="{{ url_for('static', filename='vendors/bootstrap-datepicker/dist/js/bootstrap-datepicker.min.js') }}"></script>
 <script src="{{ url_for('static', filename='js/toogle_visualization.js') }}"></script>
 <script src="{{ url_for('static', filename='js/custom_datatable.js') }}"></script>
 <script src="{{ url_for('race.static', filename='js/race.js') }}"></script>
 
 <script>
-  $(document).ready(function() {
-      setupPage("{{ locale.user_locale }}", "{{ page_type }}");
+  $(document).ready(function () {
+    setupPage("{{ locale.user_locale }}", "{{ page_type }}");
   });
 </script>
 {% endblock javascripts %}

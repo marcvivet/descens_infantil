@@ -1379,7 +1379,7 @@ table.jambo_table tbody tr.selected td {
 }
 
 .dataTables_filter {
-    width: 25%;
+    /*width: 25%;*/
     float: right;
     text-align: right;
 }

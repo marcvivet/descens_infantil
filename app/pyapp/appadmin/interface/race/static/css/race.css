@@ -96,7 +96,7 @@
 }
 
 .toolbar-button {
-    width: 150px;
+    width: 50px;
 }
 
 @font-face {
@@ -115,17 +115,17 @@
 
 .bib_number {
     font-family: bib_number;
-    font-size: 150px;
+    font-size: 75px;
     width: 100%;
     color: black;
     text-align: center;
-    margin-top: -50px;
-    margin-bottom: -20px;
+    margin-top: -20px;
+    margin-bottom: 0px;
 }
 .container-img-square-race {
     position: relative; 
     width: 100%;
-    height: 150px;
+    height: 100px;
     object-fit: contain;
     align-content: center;
   }
@@ -137,19 +137,46 @@
   }
 
 .club-info {
-    border: 1px solid rgb(204, 204, 204);
-    border-radius: 10px;
     padding: 5px;
 }
 
 .div-time-big {
-    font: normal normal 400 normal 100px / 150px crono;
+    font: normal normal 200 normal 82px / 120px crono;
     height: auto;
-    color: rgb(153, 0, 0)
+    color: rgb(200, 0, 0);
+    margin-top: 10px;
+    /*border-radius: 10px;/*
+    background: rgb(0, 0, 0);
+
+    /*border: 10px solid black;*/
+
+    -moz-box-shadow:    inset 0 0 15px #c0c0c0;
+    -webkit-box-shadow: inset 0 0 15px #c0c0c0;
+    box-shadow:         inset 0 0 15px #c0c0c0;
 }
 
 .div-time-big input {
-    width: 110px;
-    color: rgb(153, 0, 0)
+    width: 100px;
+    color: rgb(200, 0, 0);
+    background: transparent;
+    
 
+}
+
+.div-time-big input:hover {
+    color: rgb(255, 0, 0);
+    /*box-shadow: 0 0 30px rgb(0, 191, 255);*/
+    
+
+}
+
+.list-group-custom {
+    margin-right: -40px;
+    margin-left: -10px;
+    margin-top: 10px;
+    padding: 0px;
+}
+
+.custom-div {
+    margin-left: -20px;
 }
