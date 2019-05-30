@@ -70,6 +70,17 @@ class ViewParticipantsPageRow extends PageRow {
     }
   }
 
+  runOnChildrenReady(id, func) {
+    var element = document.getElementById(id);
+    if (element.hasChildNodes) {
+      func();
+    } else {
+      setTimeout(() => {
+        this.runOnChildrenReady(id, func);
+      }, 100);
+    }
+  }
+
   runOnNotReady(id, func) {
     var element = document.getElementById(id);
     if (element) {
@@ -178,6 +189,36 @@ class ViewParticipantsPageRow extends PageRow {
     this.title = this._locale.race.participants_for_edition + this.editionYear;
   }
 
+  selectTableElement(offset, selected=null) {
+    if (! selected ) {
+      selected = $('#table_body>tr.selected').first();
+      if (! selected ) {
+        console.log('no_selected');
+        selected = $('#table_body>tr:eq(0)');
+        selected.addClass('selected');
+      }
+    }
+    
+    let curItemIndex = this._datatable._table.row(selected).index();
+    let curTableIndexs = this._datatable._table.rows().indexes();
+    let curIndexArrayKey = curTableIndexs.indexOf(curItemIndex);
+    let itemIndex = curTableIndexs[curIndexArrayKey + offset];
+    let item = this._datatable._table.row(itemIndex);
+
+    $('#table_body>tr.selected').removeClass('selected');
+    $(item.node()).addClass('selected');
+    item.show().draw(false);
+
+    let id = $(item.node()).attr('id').substring(10);
+
+    console.log(id);
+    let participant = this._participants_data[id];
+
+    $('#bib_number_select').html(participant.bib_number);
+    $('#club_image_select').attr("src", participant.club_emblem);
+    $('#club_name_select').html(participant.club_name);
+  }
+
   createTableDefault() {
     let columnDefs = [{
         "targets": [0],
@@ -226,6 +267,24 @@ class ViewParticipantsPageRow extends PageRow {
     });
 
     this.title = this._locale.race.participants_for_edition + this.editionYear;
+
+    if (this._page_type == 'enter_times') {
+      $('#button-previous').on('click', (event) => {
+        this.selectTableElement(-1);
+      });
+
+      $('#button-next').on('click', (event) => {
+        this.selectTableElement(1);
+      });
+
+      $('#table_body').on( 'click', 'tr', (event) => {
+        if ( $(event.target).parent().hasClass('selected') ) {
+          $(event.target).parent().removeClass('selected');
+        } else {
+          this.selectTableElement(0, $(event.target).parent());
+        }
+      });
+    }
   }
 
   fadeIn(id, time) {
@@ -709,13 +768,13 @@ class ViewParticipantsPageRow extends PageRow {
 
     timeTd.innerHTML = `<div class="div-time-small">
       <span tooltip="${this._locale.race.tooltip_minutes}" tooltip-position='bottom' class="input">
-        <input name="form_${id}" id="time_minutes_${id}" type="number" min="0" max="59" value="${minutes}" placeholder="00" onfocus="this.select();" onkeypress="removeZerosTime(this)" onkeyup="changeTime(this)" onchange="changeTime(this)">
+        <input name="form_${id}" id="time_minutes_${id}" type="number" min="0" max="59" value="${minutes}" placeholder="00" onfocus="this.select();" oninput="changeTime(this)" onchange="changeTime(this)">
       </span>:
       <span tooltip="${this._locale.race.tooltip_seconds}" tooltip-position='bottom' class="input">
-        <input name="form_${id}" id="time_seconds_${id}" type="number" min="0" max="59" value="${seconds}"    placeholder="00" onfocus="this.select();" onkeypress="removeZerosTime(this)" onkeyup="changeTime(this)" onchange="changeTime(this)">
+        <input name="form_${id}" id="time_seconds_${id}" type="number" min="0" max="59" value="${seconds}"    placeholder="00" onfocus="this.select();" oninput="changeTime(this)" onchange="changeTime(this)">
       </span>.
       <span tooltip="${this._locale.race.tooltip_hundredths}" of a second' tooltip-position='bottom' class="input">
-        <input name="form_${id}" id="time_hundredths_${id}" type="number" min="0" max="99" value="${centesimal}" placeholder="00" onfocus="this.select();" onkeypress="removeZerosTime(this)" onkeyup="changeTime(this)" onchange="changeTime(this)">
+        <input name="form_${id}" id="time_hundredths_${id}" type="number" min="0" max="99" value="${centesimal}" placeholder="00" onfocus="this.select();" oninput="changeTime(this)" onchange="changeTime(this)">
       </span>
     </div>`;
   }
@@ -727,8 +786,15 @@ class ViewParticipantsPageRow extends PageRow {
 
 function changeTime(element) {
   let value = parseInt(element.value);
+
+  let valueStr = value.toString();
+  if (valueStr.length > 2) {
+    valueStr = valueStr.substring(1, 3);
+    value = parseInt(valueStr);
+  }
+
   if (value > element.max) {
-    value = element.max;
+    value = element.min;
   }
 
   if (value < element.min) {

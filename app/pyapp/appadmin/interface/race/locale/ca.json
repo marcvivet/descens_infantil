@@ -35,6 +35,10 @@
     "enter_times": "Enter Times",
     "list_participants": "List Participants",
     "results": "Results",
+    "race_penalize": "Penalize participant.",
+    "race_disqualified": "Disqualify participant.",
+    "race_not_arrived": "Participant not arrived.",
+    "race_not_come_out": "Participant not Came Out.",
 
     "edit": "Edit",
     "delete": "Delete",

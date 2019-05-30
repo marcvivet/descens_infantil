@@ -424,6 +424,7 @@ class Edition(db.Model):
                     "edition_participants.time AS time_final, " \
                     "clubs.id AS club_id, " \
                     "clubs.name AS club_name, " \
+                    "clubs.emblem AS club_emblem, " \
                     "editions.id AS edition_id, " \
                     "editions.date AS edition_date " \
                     "FROM edition_participants " \

@@ -52,27 +52,27 @@ endblock title %} {% block stylesheets %}
           <div class="x_panel">
             <div class="x_content">
               <div class="col-md-2 col-sm-2 col-xs-12 profile_left">
-                <div class="bib_number">
+                <div class="bib_number" id="bib_number_select">
                   23
                 </div>
                 <div class="club-info">
                   <div class="container-img-square-race text-center">
-                    <img src="/static/images/clubs/CASTE.jpg?none" alt="" class="img-square-race">
+                    <img src="/static/images/clubs/CASTE.jpg?none" alt="" class="img-square-race" id="club_image_select">
                   </div>
-                  <h4 class="text-center">Centre Exc. Castellar</h4>
+                  <h4 class="text-center" id="club_name_select">Centre Exc. Castellar</h4>
                 </div>
               </div>
               <div class="col-md-10 col-sm-10 col-xs-12 profile_details">
                 <div class="profile_title">
                   <div class="col-md-6">
-                    <h2>Pepita Joselita</h2>
+                    <h2 id="participant_name_select">Pepita Joselita</h2>
                   </div>
                   <div class="col-md-6">
                     <div class="btn-toolbar navbar-right" role="group">
-                      <button type="button" class="btn btn-default btn-lg toolbar-button">
+                      <button type="button" id="button-previous" class="btn btn-default btn-lg toolbar-button">
                         <span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span>
                       </button>
-                      <button type="button" class="btn btn-default btn-lg toolbar-button">
+                      <button type="button" id="button-next" class="btn btn-default btn-lg toolbar-button">
                         <span class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span>
                       </button>
                     </div>
@@ -82,50 +82,50 @@ endblock title %} {% block stylesheets %}
                   <div class="col-md-9 col-sm-9 col-xs-12 custom-div">
                     <div class="div-time-big">
                       <span class="input">
-                        <input name="form__1" id="time_minutes_1" type="number" min="0" max="59" value="01"
-                          placeholder="00" onfocus="this.select();" onkeypress="removeZerosTime(this)"
-                          onkeyup="changeTime(this)" onchange="changeTime(this)">
+                        <input name="form__1" id="time_minutes_select" type="number" min="0" max="59" value="01"
+                          placeholder="00" onfocus="this.select();" oninput="changeTime(this)"
+                          onchange="changeTime(this)">
                       </span>:
                       <span class="input">
-                        <input name="form__1" id="time_seconds_1" type="number" min="0" max="59" value="22"
-                          placeholder="00" onfocus="this.select();" onkeypress="removeZerosTime(this)"
-                          onkeyup="changeTime(this)" onchange="changeTime(this)">
+                        <input name="form__1" id="time_seconds_select" type="number" min="0" max="59" value="22" oninput="changeTime(this)"
+                          placeholder="00" onfocus="this.select();"
+                          onchange="changeTime(this)">
                       </span>.
                       <span class="input">
-                        <input name="form__1" id="time_hundredths__1" type="number" min="0" max="99" value="69"
-                          placeholder="00" onfocus="this.select();" onkeypress="removeZerosTime(this)"
-                          onkeyup="changeTime(this)" onchange="changeTime(this)">
+                        <input name="form__1" id="time_hundreds_select" type="number" min="0" max="99" value="69" oninput="changeTime(this)"
+                          placeholder="00" onfocus="this.select();"
+                          onchange="changeTime(this)">
                       </span>
                     </div>
                     <div class="checkbox">
                       <label>
-                        <input type="checkbox" data-toggle="toggle">
-                        Option one is enabled
+                        <input type="checkbox" data-toggle="toggle" data-onstyle="danger" data-offstyle="default" data-on="{{ blocale.yes }}" data-off="{{ blocale.no }}">
+                        {{blocale.race_penalize}}
                       </label>
                     </div>
                     <div class="checkbox">
                       <label>
-                        <input type="checkbox" data-toggle="toggle">
-                        Option two is disabled
+                        <input type="checkbox" data-toggle="toggle" data-onstyle="danger" data-offstyle="default" data-on="{{ blocale.yes }}" data-off="{{ blocale.no }}">
+                        {{blocale.race_disqualified}}
                       </label>
                     </div>
                     <div class="checkbox">
                       <label>
-                        <input type="checkbox" data-toggle="toggle">
-                        Option two is disabled
+                        <input type="checkbox" data-toggle="toggle" data-onstyle="danger" data-offstyle="default" data-on="{{ blocale.yes }}" data-off="{{ blocale.no }}">
+                        {{blocale.race_not_arrived}}
                       </label>
                     </div>
                     <div class="checkbox">
                       <label>
-                        <input type="checkbox" data-toggle="toggle">
-                        Option two is disabled
+                        <input type="checkbox" data-toggle="toggle" data-onstyle="danger" data-offstyle="default" data-on="{{ blocale.yes }}" data-off="{{ blocale.no }}">
+                        {{blocale.race_not_come_out}}
                       </label>
                     </div>
                   </div>
                   <div class="col-md-3 col-sm-3 col-xs-12">
                     <ul class="list-group list-group-custom">
-                      <li class="list-group-item"><i class="fa fa-map-marker user-profile-icon"></i> Birthday: 2015-15-02</li>
-                      <li class="list-group-item"><i class="fa fa-briefcase user-profile-icon"></i> Categoria: 1</li>
+                      <li class="list-group-item"><i class="fa fa-puzzle-piece user-profile-icon"></i> <b>{{blocale.category}}:</b> 1</li>
+                      <li class="list-group-item"><i class="fa fa-birthday-cake user-profile-icon"></i> <b>{{blocale.birthday}}:</b> 2015-15-02</li>
                     </ul>
                   </div>
                 </div>
@@ -218,6 +218,25 @@ endblock title %} {% block stylesheets %}
 <script src="{{ url_for('race.static', filename='js/race.js') }}"></script>
 
 <script>
+  $.fn.dataTable.Api.register('row().show()', function() {
+    var page_info = this.table().page.info();
+    // Get row index
+    var new_row_index = this.index();
+    // Row position
+    var row_position = this.table().rows()[0].indexOf( new_row_index );
+    // Already on right page ?
+    if( row_position >= page_info.start && row_position < page_info.end ) {
+        // Return row object
+        return this;
+    }
+    // Find page number
+    var page_to_display = Math.floor( row_position / this.table().page.len() );
+    // Go to that page
+    this.table().page( page_to_display );
+    // Return row object
+    return this;
+  });
+
   $(document).ready(function () {
     setupPage("{{ locale.user_locale }}", "{{ page_type }}");
   });
