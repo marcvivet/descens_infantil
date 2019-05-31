@@ -53,27 +53,30 @@ endblock title %} {% block stylesheets %}
             <div class="x_content">
               <div class="col-md-2 col-sm-2 col-xs-12 profile_left">
                 <div class="bib_number" id="bib_number_select">
-                  23
+                  0
                 </div>
                 <div class="club-info">
                   <div class="container-img-square-race text-center">
-                    <img src="/static/images/clubs/CASTE.jpg?none" alt="" class="img-square-race" id="club_image_select">
+                    <img src="/static/images/NO_IMAGE.jpg" alt="" class="img-square-race" id="club_image_select">
                   </div>
-                  <h4 class="text-center" id="club_name_select">Centre Exc. Castellar</h4>
+                  <h4 class="text-center" id="club_name_select">&nbsp;</h4>
                 </div>
               </div>
               <div class="col-md-10 col-sm-10 col-xs-12 profile_details">
                 <div class="profile_title">
-                  <div class="col-md-6">
-                    <h2 id="participant_name_select">Pepita Joselita</h2>
+                  <div class="col-md-9">
+                    <h2 id="participant_name_select"> &nbsp;</h2>
                   </div>
-                  <div class="col-md-6">
+                  <div class="col-md-3">
                     <div class="btn-toolbar navbar-right" role="group">
-                      <button type="button" id="button-previous" class="btn btn-default btn-lg toolbar-button">
+                      <button type="button" name="select_participant" id="button-previous" class="btn btn-default btn-lg toolbar-button">
                         <span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span>
                       </button>
-                      <button type="button" id="button-next" class="btn btn-default btn-lg toolbar-button">
+                      <button type="button" name="select_participant" id="button-next" class="btn btn-default btn-lg toolbar-button">
                         <span class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span>
+                      </button>
+                      <button type="button" name="select_participant" id="button-save" class="btn btn-success btn-lg toolbar-button hidden" disabled>
+                        <i class="fa fa-save"> </i>
                       </button>
                     </div>
                   </div>
@@ -82,50 +85,50 @@ endblock title %} {% block stylesheets %}
                   <div class="col-md-9 col-sm-9 col-xs-12 custom-div">
                     <div class="div-time-big">
                       <span class="input">
-                        <input name="form__1" id="time_minutes_select" type="number" min="0" max="59" value="01"
+                        <input name="select_participant" id="time_minutes_select" type="number" min="0" max="59"
                           placeholder="00" onfocus="this.select();" oninput="changeTime(this)"
                           onchange="changeTime(this)">
                       </span>:
                       <span class="input">
-                        <input name="form__1" id="time_seconds_select" type="number" min="0" max="59" value="22" oninput="changeTime(this)"
+                        <input name="select_participant" id="time_seconds_select" type="number" min="0" max="59" oninput="changeTime(this)"
                           placeholder="00" onfocus="this.select();"
                           onchange="changeTime(this)">
                       </span>.
                       <span class="input">
-                        <input name="form__1" id="time_hundreds_select" type="number" min="0" max="99" value="69" oninput="changeTime(this)"
+                        <input name="select_participant" id="time_hundreds_select" type="number" min="0" max="99" oninput="changeTime(this)"
                           placeholder="00" onfocus="this.select();"
                           onchange="changeTime(this)">
                       </span>
                     </div>
                     <div class="checkbox">
                       <label>
-                        <input type="checkbox" data-toggle="toggle" data-onstyle="danger" data-offstyle="default" data-on="{{ blocale.yes }}" data-off="{{ blocale.no }}">
+                        <input name="select_participant" id="penalized_select" type="checkbox" data-toggle="toggle" data-onstyle="danger" data-offstyle="default" data-on="{{ blocale.yes }}" data-off="{{ blocale.no }}">
                         {{blocale.race_penalize}}
                       </label>
                     </div>
                     <div class="checkbox">
                       <label>
-                        <input type="checkbox" data-toggle="toggle" data-onstyle="danger" data-offstyle="default" data-on="{{ blocale.yes }}" data-off="{{ blocale.no }}">
+                        <input name="select_participant" id="disqualified_select" type="checkbox" data-toggle="toggle" data-onstyle="danger" data-offstyle="default" data-on="{{ blocale.yes }}" data-off="{{ blocale.no }}">
                         {{blocale.race_disqualified}}
                       </label>
                     </div>
                     <div class="checkbox">
                       <label>
-                        <input type="checkbox" data-toggle="toggle" data-onstyle="danger" data-offstyle="default" data-on="{{ blocale.yes }}" data-off="{{ blocale.no }}">
+                        <input name="select_participant" id="not_arrived_select" type="checkbox" data-toggle="toggle" data-onstyle="danger" data-offstyle="default" data-on="{{ blocale.yes }}" data-off="{{ blocale.no }}">
                         {{blocale.race_not_arrived}}
                       </label>
                     </div>
                     <div class="checkbox">
                       <label>
-                        <input type="checkbox" data-toggle="toggle" data-onstyle="danger" data-offstyle="default" data-on="{{ blocale.yes }}" data-off="{{ blocale.no }}">
-                        {{blocale.race_not_come_out}}
+                        <input name="select_participant" id="not_came_out_select" type="checkbox" data-toggle="toggle" data-onstyle="danger" data-offstyle="default" data-on="{{ blocale.yes }}" data-off="{{ blocale.no }}">
+                        {{blocale.race_not_came_out}}
                       </label>
                     </div>
                   </div>
                   <div class="col-md-3 col-sm-3 col-xs-12">
                     <ul class="list-group list-group-custom">
-                      <li class="list-group-item"><i class="fa fa-puzzle-piece user-profile-icon"></i> <b>{{blocale.category}}:</b> 1</li>
-                      <li class="list-group-item"><i class="fa fa-birthday-cake user-profile-icon"></i> <b>{{blocale.birthday}}:</b> 2015-15-02</li>
+                      <li class="list-group-item"><i class="fa fa-puzzle-piece user-profile-icon"></i> <b>{{blocale.category}}:</b> <span id="category_select">0</span></li>
+                      <li class="list-group-item"><i class="fa fa-birthday-cake user-profile-icon"></i> <b>{{blocale.birthday}}:</b> <span id="birthday_select">0000-00-00</span></li>
                     </ul>
                   </div>
                 </div>
@@ -142,17 +145,19 @@ endblock title %} {% block stylesheets %}
     <div class="row  opacity_0" id="participants_row">
       <div class="col-md-12 col-sm-12 col-xs-12">
         <div class="x_panel">
-          <div class="x_title">
+          
+          <div class="x_title {% if page_type == 'enter_times' %}hidden{% endif %}">
             <h2 id="h2_title"></h2>
             <div class="clearfix"></div>
           </div>
+          
 
           <div class="x_content" id="list">
             <table id="custom-datatable" class="table table-striped table-bordered">
               <thead>
                 <tr>
-                  {% if page_type != 'results' %}
-                  <th class="noExport">{{ locale.actions }}</th>
+                  {% if page_type == 'list_participants' %}
+                  <th class="noExport">{{ blocale.actions }}</th>
                   {% endif %}
                   <th>{{ blocale.surnames }}</th>
                   <th>{{ blocale.name }}</th>
@@ -172,6 +177,7 @@ endblock title %} {% block stylesheets %}
 
               </tbody>
             </table>
+            <div class="clearfix"></div>
           </div>
         </div>
       </div>

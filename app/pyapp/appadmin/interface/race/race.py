@@ -86,13 +86,26 @@ def communicate():
         edition_participant.penalized = data['penalized']
         edition_participant.disqualified = data['disqualified']
         edition_participant.not_arrived = data['not_arrived']
-        edition_participant.not_come_out = data['not_come_out']
+        edition_participant.not_came_out = data['not_came_out']
         edition_participant.category = data['category']
 
         participant = edition_participant.participant
         participant.set_data(data['name'], data['surnames'], data['birthday'])
         db.commit()
         response['message'] = locm.participant_updated.format(data['name'], data['surnames'])
+
+    if json_data['action'] == 'update_times':
+        data = json_data['participant_data']
+        edition_participant = db.query(
+            EditionParticipant).get([data['edition_id'], data['participant_id']])
+
+        edition_participant.set_time_from_str(data['time'])
+        edition_participant.penalized = data['penalized']
+        edition_participant.disqualified = data['disqualified']
+        edition_participant.not_arrived = data['not_arrived']
+        edition_participant.not_came_out = data['not_came_out']
+
+        db.commit()
 
     if json_data['action'] == 'delete':
         participant_id, edition_id = json_data['id'].split('_')

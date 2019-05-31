@@ -16,6 +16,8 @@ class ViewParticipantsPageRow extends PageRow {
     this._datatable = null;
     this._clubs = null;
     this._clubs_lut = null;
+    this._disable_select = false;
+    this._currData = null;
 
     Page.httpRequest({
       action: "get_locale",
@@ -29,7 +31,11 @@ class ViewParticipantsPageRow extends PageRow {
       this._clubs = response.data;
       this._clubs_lut = {};
       for (let i = 0; i < this._clubs.length; ++i) {
-        this._clubs_lut[this._clubs[i].id] = this._clubs[i].name;
+        this._clubs_lut[this._clubs[i].id] = {
+          name: this._clubs[i].name,
+          emblem: this._clubs[i].emblem
+
+        }
       }
     });
 
@@ -100,6 +106,8 @@ class ViewParticipantsPageRow extends PageRow {
   createTable() {
     if (this._page_type == 'results') {
       this.createTableResults();
+    } else if (this._page_type == 'enter_times') {
+      this.createTableEnterTimes();
     } else {
       this.createTableDefault();
     }
@@ -189,11 +197,53 @@ class ViewParticipantsPageRow extends PageRow {
     this.title = this._locale.race.participants_for_edition + this.editionYear;
   }
 
+  disableSelectTable() {
+    this._disable_select = true;
+  }
+
+  enableSelectTable() {
+    this._disable_select = false;
+  }
+
+  removeSelectTableElement() {
+    $('#table_body>tr.selected').removeClass('selected');
+
+    $('#participant_name_select').html("&nbsp;")
+    $('#bib_number_select').html("0");
+    $('#club_image_select').attr("src", "/static/images/NO_IMAGE.jpg");
+    $('#club_name_select').html("&nbsp;");
+    $('#category_select').html("0");
+    $('#birthday_select').html("0000-00-00");
+    
+    $('#time_minutes_select').val("");
+    $('#time_seconds_select').val("");
+    $('#time_hundreds_select').val("");
+
+    $("#time_minutes_select").prop("disabled", true);
+    $("#time_seconds_select").prop("disabled", true);
+    $("#time_hundreds_select").prop("disabled", true);
+
+    $('#penalized_select').bootstrapToggle('off');
+    $('#disqualified_select').bootstrapToggle('off');
+    $('#not_arrived_select').bootstrapToggle('off');
+    $('#not_came_out_select').bootstrapToggle('off');
+
+    $('#penalized_select').bootstrapToggle('disable');
+    $('#disqualified_select').bootstrapToggle('disable');
+    $('#not_arrived_select').bootstrapToggle('disable');
+    $('#not_came_out_select').bootstrapToggle('disable');
+
+    $("#button-save").prop("disabled", true);
+    this._currData = null;
+  }
+
   selectTableElement(offset, selected=null) {
+    this.saveTableElement();
+    if (this._disable_select) return;
+
     if (! selected ) {
       selected = $('#table_body>tr.selected').first();
       if (! selected ) {
-        console.log('no_selected');
         selected = $('#table_body>tr:eq(0)');
         selected.addClass('selected');
       }
@@ -211,13 +261,121 @@ class ViewParticipantsPageRow extends PageRow {
 
     let id = $(item.node()).attr('id').substring(10);
 
-    console.log(id);
     let participant = this._participants_data[id];
 
+    $('#participant_name_select').html(`${participant.name} ${participant.surnames}`)
     $('#bib_number_select').html(participant.bib_number);
     $('#club_image_select').attr("src", participant.club_emblem);
     $('#club_name_select').html(participant.club_name);
+    $('#category_select').html(participant.category);
+    $('#birthday_select').html(participant.birthday);
+    
+    let minutes = participant.time.substring(0, 2);
+    let seconds = participant.time.substring(3, 5);
+    let hundreds = participant.time.substring(6, 8);
+
+    this._currData = {
+      participant_id: parseInt(participant.id),
+      edition_id: parseInt(participant.edition_id),
+      penalized: participant.penalized,
+      disqualified: participant.disqualified,
+      not_arrived: participant.not_arrived,
+      not_came_out: participant.not_came_out,
+      time: participant.time,
+    }
+
+    $('#time_minutes_select').val(minutes);
+    $('#time_seconds_select').val(seconds);
+    $('#time_hundreds_select').val(hundreds);
+
+    $("#time_minutes_select").prop("disabled", false);
+    $("#time_seconds_select").prop("disabled", false);
+    $("#time_hundreds_select").prop("disabled", false);
+
+    $('#penalized_select').bootstrapToggle('enable');
+    $('#disqualified_select').bootstrapToggle('enable');
+    $('#not_arrived_select').bootstrapToggle('enable');
+    $('#not_came_out_select').bootstrapToggle('enable');
+
+    if (participant.penalized) {
+      $('#penalized_select').bootstrapToggle('on');
+    } else {
+      $('#penalized_select').bootstrapToggle('off');
+    }
+
+    if (participant.disqualified) {
+      $('#disqualified_select').bootstrapToggle('on');
+    } else {
+      $('#disqualified_select').bootstrapToggle('off');
+    }
+
+    if (participant.not_arrived) {
+      $('#not_arrived_select').bootstrapToggle('on');
+    } else {
+      $('#not_arrived_select').bootstrapToggle('off');
+    }
+
+    if (participant.not_came_out) {
+      $('#not_came_out_select').bootstrapToggle('on');
+    } else {
+      $('#not_came_out_select').bootstrapToggle('off');
+    }
+
+    $("#button-save").prop("disabled", false);
   }
+
+  saveTableElement() {
+    if (this._disable_select) return;
+    if (!this._currData) return;
+    let selected = $('#table_body>tr.selected').first();
+    if (!selected) return;
+    
+    let curItemIndex = this._datatable._table.row(selected).index();
+    let item = this._datatable._table.row(curItemIndex);
+
+    let id = $(item.node()).attr('id').substring(10);
+    let participant = this._participants_data[id];
+    let time = `${$('#time_minutes_select').val()}:${$('#time_seconds_select').val()}.${$('#time_hundreds_select').val()}`;
+
+    if (time == ':.') {
+      time = '00:00.00';
+    }
+
+    let data = {
+      participant_id: parseInt(participant.id),
+      edition_id: parseInt(participant.edition_id),
+      penalized: $("#penalized_select").is(':checked')? 1 : 0,
+      disqualified: $("#disqualified_select").is(':checked')? 1 : 0,
+      not_arrived: $("#not_arrived_select").is(':checked')? 1 : 0,
+      not_came_out: $("#not_came_out_select").is(':checked')? 1 : 0,
+      time: time,
+    };
+
+    if (JSON.stringify(data) === JSON.stringify(this._currData)) {
+      return;
+    }
+
+    this._currData = data;
+
+    Page.httpRequest({
+      action: "update_times",
+      participant_data: data
+    }, `/race/communicate`, ((participantId, participantData) => {
+      return (response) => {
+        this._participants_data[id].penalized = participantData.penalized;
+        this._participants_data[id].disabled = participantData.disqualified;
+        this._participants_data[id].not_arrived = participantData.not_arrived;
+        this._participants_data[id].not_came_out = participantData.not_came_out;
+        this._participants_data[id].time = participantData.time;
+        
+        this.restoreRow(id);
+      }
+    })(id, data), (status, responseText) => {
+      Page.showError(responseText);
+    });
+    
+  }
+
 
   createTableDefault() {
     let columnDefs = [{
@@ -267,24 +425,112 @@ class ViewParticipantsPageRow extends PageRow {
     });
 
     this.title = this._locale.race.participants_for_edition + this.editionYear;
+  }
 
-    if (this._page_type == 'enter_times') {
-      $('#button-previous').on('click', (event) => {
-        this.selectTableElement(-1);
-      });
+  createTableEnterTimes() {
+    let columnDefs = [
+      {
+        "targets": [4],
+        "className": "center-element"
+      },
+      {
+        "targets": [3, 5, 6, 7, 8],
+        "searchable": false,
+        "sortable": true,
+        "className": "center-element"
+      }
+    ];
 
-      $('#button-next').on('click', (event) => {
-        this.selectTableElement(1);
-      });
+    let columnsStyle = [
+      {"width": "20%"},   // 01 - surnames
+      {"width": "15%"},   // 02 - name
+      {"width": "25%"},   // 03 - club name
+      {"width": "100px"}, // 04 - birthday
+      {"width": "50px"},  // 05 - bib number
+      {"width": "50px"},  // 06 - category
+      {"width": "50px"},  // 07 - penalized
+      {"width": "50px"},  // 08 - status
+      {"width": "125px"}  // 09 - time
+    ];
 
-      $('#table_body').on( 'click', 'tr', (event) => {
-        if ( $(event.target).parent().hasClass('selected') ) {
-          $(event.target).parent().removeClass('selected');
-        } else {
-          this.selectTableElement(0, $(event.target).parent());
+    let buttons = null;
+
+    let order = [
+      [4, "asc"]
+    ];
+
+    this._datatable = new CustomDataTable({
+      page: 'race',
+      locale: this._locale_id,
+      columnDefs: columnDefs,
+      columnsStyle: columnsStyle,
+      order: order,
+      buttons: buttons
+    });
+
+    this.title = this._locale.race.participants_for_edition + this.editionYear;
+
+    $('#button-previous').on('click', (event) => {
+      this.selectTableElement(-1);
+    });
+
+    $('#button-next').on('click', (event) => {
+      this.selectTableElement(1);
+    });
+
+    $('#table_body').on( 'click', 'tr', (event) => {
+      if ( $(event.target).parent().hasClass('selected') ) {
+        $(event.target).parent().removeClass('selected');
+        this.removeSelectTableElement();
+      } else {
+        this.selectTableElement(0, $(event.target).parent());
+      }
+    });
+
+    this._datatable._page_dialog._event_display = (show) => {
+
+      if (show) {
+        this.disableSelectTable();
+      } else {
+        this.enableSelectTable();
+      }
+    };
+
+    this.removeSelectTableElement();
+    $('#disqualified_select').change(
+      () => {
+        if($("#disqualified_select").is(':checked')) {
+          $('#not_arrived_select').bootstrapToggle('off');
+          $('#not_came_out_select').bootstrapToggle('off');
         }
-      });
-    }
+      }
+    );
+
+    $('#not_arrived_select').change(
+      () => {
+        if($("#not_arrived_select").is(':checked')) {
+          $('#disqualified_select').bootstrapToggle('off');
+          $('#not_came_out_select').bootstrapToggle('off');
+        }
+      }
+    );
+
+    $('#not_came_out_select').change(
+      () => {
+        if($("#not_came_out_select").is(':checked')) {
+          $('#disqualified_select').bootstrapToggle('off');
+          $('#not_arrived_select').bootstrapToggle('off');
+        }
+      }
+    );
+
+    $('#button-save').on('click', (event) => {
+      this.saveTableElement();
+    });
+
+    window.setInterval(() => {
+      this.saveTableElement();
+    }, 250);
   }
 
   fadeIn(id, time) {
@@ -354,7 +600,7 @@ class ViewParticipantsPageRow extends PageRow {
       });
   }
 
-  getStatus(disqualified, not_arrived, not_come_out) {
+  getStatus(disqualified, not_arrived, not_came_out) {
     let status = `${this._locale.race.participant_ok}`;
 
     if (disqualified) {
@@ -365,8 +611,8 @@ class ViewParticipantsPageRow extends PageRow {
       status = `${this._locale.race.participant_not_arrived}`;
     }
 
-    if (not_come_out) {
-      status = `${this._locale.race.participant_not_come_out}`;
+    if (not_came_out) {
+      status = `${this._locale.race.participant_not_came_out}`;
     }
 
     return status;
@@ -375,7 +621,7 @@ class ViewParticipantsPageRow extends PageRow {
   splitStatus(status) {
     let disqualified = false;
     let not_arrived = false;
-    let not_come_out = false;
+    let not_came_out = false;
 
     if (status == `${this._locale.race.participant_disqualified}`) {
       disqualified = true;
@@ -385,14 +631,14 @@ class ViewParticipantsPageRow extends PageRow {
       not_arrived = true;
     }
 
-    if (status == `${this._locale.race.participant_not_come_out}`) {
-      not_come_out = true;
+    if (status == `${this._locale.race.participant_not_came_out}`) {
+      not_came_out = true;
     }
 
-    return [disqualified, not_arrived, not_come_out];
+    return [disqualified, not_arrived, not_came_out];
   }
 
-  genRaceStatus(disqualified, not_arrived, not_come_out) {
+  genRaceStatus(disqualified, not_arrived, not_came_out) {
     let status = `<span class="label label-success">${this._locale.race.participant_ok}</span>`;
 
     if (disqualified) {
@@ -403,8 +649,8 @@ class ViewParticipantsPageRow extends PageRow {
       status = `<span class="label label-danger">${this._locale.race.participant_not_arrived}</span>`;
     }
 
-    if (not_come_out) {
-      status = `<span class="label label-danger">${this._locale.race.participant_not_come_out}</span>`;
+    if (not_came_out) {
+      status = `<span class="label label-danger">${this._locale.race.participant_not_came_out}</span>`;
     }
 
     return status;
@@ -418,7 +664,7 @@ class ViewParticipantsPageRow extends PageRow {
     this._participants_data[id] = participant;
 
     let status = this.genRaceStatus(
-      participant.disqualified, participant.not_arrived, participant.not_come_out);
+      participant.disqualified, participant.not_arrived, participant.not_came_out);
 
 
     let penalized = '<span class="hidden">0</span>';
@@ -428,7 +674,7 @@ class ViewParticipantsPageRow extends PageRow {
 
     let innerHtml = '';
 
-    if (this._page_type != 'results') {
+    if (this._page_type == 'list_participants') {
       innerHtml += `<td><table class="table-buttons" id="actions_${id}">
           <tr>
             <td id="button_1_${id}">
@@ -468,21 +714,26 @@ class ViewParticipantsPageRow extends PageRow {
   }
 
   restoreRow(id) {
+    this.enableSelectTable();
     let participant = this._participants_data[id];
 
     let button1Td = document.getElementById(`button_1_${id}`);
+    if (button1Td) {
     button1Td.innerHTML = `
       <button type="button" tooltip="${this._locale.race.tooltip_edit}" tooltip-position="bottom" onclick="clickOnEdit('${id}');"
               class="btn btn-primary btn-xs">
         <i class="fa fa-edit"> </i>
       </button>`;
+    }
 
     let button2Td = document.getElementById(`button_2_${id}`);
-    button2Td.innerHTML = `
-    <button type="button" tooltip="${this._locale.race.tooltip_delete}" tooltip-position="bottom" onclick="clickOnDelete('${id}');"
-            class="btn btn-danger btn-xs">
-      <i class="fa fa-remove"> </i>
-    </button>`;
+    if (button2Td) {
+      button2Td.innerHTML = `
+      <button type="button" tooltip="${this._locale.race.tooltip_delete}" tooltip-position="bottom" onclick="clickOnDelete('${id}');"
+              class="btn btn-danger btn-xs">
+        <i class="fa fa-remove"> </i>
+      </button>`;
+    }
 
     document.getElementById(`surnames_${id}`).innerHTML = participant.surnames;
     document.getElementById(`name_${id}`).innerHTML = participant.name;
@@ -497,11 +748,12 @@ class ViewParticipantsPageRow extends PageRow {
     document.getElementById(`penalized_${id}`).innerHTML = penalized;
 
     document.getElementById(`status_${id}`).innerHTML = this.genRaceStatus(
-      participant.disqualified, participant.not_arrived, participant.not_come_out);
+      participant.disqualified, participant.not_arrived, participant.not_came_out);
     document.getElementById(`time_${id}`).innerHTML = participant.time;
   }
 
   saveRow(id) {
+    this.enableSelectTable();
     let elements = document.getElementsByName(`form_${id}`);
 
     for (let i = 0; i < elements.length; ++i) {
@@ -516,9 +768,9 @@ class ViewParticipantsPageRow extends PageRow {
     let status = status_select.options[status_select.selectedIndex].value;
     let disqualified;
     let not_arrived;
-    let not_come_out;
+    let not_came_out;
 
-    [disqualified, not_arrived, not_come_out] = this.splitStatus(status);
+    [disqualified, not_arrived, not_came_out] = this.splitStatus(status);
 
     let data = {
       participant_id: parseInt(participant.id),
@@ -531,7 +783,7 @@ class ViewParticipantsPageRow extends PageRow {
       penalized: document.getElementById(`form_penalized_${id}`).checked,
       disqualified: disqualified,
       not_arrived: not_arrived, 
-      not_come_out: not_come_out,
+      not_came_out: not_came_out,
       category: parseInt(document.getElementById(`category_${id}`).innerText),
       minutes: parseInt(document.getElementById(`time_minutes_${id}`).value),
       seconds: parseInt(document.getElementById(`time_seconds_${id}`).value),
@@ -552,13 +804,14 @@ class ViewParticipantsPageRow extends PageRow {
         this._participants_data[id].surnames = participantData.surnames;
         this._participants_data[id].name = participantData.name;
         this._participants_data[id].club_id = participantData.club_id;
-        this._participants_data[id].club_name = this._clubs_lut[participantData.club_id];
+        this._participants_data[id].club_name = this._clubs_lut[participantData.club_id].name;
+        this._participants_data[id].club_emblem = this._clubs_lut[participantData.club_id].emblem;
         this._participants_data[id].birthday = participantData.birthday;
         this._participants_data[id].bib_number = participantData.bib_number;
         this._participants_data[id].penalized = participantData.penalized;
         this._participants_data[id].disabled = participantData.disqualified;
         this._participants_data[id].not_arrived = participantData.not_arrived;
-        this._participants_data[id].not_come_out = participantData.not_come_out;
+        this._participants_data[id].not_came_out = participantData.not_came_out;
         this._participants_data[id].category = participantData.category;
         this._participants_data[id].time = `${participantData.minutes.pad()}:${participantData.seconds.pad()}.${participantData.hundreds.pad()}`;
         Page.showSuccess(response.message);
@@ -574,6 +827,7 @@ class ViewParticipantsPageRow extends PageRow {
   }
 
   editRow(id) {
+    this.disableSelectTable();
     let participant = this._participants_data[id];
 
     let button1Td = document.getElementById(`button_1_${id}`);
@@ -706,11 +960,11 @@ class ViewParticipantsPageRow extends PageRow {
     selectStatus.style.width = '125px';
 
     let currStatus = this.getStatus(
-      participant.disqualified, participant.not_arrived, participant.not_come_out);
+      participant.disqualified, participant.not_arrived, participant.not_came_out);
 
     let status = [
       this._locale.race.participant_ok, this._locale.race.participant_disqualified,
-      this._locale.race.participant_not_arrived, this._locale.race.participant_not_come_out];
+      this._locale.race.participant_not_arrived, this._locale.race.participant_not_came_out];
 
     status.forEach(element => {
       let option = document.createElement('option');

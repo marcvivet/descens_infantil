@@ -188,3 +188,9 @@
 .custom-div {
     margin-left: -20px;
 }
+
+#custom-datatable {
+    position: relative;
+    overflow: hidden;
+    width: 100%;
+}

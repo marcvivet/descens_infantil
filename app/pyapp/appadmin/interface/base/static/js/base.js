@@ -344,6 +344,11 @@ class PageDialog {
     this._button_close.setAttribute('type', 'button');
     this._button_close.setAttribute('class', 'btn btn-default');
     this._button_close.setAttribute('data-dismiss', 'modal');
+    this._button_close.onclick = () => {
+      if (this._event_display != null) {
+        this._event_display(false);
+      }
+    };
     this._button_close.innerHTML = 'Close';
 
     this._div_modal_footer.appendChild(this._button_close);
@@ -351,6 +356,7 @@ class PageDialog {
     this.id = id;
     this.title = title;
     this.body = body;
+    this._event_display = null;
 
     document.body.appendChild(this._div_modal);
   }
@@ -381,11 +387,19 @@ class PageDialog {
   }
 
   show() {
+    if (this._event_display != null) {
+      this._event_display(true);
+    }
+
     $("#" + this.id).modal("show");
     $("#" + this.id).css('pointer-events', 'inherit');
   }
 
   hide() {
+    if (this._event_display != null) {
+      this._event_display(false);
+    }
+
     $("#" + this.id).modal("hide");
     $("#" + this.id).css('pointer-events', 'none');
   }
@@ -427,6 +441,11 @@ class PageModal {
     this._button_close.classList.add('close');
     this._button_close.setAttribute("data-dismiss", "modal");
     this._button_close.innerHTML = '<span aria-hidden="true">×</span>';
+    this._button_close.onclick = () => {
+      if (this._event_display != null) {
+        this._event_display(false);
+      }
+    };
 
     this._h4_title = document.createElement("h4");
     this._h4_title.classList.add('modal-title');
@@ -444,6 +463,7 @@ class PageModal {
 
     this.id = id;
     this.title = title;
+    this._event_display = null;
   }
 
   addToolBoxButton(icon, func) {
@@ -471,11 +491,19 @@ class PageModal {
   }
 
   show() {
+    if (this._event_display != null) {
+      this._event_display(true);
+    }
+
     $("#" + this.id).modal("show");
     $("#" + this.id).css('pointer-events', 'inherit');
   }
 
   hide() {
+    if (this._event_display != null) {
+      this._event_display(false);
+    }
+
     $("#" + this.id).modal("hide");
     $("#" + this.id).css('pointer-events', 'none');
   }

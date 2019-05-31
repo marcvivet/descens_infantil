@@ -521,7 +521,7 @@ class Club(db.Model):
 
     @staticmethod
     def get_clubs():
-        sql_query = "SELECT clubs.id AS id, clubs.name AS name " \
+        sql_query = "SELECT clubs.id AS id, clubs.name AS name, clubs.emblem AS emblem " \
                     "FROM clubs " \
                     "ORDER BY clubs.name"
 
@@ -642,6 +642,10 @@ class EditionParticipant(db.Model):
 
     def set_time(self, minutes: int, seconds: int, hundredths: int):
         self.time = time(0, minutes, seconds, hundredths * 10000)
+
+    def set_time_from_str(self, input_time):
+        new_datetime = datetime.strptime(input_time + '0000', "%M:%S.%f")
+        self.time = time(0, new_datetime.minute, new_datetime.second, new_datetime.microsecond)
 
     @staticmethod
     def delete(participant_id, edition_id):
