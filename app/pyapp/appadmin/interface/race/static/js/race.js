@@ -674,7 +674,7 @@ class ViewParticipantsPageRow extends PageRow {
 
     let innerHtml = '';
 
-    if (this._page_type == 'list_participants') {
+    if (this._page_type == 'edit_participants') {
       innerHtml += `<td><table class="table-buttons" id="actions_${id}">
           <tr>
             <td id="button_1_${id}">

@@ -1,0 +1,105 @@
+{% extends "base_site.html" %}
+
+{% block title %}{{ page_title }}{% endblock title %}
+
+{% block stylesheets %}
+{{ super() }}
+<link href="{{ url_for('static', filename='vendors/bootstrap-datepicker/dist/css/bootstrap-datepicker.min.css') }}"
+  rel="stylesheet">
+{% endblock stylesheets %}
+
+{% block content %}
+
+<div class="right_col" role="main">
+  <div class="">
+    <div class="page-title">
+      <div class="title_left">
+        <h3>{{ page_title }}</h3>
+      </div>
+    </div>
+    <div class="clearfix"></div>
+
+    <div class="row">
+      <div class="col-md-12 col-sm-12 col-xs-12">
+        <div class="x_panel">
+          <div class="x_content">
+            <form class="form-horizontal form-label-left" method="post" enctype="multipart/form-data">
+              <div class="item form-group">
+                <label class="control-label col-md-3 col-sm-3 col-xs-12" for="name">{{ blocale.name }} <span class="required">*</span>
+                </label>
+                <div class="col-md-6 col-sm-6 col-xs-12">
+                  <input id="name" class="form-control col-md-7 col-xs-12"
+                    data-validate-length-range="6" name="name" placeholder="{{ blocale.name }}" required="required" type="text">
+                </div>
+              </div>
+              <div class="item form-group">
+                <label class="control-label col-md-3 col-sm-3 col-xs-12" for="surnames">{{ blocale.surnames }} <span class="required">*</span>
+                </label>
+                <div class="col-md-6 col-sm-6 col-xs-12">
+                  <input id="surnames" class="form-control col-md-7 col-xs-12"
+                    data-validate-length-range="6" name="surnames" placeholder="{{ blocale.surnames }}" required="required"
+                    type="text">
+                </div>
+              </div>
+              <div class="item form-group">
+                <label class="control-label col-md-3 col-sm-3 col-xs-12" for="surnames">{{ blocale.birthday }} <span class="required">*</span>
+                </label>
+                <div class="col-md-6 col-sm-6 col-xs-12 xdisplay_inputx form-group has-feedback">
+                  <input type="text" class="form-control has-feedback-left" id="form_birthday" placeholder="{{ blocale.birthday }}" aria-describedby="inputSuccess2Status3"  required="required" data-validate-length-range="6">
+                  <span class="fa fa-calendar-o form-control-feedback left" aria-hidden="true"></span>
+                  <span id="inputSuccess2Status3" class="sr-only">(success)</span>
+                </div>
+              </div>
+              <div class="item form-group">
+                  <label class="control-label col-md-3 col-sm-3 col-xs-12" for="bib_number">{{ blocale.bib_number }}
+                  </label>
+                  <div class="col-md-6 col-sm-6 col-xs-12">
+                    <input type="number" id="bib_number" name="bib_number" class="form-control col-md-7 col-xs-12">
+                  </div>
+                </div>
+              <div class="item form-group">
+                <label class="control-label col-md-3 col-sm-3 col-xs-12" for="clubs">{{ blocale.club_name }} 
+                </label>
+                <div class="col-md-6 col-sm-6 col-xs-12" id="club_name_div">
+                  <input type="hidden" name="action" value="club_id">
+                  <input id="club_name" class="form-control col-md-7 col-xs-12"
+                    data-validate-length-range="6" name="club_name" placeholder="{{ blocale.independent }}"
+                    type="text">
+                </div>
+              </div>
+              <div class="form-group">
+                <div class="col-md-6 col-md-offset-3">
+                  <button type="submit" class="btn btn-primary">{{ locale.cancel }}</button>
+                  <button id="send" type="submit" class="btn btn-success">{{ locale.submit }}</button>
+                </div>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock content %}
+
+{% block javascripts %}
+{{ super() }}
+<script>
+    var request = new XMLHttpRequest();
+    request.open("GET","{{ url_for('static', filename='locale/validator_{}.json'.format(locale.user_locale)) }}", false);
+    request.send(null);
+    var message_locale = JSON.parse(request.responseText);
+</script>
+<script
+src="{{ url_for('static', filename='vendors/bootstrap-datepicker/dist/js/bootstrap-datepicker.min.js') }}"></script>
+<script src="{{ url_for('static', filename='vendors/typeahead.js/dist/typeahead.jquery.min.js') }}"></script>
+<!-- validator -->
+<script src="{{ url_for('static', filename='vendors/validator/validator.js') }}"></script>
+<script src="{{ url_for('race.static', filename='js/race_add.js') }}"></script>
+
+<script>
+  $(document).ready(function() {
+    setupPage("{{ locale.user_locale }}");
+  });
+</script>
+{% endblock javascripts %}

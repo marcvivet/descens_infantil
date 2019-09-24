@@ -16,3 +16,4 @@ future
 numpy
 pillow
 pyopenssl
+unidecode==1.1.1

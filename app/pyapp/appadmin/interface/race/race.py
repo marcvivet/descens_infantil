@@ -33,10 +33,10 @@ def enter_times():
     return render_template('race.html', **locals())
 
 
-@blp.route('/list_participants', methods=['GET', 'POST'])
+@blp.route('/edit_participants', methods=['GET', 'POST'])
 @roles_required_online(blp)
-def list_participants():
-    page_type = 'list_participants'
+def edit_participants():
+    page_type = 'edit_participants'
     editions = Edition.get_editions()
     return render_template('race.html', **locals())
 
@@ -119,3 +119,50 @@ def communicate():
 
     response['elapsed_time'] = time() - start
     return Response(json.dumps(response), status=200)
+
+
+@blp.route('/add', methods=['GET', 'POST'])
+@roles_required_online(blp)
+def add():
+    db = blp.db_manager
+    locm = LocalizationManager().get_blueprint_locale(blp.name)
+
+    state = None
+    organizer = None
+    message = None
+    
+    page_type = 'new_organizer'
+    page_title = locm.add_organizer
+
+    if request.method == 'POST':
+        try:
+            data = request.form
+
+            """
+            picture = '/static/images/NO_IMAGE.jpg'
+
+            new_organizer = Organizer(
+                name=data['name'], surnames=data['surnames'], about=data['about'], picture=picture)
+            db.add(new_organizer)
+            db.flush()
+
+            # check if the post request has the file part
+            if 'picture' in request.files:
+                file = request.files['picture']
+                new_organizer.picture = upload_small_picture(
+                    blp, file, new_organizer.id)
+
+            db.commit()
+            """
+
+            message = locm.organizer_added
+            state = 'success'
+        except Exception as e:
+            db.rollback()
+            error_msg = 'Exception: {}'.format(e)
+            print(error_msg)
+            state = 'error'
+            message = f'{locm.error_while_adding}. {error_msg}'
+
+    return render_template('race_add.html', **locals())
+
