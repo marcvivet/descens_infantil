@@ -1,15 +1,18 @@
 import os
 import json
 from time import time
+from datetime import datetime
 
 from flask import Blueprint, render_template, request, redirect, Response, current_app
 from flask_login import current_user
 from flask_login import login_required
 
+from sqlalchemy.sql.expression import and_
+
 from PIL import Image
 import numpy as np
 
-from appadmin.models.descens_infantil_model import Edition, Club, EditionParticipant
+from appadmin.models.descens_infantil_model import Edition, Club, EditionParticipant, Participant
 from appadmin.utils.blueprint_utils import roles_required_online, config, safe_response
 from appadmin.utils.localization_manager import LocalizedException, LocalizationManager
 from appadmin.utils.image_utils import upload_small_picture
@@ -77,6 +80,17 @@ def communicate():
     if json_data['action'] == 'get_clubs':
         response['data'] = Club.get_clubs()
 
+    if json_data['action'] == 'get_autocomplete_data':
+        clubs = Club.get_clubs()
+        participants = Participant.get_names_surnames()
+        editions = Edition.get_editions()
+
+        response['data'] = {
+            'clubs': clubs,
+            'editions': editions,
+            **participants
+        }
+
     if json_data['action'] == 'update_participant':
         data = json_data['participant_data']
         edition_participant = db.query(
@@ -137,23 +151,33 @@ def add():
     if request.method == 'POST':
         try:
             data = request.form
+            birthday = datetime.strptime(data['birthday'], '%Y-%m-%d').date()
+            participant = db.query(Participant).filter(
+                Participant.hash == Participant.get_hash(
+                    data['name'], data['surnames'], birthday)).first()
 
-            """
-            picture = '/static/images/NO_IMAGE.jpg'
+            if not participant:
+                participant = Participant(data['name'], data['surnames'], birthday)
+                db.add(participant)
+                db.flush()
 
-            new_organizer = Organizer(
-                name=data['name'], surnames=data['surnames'], about=data['about'], picture=picture)
-            db.add(new_organizer)
-            db.flush()
+            edition = db.query(Edition).get(int(data['edition']))
 
-            # check if the post request has the file part
-            if 'picture' in request.files:
-                file = request.files['picture']
-                new_organizer.picture = upload_small_picture(
-                    blp, file, new_organizer.id)
+            edition_participant = db.query(EditionParticipant).filter(and_(
+                EditionParticipant.participant_id == participant.id,
+                EditionParticipant.edition_id == edition.id)).first()
 
+            if edition_participant:
+                raise LocalizedException('participant_exists', blp=blp.name)
+
+            club = db.query(Club).get(int(data['club_id']))
+
+            bib_number = data['bib_number']
+            edition_participant = EditionParticipant(
+                edition, participant, club, [None, int(bib_number)][len(bib_number) > 0])
+
+            db.add(edition_participant)
             db.commit()
-            """
 
             message = locm.organizer_added
             state = 'success'

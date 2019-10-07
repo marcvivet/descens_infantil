@@ -14,7 +14,7 @@
   <div class="">
     <div class="page-title">
       <div class="title_left">
-        <h3>{{ page_title }}</h3>
+        <h3>{{ blocale.add_participants }}</h3>
       </div>
     </div>
     <div class="clearfix"></div>
@@ -25,9 +25,17 @@
           <div class="x_content">
             <form class="form-horizontal form-label-left" method="post" enctype="multipart/form-data">
               <div class="item form-group">
-                <label class="control-label col-md-3 col-sm-3 col-xs-12" for="name">{{ blocale.name }} <span class="required">*</span>
+                <label class="control-label col-md-3 col-sm-3 col-xs-12" for="edition">{{ blocale.edition }} <span class="required">*</span>
                 </label>
                 <div class="col-md-6 col-sm-6 col-xs-12">
+                  <select class="form-control" id="edition" name="edition">
+                  </select>
+                </div>
+              </div>
+              <div class="item form-group">
+                <label class="control-label col-md-3 col-sm-3 col-xs-12" for="name">{{ blocale.name }} <span class="required">*</span>
+                </label>
+                <div class="col-md-6 col-sm-6 col-xs-12" id="name_div">
                   <input id="name" class="form-control col-md-7 col-xs-12"
                     data-validate-length-range="6" name="name" placeholder="{{ blocale.name }}" required="required" type="text">
                 </div>
@@ -35,33 +43,33 @@
               <div class="item form-group">
                 <label class="control-label col-md-3 col-sm-3 col-xs-12" for="surnames">{{ blocale.surnames }} <span class="required">*</span>
                 </label>
-                <div class="col-md-6 col-sm-6 col-xs-12">
+                <div class="col-md-6 col-sm-6 col-xs-12" id="surnames_div">
                   <input id="surnames" class="form-control col-md-7 col-xs-12"
                     data-validate-length-range="6" name="surnames" placeholder="{{ blocale.surnames }}" required="required"
                     type="text">
                 </div>
               </div>
               <div class="item form-group">
-                <label class="control-label col-md-3 col-sm-3 col-xs-12" for="surnames">{{ blocale.birthday }} <span class="required">*</span>
+                <label class="control-label col-md-3 col-sm-3 col-xs-12" for="birthday">{{ blocale.birthday }} <span class="required">*</span>
                 </label>
                 <div class="col-md-6 col-sm-6 col-xs-12 xdisplay_inputx form-group has-feedback">
-                  <input type="text" class="form-control has-feedback-left" id="form_birthday" placeholder="{{ blocale.birthday }}" aria-describedby="inputSuccess2Status3"  required="required" data-validate-length-range="6">
+                  <input type="text" class="form-control has-feedback-left" name="birthday" id="form_birthday" placeholder="{{ blocale.birthday }}" aria-describedby="inputSuccess2Status3" required="required" data-validate-length-range="6">
                   <span class="fa fa-calendar-o form-control-feedback left" aria-hidden="true"></span>
                   <span id="inputSuccess2Status3" class="sr-only">(success)</span>
                 </div>
               </div>
               <div class="item form-group">
-                  <label class="control-label col-md-3 col-sm-3 col-xs-12" for="bib_number">{{ blocale.bib_number }}
-                  </label>
-                  <div class="col-md-6 col-sm-6 col-xs-12">
-                    <input type="number" id="bib_number" name="bib_number" class="form-control col-md-7 col-xs-12">
-                  </div>
+                <label class="control-label col-md-3 col-sm-3 col-xs-12" for="bib_number">{{ blocale.bib_number }}
+                </label>
+                <div class="col-md-6 col-sm-6 col-xs-12">
+                  <input type="number" id="bib_number" name="bib_number" class="form-control col-md-7 col-xs-12">
                 </div>
+              </div>
               <div class="item form-group">
                 <label class="control-label col-md-3 col-sm-3 col-xs-12" for="clubs">{{ blocale.club_name }} 
                 </label>
+                <input type="hidden" id="club_id" name="club_id" value="">
                 <div class="col-md-6 col-sm-6 col-xs-12" id="club_name_div">
-                  <input type="hidden" name="action" value="club_id">
                   <input id="club_name" class="form-control col-md-7 col-xs-12"
                     data-validate-length-range="6" name="club_name" placeholder="{{ blocale.independent }}"
                     type="text">
@@ -69,7 +77,7 @@
               </div>
               <div class="form-group">
                 <div class="col-md-6 col-md-offset-3">
-                  <button type="submit" class="btn btn-primary">{{ locale.cancel }}</button>
+                  <button type="cancel" class="btn btn-primary">{{ locale.cancel }}</button>
                   <button id="send" type="submit" class="btn btn-success">{{ locale.submit }}</button>
                 </div>
               </div>

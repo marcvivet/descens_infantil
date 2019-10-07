@@ -1,9 +1,3 @@
-class PageData {
-  constructor() {
-    this._clubs_lut = {};
-    this._clubs = null;
-  }
-}
 
 function setupPage(locale) {
   $(`#form_birthday`).datepicker({
@@ -14,7 +8,7 @@ function setupPage(locale) {
 
 
   Page.httpRequest({
-    action: "get_clubs",
+    action: "get_autocomplete_data",
   }, '/race/communicate', (response) => {
     var substringMatcher = function (strs) {
       return function findMatches(q, cb) {
@@ -38,7 +32,7 @@ function setupPage(locale) {
       };
     };
 
-    let clubs = response.data;
+    let clubs = response.data['clubs'];
     let clubs_str = []
     let clubs_lut = {};
 
@@ -64,6 +58,34 @@ function setupPage(locale) {
         return;
       }
       $('#club_id').val(clubs_lut[$('#club_name').val()]);
+    });
+
+    let names_str = response.data['names'];
+    let surnames_str = response.data['surnames'];
+
+    $("#name_div .form-control").typeahead({
+      hint: true,
+      highlight: true,
+      minLength: 1,
+      autoselect: true
+    }, {
+      name: 'names',
+      source: substringMatcher(names_str)
+    });
+
+    $("#surnames_div .form-control").typeahead({
+      hint: true,
+      highlight: true,
+      minLength: 1,
+      autoselect: true
+    }, {
+      name: 'surnames',
+      source: substringMatcher(surnames_str)
+    });
+
+    var $edition = $("#edition");
+    $.each(response.data['editions'], function() {
+        $edition.append($("<option />").val(this.id).text(this.year));
     });
   });
 }

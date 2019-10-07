@@ -32,6 +32,7 @@
     "no": "No",
     "delete_successful": "Participant {} deleted successfully",
     "participant_updated": "Participant {} {} updated correctly",
+    "participant_exists": "This participant already exists!",
     "race": "Race",
     "enter_times": "Enter Times",
     "edit_participants": "Edit Participants",

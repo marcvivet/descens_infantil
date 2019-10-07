@@ -32,6 +32,7 @@
     "no": "No",
     "delete_successful": "El participant {} s'ha elminat correctament",
     "participant_updated": "El participant {} {} s'ha actualitzat correctament",
+    "participant_exists": "Aquest participant ja està havia estat afegit!",
     "race": "Carrera",
     "enter_times": "Entrar Temps",
     "edit_participants": "Edita Participants",

@@ -239,7 +239,35 @@ class Participant(db.Model):
             return quote_plus(str(self.time_updated))
         else:
             return 'none'
-            
+
+    @staticmethod
+    def get_names_surnames():
+        sql_query = "SELECT participants.name AS name, participants.surnames as surnames " \
+                    "FROM participants"
+
+        rows = db.session.execute(sql_query).fetchall()
+
+        output = {
+            'names': set(),
+            'surnames': set()
+        }
+
+        for row in rows:
+            output['names'].add(row['name'])
+            output['surnames'].add(row['surnames'])
+
+        output['names'] = sorted(list(output['names']))
+        output['surnames'] = sorted(list(output['surnames']))
+
+        return output            
+
+    @staticmethod
+    def get_hash(name: str, surnames: str, birthday: date):
+        return int(
+            hashlib.sha256(
+                f'{unidecode(name)}_{unidecode(surnames)}_'\
+                    f'{birthday.strftime("%Y-%m-%d")}'.encode(
+                    'utf-8')).hexdigest(), 16) % (2 ** 63)
 
 class Edition(db.Model):
     __tablename__ = "editions"
