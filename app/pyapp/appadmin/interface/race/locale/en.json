@@ -45,5 +45,9 @@
     "edit": "Edit",
     "delete": "Delete",
     "cancel": "Cancel",
-    "actions": "Actions"
+    "actions": "Actions",
+    "lists": "Lists",
+    "list_out": "Output",
+    "list_bib_number": "Bib Numbers",
+    "list_results": "Results"
 }

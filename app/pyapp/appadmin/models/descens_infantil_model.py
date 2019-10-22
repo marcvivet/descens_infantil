@@ -496,6 +496,21 @@ class Edition(db.Model):
         return {row['category']: (datetime.strptime(row['time'], "%H:%M:%S.%f") - t0)
                 for row in query.fetchall()}
 
+    @staticmethod
+    def get_bib_number_table(edition_id: int):
+        sql_query = "SELECT "\
+                    "participants.surnames AS surnames, " \
+                    "participants.name AS name, " \
+                    "edition_participants.category AS category, " \
+                    "edition_participants.bib_number AS bib_number " \
+                    "FROM edition_participants " \
+                    "JOIN participants ON participants.id = edition_participants.participant_id " \
+                    "JOIN editions ON editions.id = edition_participants.edition_id " \
+                    f"WHERE editions.id = {edition_id} "\
+                    "ORDER BY participants.surnames, participants.name ASC"
+
+        return db.session.execute(sql_query).fetchall()
+
 class Club(db.Model):
     __tablename__ = "clubs"
 

@@ -3,7 +3,10 @@ import json
 from time import time
 from datetime import datetime
 
-from flask import Blueprint, render_template, request, redirect, Response, current_app
+from tempfile import TemporaryDirectory
+
+import pdfkit
+from flask import Blueprint, render_template, request, redirect, Response, current_app, make_response
 from flask_login import current_user
 from flask_login import login_required
 
@@ -121,6 +124,9 @@ def communicate():
 
         db.commit()
 
+    if json_data['action'] == 'get_bib_number_table':
+        response['data'] = Edition.get_bib_number_table(json_data['edition_id'])
+
     if json_data['action'] == 'delete':
         participant_id, edition_id = json_data['id'].split('_')
 
@@ -190,3 +196,33 @@ def add():
 
     return render_template('race_add.html', **locals())
 
+
+@blp.route('/list_bib_number', methods=['GET', 'POST'])
+@blp.route('/list_bib_number/<edition_id>', methods=['GET', 'POST'])
+@roles_required_online(blp)
+def list_bib_number(edition_id=None):
+    locm = LocalizationManager().get_blueprint_locale(blp.name)
+    editions = Edition.get_editions()
+    if edition_id:
+        rows = Edition.get_bib_number_table(edition_id)
+        with TemporaryDirectory() as temp_dir:
+            table_html = render_template('race_list_bib_number_raw.html', **locals())
+            pdfkit.from_string(table_html, os.path.join(temp_dir, 'table.pdf'))
+            with open(os.path.join(temp_dir, 'table.pdf'), 'rb') as file_r:
+                table_pdf = file_r.read()
+
+        response = make_response(table_pdf)
+        response.headers.set('Content-Disposition', 'attachment', filename='table.pdf')
+        response.headers.set('Content-Type', 'application/pdf')
+        return response
+    return render_template('race_list_bib_number.html', **locals())
+
+@blp.route('/list_out')
+@roles_required_online(blp)
+def list_out():
+    return render_template('race_list_out.html', **locals())
+
+@blp.route('/list_results')
+@roles_required_online(blp)
+def list_results():
+    return render_template('race_list_resutls.html', **locals())

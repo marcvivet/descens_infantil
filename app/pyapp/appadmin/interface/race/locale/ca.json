@@ -45,5 +45,9 @@
     "edit": "Edita",
     "delete": "Elimina",
     "cancel": "Cancel·la",
-    "actions": "Accions"
+    "actions": "Accions",
+    "lists": "Llistats",
+    "list_out": "Sortida",
+    "list_bib_number": "Dorçals",
+    "list_results": "Resultats"
 }
