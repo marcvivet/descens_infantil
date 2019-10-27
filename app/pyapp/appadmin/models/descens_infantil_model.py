@@ -497,7 +497,10 @@ class Edition(db.Model):
                 for row in query.fetchall()}
 
     @staticmethod
-    def get_bib_number_table(edition_id: int):
+    def get_list_bib_number(edition_id: int, order_by: str = None):
+        if order_by is None:
+            order_by = 'participants.surnames, participants.name ASC'
+
         sql_query = "SELECT "\
                     "participants.surnames AS surnames, " \
                     "participants.name AS name, " \
@@ -507,9 +510,73 @@ class Edition(db.Model):
                     "JOIN participants ON participants.id = edition_participants.participant_id " \
                     "JOIN editions ON editions.id = edition_participants.edition_id " \
                     f"WHERE editions.id = {edition_id} "\
+                    f"ORDER BY {order_by}"
+
+        cursor = db.session.execute(sql_query)
+        rows = cursor.fetchall()
+        result = []
+
+        if not rows:
+            return []
+
+        for row in rows:
+            result.append(dict(zip(cursor.keys(), row)))
+
+        return result
+
+    """
+    @staticmethod
+    def get_list_results(edition_id: int):
+        sql_query = "SELECT "\
+                    "edition_participants.bib_number AS bib_number, " \
+                    "participants.surnames AS surnames, " \
+                    "participants.name AS name, " \
+                    "edition_participants.category AS category, " \
+                    "edition_participants.penalized AS penalized, " \
+                    "edition_participants.disqualified AS disqualified, " \
+                    "edition_participants.not_arrived AS not_arrived, " \
+                    "edition_participants.not_came_out AS not_came_out, " \
+                    "edition_participants.time AS time, " \
+                    "edition_participants.time AS time_final " \
+                    "FROM edition_participants " \
+                    "JOIN participants ON participants.id = edition_participants.participant_id " \
+                    "JOIN editions ON editions.id = edition_participants.edition_id " \
+                    f"WHERE editions.id = {edition_id} "\
                     "ORDER BY participants.surnames, participants.name ASC"
 
-        return db.session.execute(sql_query).fetchall()
+        penalizations = Edition.get_penalizations(edition_id)
+        query = db.session.execute(sql_query)
+        keys = query.keys()
+
+        result = [dict(zip(keys, row)) for row in query.fetchall()]
+        for element in result:
+            element['time'] = element['time'][3:-4]
+            if element['category'] in penalizations and element['penalized'] == 1:
+                element['time_final'] = (
+                    datetime.strptime(element['time_final'], "%H:%M:%S.%f") +
+                    penalizations[element['category']]).strftime("%H:%M:%S.%f")
+            element['time_final'] = element['time_final'][3:-4]
+
+        return result
+    """
+
+    @staticmethod
+    def get_list_out(edition_id: int):
+        rows = Edition.get_list_bib_number(edition_id, order_by='edition_participants.bib_number')
+
+        result = {}
+        categories = []
+        for row in rows:
+            category = row.pop('category')
+            if category not in result:
+                result[category] = []
+
+            result[category].append(row)
+
+        return {
+            "category_dict": result,
+            "categories": sorted(list(result.keys()))
+        }
 
 class Club(db.Model):
     __tablename__ = "clubs"

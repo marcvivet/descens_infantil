@@ -246,7 +246,7 @@ class PageRow {
         this._div_x_content.push(this._div_x_panel.children[i]);
       }
     } else {
-      this._div_x_content.add(document.createElement("div"));
+      this._div_x_content.push(document.createElement("div"));
       this._div_x_content[0].classList.add('x_content');
       this._div_x_panel.appendChild(this._div_x_content[0]);
       this._div_x_panel.appendChild(this._div_clearfix.cloneNode(true));

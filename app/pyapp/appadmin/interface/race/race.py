@@ -124,8 +124,11 @@ def communicate():
 
         db.commit()
 
-    if json_data['action'] == 'get_bib_number_table':
-        response['data'] = Edition.get_bib_number_table(json_data['edition_id'])
+    if json_data['action'] == 'list_bib_number':
+        response['data'] = Edition.get_list_bib_number(json_data['edition_id'])
+
+    if json_data['action'] == 'list_out':
+        response['data'] = Edition.get_list_out(json_data['edition_id'])
 
     if json_data['action'] == 'delete':
         participant_id, edition_id = json_data['id'].split('_')
@@ -198,29 +201,55 @@ def add():
 
 
 @blp.route('/list_bib_number', methods=['GET', 'POST'])
-@blp.route('/list_bib_number/<edition_id>', methods=['GET', 'POST'])
+@blp.route('/list_bib_number/<edition_id>/<edition_year>', methods=['GET', 'POST'])
 @roles_required_online(blp)
-def list_bib_number(edition_id=None):
+def list_bib_number(edition_id=None, edition_year=None):
+    page_type = 'list_bib_number'
     locm = LocalizationManager().get_blueprint_locale(blp.name)
+    title = locm.list_bib_number
     editions = Edition.get_editions()
-    if edition_id:
-        rows = Edition.get_bib_number_table(edition_id)
+    if edition_id and edition_year:
+        rows = Edition.get_list_bib_number(edition_id)
         with TemporaryDirectory() as temp_dir:
             table_html = render_template('race_list_bib_number_raw.html', **locals())
-            pdfkit.from_string(table_html, os.path.join(temp_dir, 'table.pdf'))
-            with open(os.path.join(temp_dir, 'table.pdf'), 'rb') as file_r:
+            file_name = f'{locm.list_bib_number}-{locm.edition}-{edition_year}.pdf'.lower().replace(
+                ' ', '_')
+            pdfkit.from_string(table_html, os.path.join(temp_dir, file_name))
+            with open(os.path.join(temp_dir, file_name), 'rb') as file_r:
                 table_pdf = file_r.read()
 
         response = make_response(table_pdf)
-        response.headers.set('Content-Disposition', 'attachment', filename='table.pdf')
+        response.headers.set('Content-Disposition', 'attachment', filename=file_name)
         response.headers.set('Content-Type', 'application/pdf')
         return response
-    return render_template('race_list_bib_number.html', **locals())
+    return render_template('race_list.html', **locals())
 
-@blp.route('/list_out')
+
+@blp.route('/list_out', methods=['GET', 'POST'])
+@blp.route('/list_out/<edition_id>/<edition_year>', methods=['GET', 'POST'])
 @roles_required_online(blp)
-def list_out():
-    return render_template('race_list_out.html', **locals())
+def list_out(edition_id=None, edition_year=None):
+    page_type = 'list_out'
+    locm = LocalizationManager().get_blueprint_locale(blp.name)
+    title = locm.category
+    editions = Edition.get_editions()
+    if edition_id and edition_year:
+        data = Edition.get_list_out(edition_id)
+        with TemporaryDirectory() as temp_dir:
+            table_html = render_template('race_list_out_raw.html', **locals())
+            file_name = f'{locm.list_out}-{locm.edition}-{edition_year}.pdf'.lower().replace(
+                ' ', '_')
+            pdfkit.from_string(table_html, os.path.join(temp_dir, file_name))
+            with open(os.path.join(temp_dir, file_name), 'rb') as file_r:
+                table_pdf = file_r.read()
+
+        response = make_response(table_pdf)
+        response.headers.set('Content-Disposition', 'attachment', filename=file_name)
+        response.headers.set('Content-Type', 'application/pdf')
+        return response
+
+    return render_template('race_list.html', **locals())
+
 
 @blp.route('/list_results')
 @roles_required_online(blp)

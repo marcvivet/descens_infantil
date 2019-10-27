@@ -194,3 +194,7 @@
     overflow: hidden;
     width: 100%;
 }
+
+#convert_to_pdf {
+    font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;
+}

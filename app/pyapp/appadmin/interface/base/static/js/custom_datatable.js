@@ -1,5 +1,6 @@
 class CustomDataTable {
     constructor(config) {
+        let id = config.id === undefined? 'custom-datatable' : config.id;
         let page = config.page === undefined? null : config.page;
         let locale = config.locale === undefined? 'en' : config.locale;
         let addToggle = config.addToggle === undefined? false : config.addToggle;
@@ -16,6 +17,7 @@ class CustomDataTable {
 
         Page.setLocale(locale);
 
+        this._id = id;
         this._page = page;
         this._selected_form = null;
         this._selected_id = null;
@@ -48,7 +50,7 @@ class CustomDataTable {
             datatable_config['order'] = order;
         }
 
-        this._table = $('#custom-datatable').DataTable(datatable_config);
+        this._table = $('#' + this._id).DataTable(datatable_config);
 
         this._page_dialog = new PageDialog(
             'confirm', this._message_locale.are_you_sure, this._message_locale.warning_message);
