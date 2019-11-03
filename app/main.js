@@ -184,14 +184,21 @@ function createWindow() {
     }
 
     window = new BrowserWindow({
+        file: 'index.html',
         width: 600,
         height: 400,
+        show: false,
+        transparent: false,
         webPreferences: {
             nodeIntegration: false,
         }
     });
 
-    window.loadFile('index.html');
+    window.once('ready-to-show', () => {
+        window.show()
+    })
+
+    //window.loadFile(`file://index.html`);
     checkIfFlaskIsOnline(window, 'http://127.0.0.1:10001/');
 }
 

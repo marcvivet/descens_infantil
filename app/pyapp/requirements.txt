@@ -19,3 +19,4 @@ pyopenssl
 unidecode==1.1.1
 python-docx==0.8.10
 pdfkit==0.6.1
+

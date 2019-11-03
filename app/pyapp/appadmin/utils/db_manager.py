@@ -91,10 +91,10 @@ class DBManager(metaclass=NamedSingleton):
             print('Using SQLite')
 
             if not self.data_base_path:
-                tmp_dir = os.path.join(os.path.dirname(
+                tmp_dir = os.path.join(
                     os.path.dirname(
                         os.path.dirname(
-                            os.path.abspath(__file__)))), 'data/databases/')
+                            os.path.abspath(__file__))), 'data/databases/')
 
                 if not os.path.isdir(tmp_dir):
                     os.makedirs(tmp_dir)

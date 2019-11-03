@@ -8,6 +8,11 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "postinstall": "install-app-deps",
     "pack": "./node_modules/.bin/electron-packager . --overwrite --ignore=pyapp$",
+    "package": "npm-run-all package:*",
+    "package:mac": "./node_modules/.bin/electron-packager . --overwrite --platform=darwin --arch=x64 --out=. --icon=assets/app-icon/mac/app.icns --osx-sign.identity='Developer ID Application: GitHub' --extend-info=assets/mac/info.plist --ignore=pyapp$",
+    "package:win": "./node_modules/.bin/electron-packager . --overwrite --platform=win32 --arch=ia32 --out=out --icon=assets/app-icon/win/app.ico --ignore=pyapp$",
+    "package:linux": "./node_modules/.bin/electron-packager . --overwrite --platform=linux --arch=x64 --out=out --ignore=pyapp$",
+    "package:installer": "node ./script/installer.js",
     "dist": "build"
   },
   "keywords": [],
@@ -41,10 +46,11 @@
     }
   },
   "devDependencies": {
-    "electron": "^4.1.4",
-    "electron-builder": "^20.39.0",
+    "electron": "^7.0.0",
+    "electron-builder": "^20.44.4",
     "electron-packager": "^13.1.1",
-    "electron-prebuilt": "*"
+    "electron-prebuilt": "*",
+    "electron-winstaller": "^2.2.0"
   },
   "dependencies": {
     "python-shell": "^0.5.0",

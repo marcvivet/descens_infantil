@@ -1,6 +1,7 @@
 # -*- mode: python -*-
 
 import os
+import sys
 from PyInstaller.building.build_main import Analysis, PYZ, EXE, COLLECT, BUNDLE, TOC
 
 def collect_pkg_data(package, include_py_files=False, subdir=None):
@@ -27,35 +28,46 @@ def collect_pkg_data(package, include_py_files=False, subdir=None):
 
     return data_toc
 
-pkg_data = collect_pkg_data('pyapp', include_py_files=True)
+sys.path.append(os.path.join(os.getcwd(), 'pyapp'))
+pkg_data = collect_pkg_data('appadmin', include_py_files=True)
 
 block_cipher = None
 
 
-a = Analysis(['pyapp/server.py'],
-             pathex=['/home/marc/local.x86_64/src/descens_infantil/app'],
-             binaries=[],
-             datas=[],
-             hiddenimports=['PIL', 'PIL._imagingtk', 'PIL._tkinter_finder', 'PIL.Image', 'requests'],
-             hookspath=[],
-             runtime_hooks=[],
-             excludes=[],
-             win_no_prefer_redirects=False,
-             win_private_assemblies=False,
-             cipher=block_cipher,
-             noarchive=False)
-pyz = PYZ(a.pure, a.zipped_data,
-             cipher=block_cipher)
-exe = EXE(pyz,
-          a.scripts,
-          a.binaries,
-          a.zipfiles,
-          a.datas,
-          pkg_data,
-          name='server',
-          debug=False,
-          bootloader_ignore_signals=False,
-          strip=False,
-          upx=True,
-          runtime_tmpdir=None,
-          console=True )
+a = Analysis(
+    ['pyapp/appadmin/server_gui.py'],
+    pathex=[os.getcwd()],
+    binaries=[],
+    datas=[],
+    hiddenimports=['PIL', 'PIL._imagingtk', 'PIL._tkinter_finder', 'PIL.Image', 'requests', 'pdfkit', 'PyQt5', 'PyQtWebEngine'],
+    hookspath=[],
+    runtime_hooks=[],
+    excludes=[],
+    win_no_prefer_redirects=False,
+    win_private_assemblies=False,
+    cipher=block_cipher,
+    noarchive=True)
+
+pyz = PYZ(
+    a.pure, a.zipped_data,
+    cipher=block_cipher)
+
+exe = EXE(
+    pyz,
+    a.scripts,
+    a.binaries,
+    a.zipfiles,
+    a.datas,
+    pkg_data,
+    name='server',
+    debug=False,
+    bootloader_ignore_signals=False,
+    strip=False,
+    upx=False,
+    runtime_tmpdir=None,
+    console=True)
+
+app = BUNDLE(exe,
+    name='myscript.app',
+    icon=None,
+    bundle_identifier=None)
