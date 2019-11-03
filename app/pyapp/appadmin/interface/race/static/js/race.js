@@ -363,7 +363,7 @@ class ViewParticipantsPageRow extends PageRow {
     }, `/race/communicate`, ((participantId, participantData) => {
       return (response) => {
         this._participants_data[id].penalized = participantData.penalized;
-        this._participants_data[id].disabled = participantData.disqualified;
+        this._participants_data[id].disqualified = participantData.disqualified;
         this._participants_data[id].not_arrived = participantData.not_arrived;
         this._participants_data[id].not_came_out = participantData.not_came_out;
         this._participants_data[id].time = participantData.time;
@@ -471,10 +471,12 @@ class ViewParticipantsPageRow extends PageRow {
     this.title = this._locale.race.participants_for_edition + this.editionYear;
 
     $('#button-previous').on('click', (event) => {
+      $("#custom-datatable").DataTable().search("");
       this.selectTableElement(-1);
     });
 
     $('#button-next').on('click', (event) => {
+      $("#custom-datatable").DataTable().search("");
       this.selectTableElement(1);
     });
 
@@ -735,6 +737,7 @@ class ViewParticipantsPageRow extends PageRow {
       </button>`;
     }
 
+    try {    
     document.getElementById(`surnames_${id}`).innerHTML = participant.surnames;
     document.getElementById(`name_${id}`).innerHTML = participant.name;
     document.getElementById(`club_name_${id}`).innerHTML = participant.club_name;
@@ -750,6 +753,9 @@ class ViewParticipantsPageRow extends PageRow {
     document.getElementById(`status_${id}`).innerHTML = this.genRaceStatus(
       participant.disqualified, participant.not_arrived, participant.not_came_out);
     document.getElementById(`time_${id}`).innerHTML = participant.time;
+    } catch {
+      console.log('Not found ' + id);
+    }
   }
 
   saveRow(id) {
