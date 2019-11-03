@@ -50,5 +50,7 @@
     "list_out": "Output",
     "list_bib_number": "Bib Numbers",
     "list_results": "Results",
-    "convert_to_pdf": "Create PDF"
+    "convert_to_pdf": "Create PDF",
+    "disqualified": "Disqualifieds",
+    "classified": "Classifieds"
 }

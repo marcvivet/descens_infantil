@@ -130,6 +130,9 @@ def communicate():
     if json_data['action'] == 'list_out':
         response['data'] = Edition.get_list_out(json_data['edition_id'])
 
+    if json_data['action'] == 'list_results':
+        response['data'] = Edition.get_list_results(json_data['edition_id'])
+
     if json_data['action'] == 'delete':
         participant_id, edition_id = json_data['id'].split('_')
 
@@ -251,7 +254,27 @@ def list_out(edition_id=None, edition_year=None):
     return render_template('race_list.html', **locals())
 
 
-@blp.route('/list_results')
+@blp.route('/list_results', methods=['GET', 'POST'])
+@blp.route('/list_results/<edition_id>/<edition_year>', methods=['GET', 'POST'])
 @roles_required_online(blp)
-def list_results():
-    return render_template('race_list_resutls.html', **locals())
+def list_results(edition_id=None, edition_year=None):
+    page_type = 'list_results'
+    locm = LocalizationManager().get_blueprint_locale(blp.name)
+    title = locm.category
+    editions = Edition.get_editions()
+    if edition_id and edition_year:
+        data = Edition.get_list_results(edition_id)
+        with TemporaryDirectory() as temp_dir:
+            table_html = render_template('race_list_results_raw.html', **locals())
+            file_name = f'{locm.list_results}-{locm.edition}-{edition_year}.pdf'.lower().replace(
+                ' ', '_')
+            pdfkit.from_string(table_html, os.path.join(temp_dir, file_name))
+            with open(os.path.join(temp_dir, file_name), 'rb') as file_r:
+                table_pdf = file_r.read()
+
+        response = make_response(table_pdf)
+        response.headers.set('Content-Disposition', 'attachment', filename=file_name)
+        response.headers.set('Content-Type', 'application/pdf')
+        return response
+
+    return render_template('race_list.html', **locals())

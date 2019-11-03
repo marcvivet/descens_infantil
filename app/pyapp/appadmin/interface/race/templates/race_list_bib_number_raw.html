@@ -48,6 +48,9 @@
     .table-striped>tbody>tr:nth-of-type(odd) {
       background-color: #f9f9f9;
     }
+    .center {
+      text-align: center;
+    }
   </style>
 </head>
 <body>
@@ -57,17 +60,17 @@
       <tr>
         <th>{{ blocale.surnames }}</th>
         <th>{{ blocale.name }}</th>
-        <th>{{ blocale.category }}</th>
-        <th>{{ blocale.bib_number }}</th>
+        <th class="center">{{ blocale.category }}</th>
+        <th class="center">{{ blocale.bib_number }}</th>
       </tr>
     </thead>
     <tbody>
       {% for row in rows %}
       <tr>
-        <td>{{ row['surnames'] }}</th>
-        <td>{{ row['name'] }}</th>
-        <td>{{ row['category'] }}</th>
-        <td>{{ row['bib_number'] }}</th>
+        <td>{{ row['surnames'] }}</td>
+        <td>{{ row['name'] }}</td>
+        <td class="center">{{ row['category'] }}</td>
+        <td class="center">{{ row['bib_number'] }}</td>
       </tr>
       {% endfor %}
     </tbody>

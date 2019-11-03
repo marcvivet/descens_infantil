@@ -524,41 +524,32 @@ class Edition(db.Model):
 
         return result
 
-    """
     @staticmethod
     def get_list_results(edition_id: int):
-        sql_query = "SELECT "\
-                    "edition_participants.bib_number AS bib_number, " \
-                    "participants.surnames AS surnames, " \
-                    "participants.name AS name, " \
-                    "edition_participants.category AS category, " \
-                    "edition_participants.penalized AS penalized, " \
-                    "edition_participants.disqualified AS disqualified, " \
-                    "edition_participants.not_arrived AS not_arrived, " \
-                    "edition_participants.not_came_out AS not_came_out, " \
-                    "edition_participants.time AS time, " \
-                    "edition_participants.time AS time_final " \
-                    "FROM edition_participants " \
-                    "JOIN participants ON participants.id = edition_participants.participant_id " \
-                    "JOIN editions ON editions.id = edition_participants.edition_id " \
-                    f"WHERE editions.id = {edition_id} "\
-                    "ORDER BY participants.surnames, participants.name ASC"
+        rows = Edition.get_participants(edition_id)
 
-        penalizations = Edition.get_penalizations(edition_id)
-        query = db.session.execute(sql_query)
-        keys = query.keys()
+        result = {}
+        for row in rows:
+            if row['category'] not in result:
+                result[row['category']] = {
+                    'classified': [],
+                    'disqualified': []
+                }
 
-        result = [dict(zip(keys, row)) for row in query.fetchall()]
-        for element in result:
-            element['time'] = element['time'][3:-4]
-            if element['category'] in penalizations and element['penalized'] == 1:
-                element['time_final'] = (
-                    datetime.strptime(element['time_final'], "%H:%M:%S.%f") +
-                    penalizations[element['category']]).strftime("%H:%M:%S.%f")
-            element['time_final'] = element['time_final'][3:-4]
+            if row['disqualified'] or row['not_arrived'] or row['not_came_out']:
+                result[row['category']]['disqualified'].append(row)
+            else:
+                result[row['category']]['classified'].append(row)
 
-        return result
-    """
+        for category in result.keys():
+            if result[category]['classified']:
+                result[category]['classified'] = sorted(
+                    result[category]['classified'], key=lambda k: k['time_final'])
+        
+        return {
+            'category_dict': result,
+            'categories': sorted(list(result.keys()))
+        }
 
     @staticmethod
     def get_list_out(edition_id: int):

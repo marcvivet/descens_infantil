@@ -48,33 +48,67 @@
     .table-striped>tbody>tr:nth-of-type(odd) {
       background-color: #f9f9f9;
     }
+    .penalized {
+      color: red;
+      font-weight: bold;
+    }
     .center {
       text-align: center;
     }
   </style>
 </head>
 <body>
-  <h1>{{ blocale.list_out }} - {{ blocale.edition }} {{ edition_year }}</h1>
+  <h1>{{ blocale.list_results }} - {{ blocale.edition }} {{ edition_year }}</h1>
   {% for category in data['categories'] %}
   <h2>{{ blocale.category }} {{ category}}</h2>
+  <h3>{{ blocale.classified }}</h3>
+  {% if data['category_dict'][category]['classified'] %}
   <table class="table table-striped table-bordered">
     <thead>
       <tr>
         <th class="center">{{ blocale.bib_number }}</th>
         <th>{{ blocale.surnames }}</th>
         <th>{{ blocale.name }}</th>
+        <th class="center">{{ blocale.penalized }}</th>
+        <th class="center">{{ blocale.time_final }}</th>
       </tr>
     </thead>
     <tbody>
-      {% for row in data['category_dict'][category] %}
+      {% for row in data['category_dict'][category]['classified'] %}
       <tr>
         <td class="center">{{ row['bib_number'] }}</td>
         <td>{{ row['surnames'] }}</td>
         <td>{{ row['name'] }}</td>
+        <td class="center">{% if row['penalized'] %}<span class="penalized" /><span class="hidden">X</span>{% else %}<span></span>{% endif %}</td>
+        <td class="center">{% if category > 3 %}{{ row['time_final'] }}{% else %}-{% endif %}</td>
       </tr>
       {% endfor %}
     </tbody>
   </table>
+  {% endif %}
+  {% if data['category_dict'][category]['disqualified'] %}
+  <h3>{{ blocale.disqualified }}</h3>
+  <table class="table table-striped table-bordered">
+    <thead>
+      <tr>
+        <th>{{ blocale.bib_number }}</th>
+        <th>{{ blocale.surnames }}</th>
+        <th>{{ blocale.name }}</th>
+        <th>{{ blocale.race_status }}</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for row in data['category_dict'][category]['disqualified'] %}
+      <tr>
+        <td>{{ row['bib_number'] }}</td>
+        <td>{{ row['surnames'] }}</td>
+        <td>{{ row['name'] }}</td>
+        <td>{% if row['disqualified'] %}{{ blocale.participant_disqualified }}{% else %}{% if row['not_arrived'] %}{{ blocale.participant_not_arrived }}{% else %}{% if row['not_came_out'] %}{{ blocale.participant_not_came_out }}{% endif %}{% endif %}{% endif %}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% endif %}
   {% endfor %}
 </body>
 </html>
