@@ -67,7 +67,7 @@ class Window(QtWidgets.QMainWindow):
     def __init__(self):
         super().__init__()
 
-        self.title = 'PyQt5 menu - pythonspot.com'
+        self.title = 'Descens Infantil'
         self.left = 100
         self.top = 100
         self.width = 1280

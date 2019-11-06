@@ -33,36 +33,56 @@ pkg_data = collect_pkg_data('appadmin', include_py_files=True)
 
 block_cipher = None
 
+print(f'Working Directory: {os.getcwd()}')
 
 a = Analysis(
     ['pyapp/appadmin/server_gui.py'],
     pathex=[os.getcwd()],
     binaries=[],
     datas=[],
-    hiddenimports=['PIL', 'PIL._imagingtk', 'PIL._tkinter_finder', 'PIL.Image', 'requests', 'pdfkit', 'PyQt5', 'PyQtWebEngine'],
+    hiddenimports=['PIL', 'PIL._imagingtk', 'PIL._tkinter_finder', 'PIL.Image', 'requests', 'pdfkit', 'PyQt5', 'sip', 'PyQt5.QtWebEngineWidgets'], # , 'PyQtWebEngine'],
     hookspath=[],
     runtime_hooks=[],
     excludes=[],
     win_no_prefer_redirects=False,
     win_private_assemblies=False,
-    cipher=block_cipher,
-    noarchive=True)
+    #cipher=block_cipher,
+    cipher=None,
+    noarchive=False
+    )
 
 pyz = PYZ(
     a.pure, a.zipped_data,
-    cipher=block_cipher)
+    #cipher=block_cipher,
+    cipher=None
+    )
 
 exe = EXE(
     pyz,
+    a.scripts,
+    #a.binaries,
+    #a.zipfiles,
+    #a.datas,
+    #pkg_data,
+    exclude_binaries=True,
+    name='di',
+    debug=False,
+    bootloader_ignore_signals=False,
+    strip=False,
+    upx=False,
+    runtime_tmpdir=None,
+    console=True)
+
+collect = COLLECT(
+    exe,
     a.scripts,
     a.binaries,
     a.zipfiles,
     a.datas,
     pkg_data,
-    name='server',
+    name='di',
     debug=False,
-    bootloader_ignore_signals=False,
-    strip=False,
+    strip=None,
     upx=False,
     runtime_tmpdir=None,
     console=True)

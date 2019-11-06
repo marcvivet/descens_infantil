@@ -45,7 +45,7 @@ class LocaleData:
 
     def reload(self):
         if os.path.exists(self._file):
-            with open(self._file, 'r') as read_fp:
+            with open(self._file, 'r', encoding='utf-8') as read_fp:
                 self._locale = json.load(read_fp)
 
     @property
