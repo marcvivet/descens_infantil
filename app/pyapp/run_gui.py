@@ -67,11 +67,16 @@ class Window(QtWidgets.QMainWindow):
     def __init__(self):
         super().__init__()
 
-        self.title = 'PyQt5 menu - pythonspot.com'
+        self.title = 'Descens Infantil'
         self.left = 100
         self.top = 100
         self.width = 1280
         self.height = 1024
+        self.setWindowIcon(
+            QtGui.QIcon(
+                os.path.join(
+                    os.path.dirname(os.path.abspath(__file__)),
+                    'appadmin', 'interface', 'base', 'static', 'images', 'favicon', 'icono_72_72.ico')))
         
         self.initUI()
         

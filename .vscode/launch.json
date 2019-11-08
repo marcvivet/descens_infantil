@@ -54,6 +54,22 @@
             "name": "Python: Current File",
             "type": "python",
             "request": "launch",
+            "env": {
+                "PYTHONPATH": "${workspaceFolder}/app/pyapp",
+                "PATH": "${workspaceFolder}/app/pyapp/appadmin/bin;$PATH"
+            },
+            "program": "${file}",
+            "console": "integratedTerminal"
+        },
+        {
+            "name": "Python: Current File Windowed",
+            "pythonPath": "${workspaceFolder}/.venv_win/Scripts/pythonw.exe",
+            "type": "python",
+            "request": "launch",
+            "env": {
+                "PYTHONPATH": "${workspaceFolder}/app/pyapp",
+                "PATH": "${workspaceFolder}/app/pyapp/appadmin/bin;$PATH"
+            },
             "program": "${file}",
             "console": "integratedTerminal"
         }

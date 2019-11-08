@@ -32,7 +32,7 @@ endblock title %} {% block stylesheets %}
           <div class="form-group group-select">
             <label class="control-label col-md-3 col-sm-3 col-xs-3 label_edition_select">{{ blocale.edition }}:</label>
             <div class="col-md-9 col-sm-9 col-xs-9 select_edition">
-              <select class="form-control" id="select_edition">
+             <select class="form-control" id="select_edition">
                 {% for edition in editions %}
                 <option value="{{ edition['id'] }}">{{ edition['year'] }}</option>
                 {% endfor %}

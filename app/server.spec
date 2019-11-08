@@ -4,6 +4,8 @@ import os
 import sys
 from PyInstaller.building.build_main import Analysis, PYZ, EXE, COLLECT, BUNDLE, TOC
 
+IGNORE_EXTENSIONS = {'.pyo'}
+
 def collect_pkg_data(package, include_py_files=False, subdir=None):
     import os
     from PyInstaller.utils.hooks import get_package_paths, remove_prefix, PY_IGNORE_EXTENSIONS
@@ -18,9 +20,11 @@ def collect_pkg_data(package, include_py_files=False, subdir=None):
     # Walk through all file in the given package, looking for data files.
     data_toc = TOC()
     for dir_path, dir_names, files in os.walk(pkg_dir):
+        if '__pycache__' in dir_path:
+            continue
         for f in files:
             extension = os.path.splitext(f)[1]
-            if include_py_files or (extension not in PY_IGNORE_EXTENSIONS):
+            if include_py_files or (extension not in PY_IGNORE_EXTENSIONS) or extension not in IGNORE_EXTENSIONS:
                 source_file = os.path.join(dir_path, f)
                 dest_folder = remove_prefix(dir_path, os.path.dirname(pkg_base) + os.sep)
                 dest_file = os.path.join(dest_folder, f)
@@ -28,16 +32,70 @@ def collect_pkg_data(package, include_py_files=False, subdir=None):
 
     return data_toc
 
-sys.path.append(os.path.join(os.getcwd(), 'pyapp'))
+
+def collect_pkg_python(package):
+    import os
+    from PyInstaller.utils.hooks import get_package_paths, remove_prefix, PY_IGNORE_EXTENSIONS
+
+    # Accept only strings as packages.
+    if type(package) is not str:
+        raise ValueError
+
+    pkg_base, pkg_dir = get_package_paths(package)
+    # Walk through all file in the given package, looking for data files.
+    data_toc = TOC()
+    for dir_path, dir_names, files in os.walk(pkg_dir):
+        for f in files:
+            extension = os.path.splitext(f)[1]
+            if extension == '.py':
+                source_file = os.path.join(dir_path, f)
+                dest_folder = remove_prefix(dir_path, os.path.dirname(pkg_base) + os.sep)
+                dest_file = os.path.join(dest_folder, f)
+                data_toc.append((dest_file, source_file, 'DATA'))
+
+    return data_toc
+
+
+def collect_pkg_bin(package):
+    import os
+    from PyInstaller.utils.hooks import get_package_paths, remove_prefix, PY_IGNORE_EXTENSIONS
+
+    # Accept only strings as packages.
+    if type(package) is not str:
+        raise ValueError
+
+    pkg_base, pkg_dir = get_package_paths(package)
+    # Walk through all file in the given package, looking for data files.
+    data_toc = TOC()
+    for dir_path, dir_names, files in os.walk(pkg_dir):
+        for f in files:
+            extension = os.path.splitext(f)[1]
+            if extension in {'.dll', '.exe'}:
+                source_file = os.path.join(dir_path, f)
+                dest_folder = remove_prefix(dir_path, os.path.dirname(pkg_base) + os.sep)
+                dest_file = os.path.join(dest_folder, f)
+                data_toc.append((dest_file, source_file, 'DATA'))
+
+    return data_toc
+
+
+pyapp_path = os.path.join(os.getcwd(), 'pyapp')
+
+if not os.path.exists(pyapp_path):
+    pyapp_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'pyapp')
+
+sys.path.append(pyapp_path)
 pkg_data = collect_pkg_data('appadmin', include_py_files=True)
+pkg_data_py = collect_pkg_python('appadmin')
+pkg_data_bin = collect_pkg_bin('appadmin')
 
 block_cipher = None
 
-print(f'Working Directory: {os.getcwd()}')
+print(f'Working Directory: {pyapp_path}')
 
 a = Analysis(
     ['pyapp/appadmin/server_gui.py'],
-    pathex=[os.getcwd()],
+    pathex=[os.path.dirname(pyapp_path)],
     binaries=[],
     datas=[],
     hiddenimports=['PIL', 'PIL._imagingtk', 'PIL._tkinter_finder', 'PIL.Image', 'requests', 'pdfkit', 'PyQt5', 'sip', 'PyQt5.QtWebEngineWidgets'], # , 'PyQtWebEngine'],
@@ -60,6 +118,7 @@ pyz = PYZ(
 exe = EXE(
     pyz,
     a.scripts,
+    #pkg_data_py,
     #a.binaries,
     #a.zipfiles,
     #a.datas,
@@ -71,13 +130,15 @@ exe = EXE(
     strip=False,
     upx=False,
     runtime_tmpdir=None,
-    console=True)
+    console=False,
+    icon=os.path.join(pyapp_path, 'appadmin', 'interface', 'base', 'static', 'images', 'favicon', 'icono_72_72.ico'))
 
 collect = COLLECT(
     exe,
-    a.scripts,
+    #a.scripts,
     a.binaries,
-    a.zipfiles,
+    #a.zipfiles,
+    pkg_data_bin,
     a.datas,
     pkg_data,
     name='di',
