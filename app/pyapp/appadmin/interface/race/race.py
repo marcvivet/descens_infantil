@@ -1,5 +1,6 @@
 import os
 import json
+import base64
 from time import time
 from datetime import datetime
 
@@ -256,16 +257,29 @@ def list_out(edition_id=None, edition_year=None):
 
 @blp.route('/list_results', methods=['GET', 'POST'])
 @blp.route('/list_results/<edition_id>/<edition_year>', methods=['GET', 'POST'])
+@blp.route('/list_results/<edition_id>/<edition_year>/<view>', methods=['GET', 'POST'])
 @roles_required_online(blp)
-def list_results(edition_id=None, edition_year=None):
+def list_results(edition_id=None, edition_year=None, view=None):
     page_type = 'list_results'
     locm = LocalizationManager().get_blueprint_locale(blp.name)
     title = locm.category
     editions = Edition.get_editions()
     if edition_id and edition_year:
         data = Edition.get_list_results(edition_id)
+        edition_data = Edition.query.get(edition_id)
         with TemporaryDirectory() as temp_dir:
+            logo_path = os.path.join(os.path.dirname(
+                os.path.dirname(os.path.abspath(__file__))),
+                'base', 'static', 'images', 'logo_descens_color.jpg')
+
+            with open(logo_path, "rb") as file_r:
+                logo_data = base64.b64encode(file_r.read()).decode('utf-8')
+
             table_html = render_template('race_list_results_raw.html', **locals())
+
+            if view:
+                return table_html
+
             file_name = f'{locm.list_results}-{locm.edition}-{edition_year}.pdf'.lower().replace(
                 ' ', '_')
             pdfkit.from_string(table_html, os.path.join(temp_dir, file_name))

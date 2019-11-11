@@ -82,8 +82,8 @@ def main():
 
                 if not row['DATA NAIXEMENT']:
                     year = int(row['ANY'])
-                    category = int(row['CATEGORIA'])
-                    birthday = date(year - category, 1, 1)
+                    category = int(row['CATEGORIA']) - 1
+                    birthday = date(year - (category + 1), 1, 1)
                 else:
                     birthday = datetime.strptime(row['DATA NAIXEMENT'], '%m/%d/%y %H:%M:%S').date()
             except:

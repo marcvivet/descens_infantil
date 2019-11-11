@@ -8,14 +8,37 @@
     }
     body {
       font-family: Arial;
-      font-size: 10px;
+      color: #4C59BA;
+    }
+    .titles {
+      position: relative;
+      left: 0px;
+      width: 100%;
+    }
+    h1, h2, h3, h4 {
+      text-align: center;
+      width: 100%;
+    }
+    h1 {
+      font-size: 36px;
+      font-weight: bold;
     }
     h2 {
-      font-family: inherit;
-      font-weight: 500;
-      margin-top: 20px;
-      margin-bottom: 10px;
-      font-size: 30px;
+      font-size: 16px;
+      font-weight: bold;
+    }
+    h3 {
+      font-size: 24px;
+      font-weight: normal;
+    }
+    h4 {
+      font-size: 16px;
+      font-weight: normal;
+    }
+    h5 {
+      font-size: 16px;
+      font-weight: normal;
+      margin-bottom: 0px;
     }
     th {
       text-align: left;
@@ -27,11 +50,16 @@
     }
     .table>tbody>tr>td,
     .table>thead>tr>th {
-      padding: 8px;
+      padding: 6px;
       vertical-align: top;
       border-top: 2px solid #ddd;
     }
+    .table>tbody>tr>td {
+      color: black;
+      font-size: 12px;
+    }
     .table>thead>tr>th {
+      font-size: 12px;
       vertical-align: bottom;
       border-bottom: 2px solid #ddd;
     }
@@ -55,13 +83,26 @@
     .center {
       text-align: center;
     }
+    .img_left {
+      float: left;
+      width: 200px;
+    }
+    .img_right {
+      float: right;
+      width: 200px;
+    }
   </style>
 </head>
 <body>
-  <h1>{{ blocale.list_results }} - {{ blocale.edition }} {{ edition_year }}</h1>
   {% for category in data['categories'] %}
-  <h2>{{ blocale.category }} {{ category}}</h2>
-  <h3>{{ blocale.classified }}</h3>
+  <img class="img_left" src="data:image/jpeg;base64,{{ logo_data }}" />
+  <img class="img_right" src="data:image/jpeg;base64,{{ logo_data }}" />
+  <div class="titles">
+    <h1>{{ edition_data.edition}} DESCENS INFANTIL</h1>
+    <h2>1 de gener del {{ edition_year }}</h2>
+    <h3>RESULTATS OFICIALS</h3>
+    <h4>{{ blocale.category }} {{ category}}: de {{ category }} a {{ category + 1}} anys</h4>
+    <h5>{{ blocale.classified }}</h5>
   {% if data['category_dict'][category]['classified'] %}
   <table class="table table-striped table-bordered">
     <thead>
@@ -87,7 +128,7 @@
   </table>
   {% endif %}
   {% if data['category_dict'][category]['disqualified'] %}
-  <h3>{{ blocale.disqualified }}</h3>
+  <h5>{{ blocale.disqualified }}</h5>
   <table class="table table-striped table-bordered">
     <thead>
       <tr>
@@ -109,6 +150,8 @@
     </tbody>
   </table>
   {% endif %}
+  </div>
+  <div style = "display:block; clear:both; page-break-after:always;"></div>
   {% endfor %}
 </body>
 </html>
