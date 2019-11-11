@@ -682,7 +682,7 @@ class EditionParticipant(db.Model):
         self.participant_id = participant.id
         self.club_id = club.id
 
-        self.category = edition.date.year - participant.birthday.year
+        self.category = edition.date.year - participant.birthday.year - 1
 
         self.bib_number = bib_number
         self.penalized = penalized
