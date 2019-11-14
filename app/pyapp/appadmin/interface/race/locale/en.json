@@ -45,12 +45,13 @@
     "edit": "Edit",
     "delete": "Delete",
     "cancel": "Cancel",
-    "actions": "Actions",
     "lists": "Lists",
     "list_out": "Output",
     "list_bib_number": "Bib Numbers",
     "list_results": "Results",
     "convert_to_pdf": "Create PDF",
     "disqualified": "Disqualifieds",
-    "classified": "Classifieds"
+    "classified": "Classifieds",
+    "position": "Position",
+    "penalization_time": "Penalization Time"
 }

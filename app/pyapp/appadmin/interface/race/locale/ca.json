@@ -45,12 +45,13 @@
     "edit": "Edita",
     "delete": "Elimina",
     "cancel": "Cancel·la",
-    "actions": "Accions",
     "lists": "Llistats",
     "list_out": "Sortida",
     "list_bib_number": "Dorsals",
     "list_results": "Resultats",
     "convert_to_pdf": "Crear PDF",
     "disqualified": "Desqualificats",
-    "classified": "Classificats"
+    "classified": "Classificats",
+    "position": "Posició",
+    "penalization_time": "Temps penalització"
 }

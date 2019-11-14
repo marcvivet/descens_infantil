@@ -483,7 +483,7 @@ class Edition(db.Model):
                     "    MAX(edition_participants.time) AS time " \
                     "FROM edition_participants " \
                     "JOIN editions ON editions.id = edition_participants.edition_id " \
-                    "WHERE editions.id = 10 AND " \
+                    f"WHERE editions.id = {edition_id} AND " \
                     "    edition_participants.penalized = 0 AND " \
                     "    edition_participants.disqualified = 0 AND " \
                     "    edition_participants.not_arrived = 0 AND " \
@@ -545,10 +545,22 @@ class Edition(db.Model):
             if result[category]['classified']:
                 result[category]['classified'] = sorted(
                     result[category]['classified'], key=lambda k: k['time_final'])
+                
+                for position, row in enumerate(result[category]['classified'], start=1):
+                    row['position'] = position
+
+                if category < 3:
+                    result[category]['classified'] = sorted(
+                        result[category]['classified'], key=lambda k: k['bib_number'])    
+
+            if result[category]['disqualified']:
+                result[category]['disqualified'] = sorted(
+                        result[category]['disqualified'], key=lambda k: k['bib_number'])                      
         
         return {
             'category_dict': result,
-            'categories': sorted(list(result.keys()))
+            'categories': sorted(list(result.keys())),
+            'penalizations': Edition.get_penalizations(edition_id)
         }
 
     @staticmethod

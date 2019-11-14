@@ -27,12 +27,17 @@ class Singleton(type):
     _instance = None
 
     def __call__(cls, *args, **kwargs):
+        singleton = kwargs.pop('singleton', True)
+
+        if not singleton:
+            return super(Singleton, cls).__call__(*args, **kwargs)
+
         if not cls._instance:
             cls._instance = \
                 super(Singleton, cls).__call__(*args, **kwargs)
         
         # REMOVE THIS AT THE END
-        cls._instance.reload()
+        # cls._instance.reload()
         return cls._instance
 
 
@@ -74,7 +79,7 @@ class LocaleData:
 
 class LocalizationManager(metaclass=Singleton):
 
-    def __init__(self):
+    def __init__(self, **kwargs):
         self._logger = logging.getLogger(__name__)
         self._locale = {
             'en': {},
@@ -82,6 +87,17 @@ class LocalizationManager(metaclass=Singleton):
         }
 
         self._default_locale = 'ca'
+
+    def add_bluprint_by_path(self, blp_path):
+        blp_name = os.path.basename(blp_path)
+        try:
+            for iso_639_1 in self._locale:
+                language_file = os.path.join(blp_path, 'locale', f'{iso_639_1}.json')
+                self._locale[iso_639_1][blp_name] = LocaleData(language_file)
+        except:
+            self._logger.error(
+                "Error while parsing locale JSON for blueprint %s, language %s",
+                blp_name, iso_639_1)
 
     def add_blueprint(self, blp):
         try:

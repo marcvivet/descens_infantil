@@ -102,26 +102,38 @@
     <h2>1 de gener del {{ edition_year }}</h2>
     <h3>RESULTATS OFICIALS</h3>
     <h4>{{ blocale.category }} {{ category}}: de {{ category }} a {{ category + 1}} anys</h4>
-    <h5>{{ blocale.classified }}</h5>
+    <h5>{{ blocale.classified }}{% if category > 2 %} - {{blocale.penalization_time}}: {{str(data['penalizations'][category])[2:-4]}}{% endif %}</h5>
   {% if data['category_dict'][category]['classified'] %}
   <table class="table table-striped table-bordered">
     <thead>
       <tr>
+        {% if category > 2 %}
+        <th class="center">{{ blocale.position }}</th>
+        {% endif %}
         <th class="center">{{ blocale.bib_number }}</th>
         <th>{{ blocale.surnames }}</th>
         <th>{{ blocale.name }}</th>
+        <th>{{ blocale.club_name }}</th>
+        {% if category > 2 %}
         <th class="center">{{ blocale.penalized }}</th>
         <th class="center">{{ blocale.time_final }}</th>
+        {% endif %}
       </tr>
     </thead>
     <tbody>
       {% for row in data['category_dict'][category]['classified'] %}
       <tr>
+        {% if category > 2 %}
+        <td class="center">{{ row['position'] }}</td>
+        {% endif %}
         <td class="center">{{ row['bib_number'] }}</td>
         <td>{{ row['surnames'] }}</td>
         <td>{{ row['name'] }}</td>
+        <td>{{ row['club_name'] }}</td>
+        {% if category > 2 %}
         <td class="center">{% if row['penalized'] %}<span class="penalized" /><span class="hidden">X</span>{% else %}<span></span>{% endif %}</td>
-        <td class="center">{% if category > 3 %}{{ row['time_final'] }}{% else %}-{% endif %}</td>
+        <td class="center">{{ row['time_final'] }}</td>
+        {% endif %}
       </tr>
       {% endfor %}
     </tbody>
@@ -135,6 +147,7 @@
         <th>{{ blocale.bib_number }}</th>
         <th>{{ blocale.surnames }}</th>
         <th>{{ blocale.name }}</th>
+        <th>{{ blocale.club_name }}</th>
         <th>{{ blocale.race_status }}</th>
       </tr>
     </thead>
@@ -144,6 +157,7 @@
         <td>{{ row['bib_number'] }}</td>
         <td>{{ row['surnames'] }}</td>
         <td>{{ row['name'] }}</td>
+        <td>{{ row['club_name'] }}</td>
         <td>{% if row['disqualified'] %}{{ blocale.participant_disqualified }}{% else %}{% if row['not_arrived'] %}{{ blocale.participant_not_arrived }}{% else %}{% if row['not_came_out'] %}{{ blocale.participant_not_came_out }}{% endif %}{% endif %}{% endif %}</td>
       </tr>
       {% endfor %}

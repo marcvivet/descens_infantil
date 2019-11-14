@@ -44,7 +44,7 @@
                       <table id="custom-datatable" class="table table-striped table-bordered">
                           <thead>
                               <tr>
-                                  <th>{{ locale.actions }}</th>
+                                  <th>{{ locale.base.actions }}</th>
                                   <th>{{ blocale.picture }}</th>
                                   <th>{{ blocale.times_as_chief_of_course }}</th>
                                   <th>{{ blocale.times_as_start_referee }}</th>
@@ -121,7 +121,7 @@
                               <div class="col-xs-6 emphasis">
                                 <form method="post">
                                     <button type="button" onclick="clickOnDelete('{{ organizer.id }}');" class="btn btn-danger btn-xs">
-                                        <i class="fa fa-remove"> </i> {{ locale.delete }}
+                                        <i class="fa fa-remove"> </i> {{ locale.base.delete }}
                                     </button>
                                 </form>
                               </div>
@@ -130,7 +130,7 @@
                                     <input type="hidden" name="action" value="edit">
                                     <input type="hidden" name="organizer_id" value="{{ organizer.id }}">
                                     <button type="submit" class="btn btn-primary btn-xs">
-                                        <i class="fa fa-edit"> </i> {{ locale.edit }}
+                                        <i class="fa fa-edit"> </i> {{ locale.base.edit }}
                                     </button>
                                 </form>
                               </div>

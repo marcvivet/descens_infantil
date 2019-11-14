@@ -414,17 +414,28 @@ class ResultsListPageRow extends ListPageRow {
     return [
       {
         "targets": [0],
+        "searchable": false,
+        "sortable": true,
+        "className": "center-element"
+      },
+      {
+        "targets": [1],
         "searchable": true,
         "sortable": true,
         "className": "center-element"
       },
       {
-        "targets": [1, 2],
+        "targets": [2, 3],
         "searchable": true,
         "sortable": true
       },
       {
-        "targets": [3, 4],
+        "targets": [4],
+        "searchable": false,
+        "sortable": true
+      },
+      {
+        "targets": [5, 6],
         "searchable": false,
         "sortable": true,
         "className": "center-element"
@@ -435,6 +446,8 @@ class ResultsListPageRow extends ListPageRow {
   tableColumnsStyle() {
     return [
       {"width": "50px"},
+      {"width": "50px"},
+      {"width": "auto"},
       {"width": "auto"},
       {"width": "auto"},
       {"width": "50px"},
@@ -444,16 +457,18 @@ class ResultsListPageRow extends ListPageRow {
 
   tableOrder() {
     return [
-      [4, "asc"]
+      [6, "asc"]
     ];
   }
 
   tableHead() {
     return `
       <tr>
+        <th>${this._locale.race["position"]}</th>
         <th>${this._locale.race["bib_number"]}</th>
         <th>${this._locale.race["surnames"]}</th>
         <th>${this._locale.race["name"]}</th>
+        <th>${this._locale.race["club_name"]}</th>
         <th>${this._locale.race["penalized"]}</th>
         <th>${this._locale.race["time_final"]}</th>
       </tr>`;
@@ -475,6 +490,11 @@ class ResultsListPageRow extends ListPageRow {
       {
         "targets": [3],
         "searchable": false,
+        "sortable": true
+      },
+      {
+        "targets": [4],
+        "searchable": false,
         "sortable": true,
         "className": "center-element"
       }
@@ -484,6 +504,7 @@ class ResultsListPageRow extends ListPageRow {
   tableColumnsStyleDis() {
     return [
       {"width": "50px"},
+      {"width": "auto"},
       {"width": "auto"},
       {"width": "auto"},
       {"width": "50px"}
@@ -502,6 +523,7 @@ class ResultsListPageRow extends ListPageRow {
         <th>${this._locale.race["bib_number"]}</th>
         <th>${this._locale.race["surnames"]}</th>
         <th>${this._locale.race["name"]}</th>
+        <th>${this._locale.race["club_name"]}</th>
         <th>${this._locale.race["race_status"]}</th>
       </tr>`;
   }
@@ -536,11 +558,14 @@ class ResultsListPageRow extends ListPageRow {
     tr.id = id;
 
     let penalized = this.getPenalized(row.penalized);
+    console.log(row)
 
     let innerHtml = `
+      <td>${row.position}</td>
       <td>${row.bib_number}</td>
       <td>${row.surnames}</td>
       <td>${row.name}</td>
+      <td>${row.club_name}</td>
       <td>${penalized}</td>
       <td>${row.time_final}</td>`;
 
@@ -558,6 +583,7 @@ class ResultsListPageRow extends ListPageRow {
       <td>${row.bib_number}</td>
       <td>${row.surnames}</td>
       <td>${row.name}</td>
+      <td>${row.club_name}</td>
       <td>${status}</td>`;
 
 

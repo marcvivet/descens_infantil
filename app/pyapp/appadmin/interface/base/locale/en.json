@@ -19,5 +19,12 @@
     "submit": "Submit",
     "thumbnails": "Thumbnails",
     "table": "Table",
-    "exception": "An error has been occurred: {}"
+    "exception": "An error has been occurred: {}",
+    "about": "About ...",
+    "help": "Help",
+    "exit": "Exit",
+    "file": "File",
+    "version": "Version",
+    "open_web": "descens infantil website ...",
+    "log": "Open Log"
 }

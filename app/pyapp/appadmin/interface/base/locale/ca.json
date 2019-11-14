@@ -19,5 +19,12 @@
     "submit": "Envia",
     "thumbnails": "Miniatures",
     "table": "Taula",
-    "exception": "S'ha produït un error: {}"
+    "exception": "S'ha produït un error: {}",
+    "about": "Sobre la applicació ...",
+    "help": "Ajuda",
+    "exit": "Sortir",
+    "file": "Fitcher",
+    "version": "Versió",
+    "open_web": "Web descens infantil ...",
+    "log": "Obrir Log"
 }

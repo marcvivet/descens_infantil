@@ -47,8 +47,8 @@
                                   <th>{{ blocale.email }}</th>
                                   <th>{{ blocale.phone }}</th>
                                   <th>{{ blocale.active }}</th>
-                                  <th data-sortable="false" style="width: 20px;">{{ locale.edit }}</th>
-                                  <th data-sortable="false" style="width: 20px;">{{ locale.delete }}</th>
+                                  <th data-sortable="false" style="width: 20px;">{{ locale.base.edit }}</th>
+                                  <th data-sortable="false" style="width: 20px;">{{ locale.base.delete }}</th>
                               </tr>
                           </thead>
                           <tbody>
@@ -108,7 +108,7 @@
                                     <input type="hidden" name="action" value="delete">
                                     <input type="hidden" name="user_id" value="{{ user.id }}">
                                     <button type="submit" class="btn btn-danger btn-xs">
-                                        <i class="fa fa-remove"> </i> {{ locale.delete }}
+                                        <i class="fa fa-remove"> </i> {{ locale.base.delete }}
                                     </button>
                                 </form>
                               </div>
@@ -117,7 +117,7 @@
                                     <input type="hidden" name="action" value="edit">
                                     <input type="hidden" name="user_id" value="{{ user.id }}">
                                     <button type="submit" class="btn btn-primary btn-xs">
-                                        <i class="fa fa-edit"> </i> {{ locale.edit }}
+                                        <i class="fa fa-edit"> </i> {{ locale.base.edit }}
                                     </button>
                                 </form>
                               </div>

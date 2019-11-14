@@ -8,14 +8,38 @@
     }
     body {
       font-family: Arial;
-      font-size: 10px;
+      color: #4C59BA;
+    }
+    .titles {
+      position: relative;
+      left: 0px;
+      width: 100%;
+     }
+    h1, h2, h3, h4 {
+      height: 75px;
+      vertical-align: middle; /*middle centred*/
+      display: table-cell;
+    }
+    h1 {
+      font-size: 36px;
+      font-weight: bold;
     }
     h2 {
-      font-family: inherit;
-      font-weight: 500;
-      margin-top: 20px;
-      margin-bottom: 10px;
-      font-size: 30px;
+      font-size: 16px;
+      font-weight: bold;
+    }
+    h3 {
+      font-size: 24px;
+      font-weight: normal;
+    }
+    h4 {
+      font-size: 16px;
+      font-weight: normal;
+    }
+    h5 {
+      font-size: 16px;
+      font-weight: normal;
+      margin-bottom: 0px;
     }
     th {
       text-align: left;
@@ -27,11 +51,16 @@
     }
     .table>tbody>tr>td,
     .table>thead>tr>th {
-      padding: 8px;
+      padding: 6px;
       vertical-align: top;
       border-top: 2px solid #ddd;
     }
+    .table>tbody>tr>td {
+      color: black;
+      font-size: 12px;
+    }
     .table>thead>tr>th {
+      font-size: 12px;
       vertical-align: bottom;
       border-bottom: 2px solid #ddd;
     }
@@ -48,13 +77,28 @@
     .table-striped>tbody>tr:nth-of-type(odd) {
       background-color: #f9f9f9;
     }
+    .penalized {
+      color: red;
+      font-weight: bold;
+    }
     .center {
       text-align: center;
+    }
+    .img_left {
+      float: left;
+      width: 100px;
+    }
+    .img_right {
+      float: right;
+      width: 100px;
     }
   </style>
 </head>
 <body>
-  <h2>{{ blocale.list_bib_number }} - {{ blocale.edition }} {{ edition_year }}</h2>
+  <img class="img_left" src="data:image/jpeg;base64,{{ logo_data }}" />
+  <img class="img_right" src="data:image/jpeg;base64,{{ logo_data }}" />
+  <div class="titles">
+  <center><h1>{{ blocale.list_bib_number }} - {{ blocale.edition }} {{ edition_year }}</h1></center>
   <table class="table table-striped table-bordered">
     <thead>
       <tr>
@@ -75,5 +119,6 @@
       {% endfor %}
     </tbody>
   </table>
+</div>
 </body>
 </html>
