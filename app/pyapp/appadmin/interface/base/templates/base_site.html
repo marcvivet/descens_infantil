@@ -1,3 +1,4 @@
+<!--{% if current_user.is_authenticated %}{"race": {{[0, 1][current_user.has_page(['race'])]}}, "organizers": {{[0, 1][current_user.has_page(['organizers'])]}}, "editions": {{[0, 1][current_user.has_page(['editions'])]}}, "clubs": {{[0, 1][current_user.has_page(['clubs'])]}}, "statistics": {{[0, 1][current_user.has_page(['statistics'])]}}, "users": {{[0, 1][current_user.has_page(['users'])]}}, "roles": {{[0, 1][current_user.has_page(['roles'])]}}}{%endif%}-->
 <!DOCTYPE html>
 <html lang="{{ locale.user_locale }}">
   <head>

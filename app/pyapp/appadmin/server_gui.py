@@ -2,13 +2,13 @@ import sys
 import os
 import subprocess
 
+import requests
 import logging
+import re
 
 import platform
 from PyQt5 import QtCore, QtWidgets, QtGui, QtWebEngineWidgets
 import socket
-
-from flask import logging as flogging
 
 from appadmin.server import app, configure_logs
 from appadmin.utils.localization_manager import LocalizationManager
@@ -59,6 +59,7 @@ class Console(QtWidgets.QDialog, logging.Handler):
         logging.Handler.__init__(self)
 
         layout = QtWidgets.QVBoxLayout()
+        self.setWindowIcon(Configuration().icon)
 
         pal = QtGui.QPalette()
         bgc = QtGui.QColor(0, 0, 0)
@@ -72,9 +73,7 @@ class Console(QtWidgets.QDialog, logging.Handler):
         font.setFamily("Verdana")
         font.setPixelSize(12)
         self.editor.setFont(font)
-
-        
-
+       
         layout.addWidget(self.editor)
         self.setLayout(layout)
 
@@ -83,14 +82,9 @@ class Console(QtWidgets.QDialog, logging.Handler):
         self.setFormatter(logging.Formatter('[%(asctime)s][%(levelname)s] %(message)s'))
 
         self.resize(1280, 480)
-
         
         self.lines = []
-
         self.new_record_signal.connect(self.on_new_record)
-        
-
-
 
     def emit(self, record):
         if record.msg.startswith('127.0.0.1'):
@@ -116,8 +110,6 @@ class Console(QtWidgets.QDialog, logging.Handler):
             self.new_record_signal.emit(record)
         else:
             self.on_new_record(record)
-
-        
 
     def on_new_record(self, record):
         self.lines.append(record)
@@ -216,6 +208,12 @@ class WebPage(QtWebEngineWidgets.QWebEnginePage):
     def home(self):
         self.load(QtCore.QUrl(self.root_url))
 
+    def setPage(self, page):
+        self.load(QtCore.QUrl(self.root_url + page))
+
+    def ask(self, *args):
+        self.load(QtCore.QUrl(self.root_url + '/ask'))
+
     def acceptNavigationRequest(self, url, kind, is_main_frame):
         """Open external links in browser and internal links in the webview"""
         ready_url = url.toEncoded().data().decode()
@@ -243,58 +241,52 @@ class Window(QtWidgets.QMainWindow):
         self.height = 1024
 
         self.setWindowIcon(config.icon)
-        
-        self.initUI()
-        
-        
-    def initUI(self):
+
         self.setWindowTitle(self.title)
         self.setGeometry(self.left, self.top, self.width, self.height)
+
+        self.permissions = '{"race": 0, "organizers": 0, "editions": 0, "clubs": 0, "statistics": 0,"users": 0,"roles": 0}'
+       
         
+    def create_menu(self, page):
         self.menubar = self.menuBar()
-        #mainMenu.setNativeMenuBar(False)
-        fileMenu = self.menubar.addMenu(f'&{self.locale.base["file"]}')
-
-        base_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'assets', 'images')
-
-        consoleutton = QtWidgets.QAction(
-            QtGui.QIcon(os.path.join(base_path, 'List.png')),
-            f' &{self.locale.base["log"]}', self)
-        consoleutton.setShortcut('Ctrl+Q')
-        consoleutton.setStatusTip(self.locale.base['log'])
-        consoleutton.triggered.connect(self.console.show)
-        fileMenu.addAction(consoleutton)
-        
-        exitButton = QtWidgets.QAction(
-            QtGui.QIcon(os.path.join(base_path, 'Close.png')),
-            f' &{self.locale.base["exit"]}', self)
-        exitButton.setShortcut('Ctrl+Q')
-        exitButton.setStatusTip(self.locale.base['exit'])
-        exitButton.triggered.connect(self.close)
-        fileMenu.addAction(exitButton)
-
-        helpMenu = self.menubar.addMenu(f'&{self.locale.base["help"]}')
-
+        #mainMenu.setNativeMenuBar(False)     
         def open_di():
             QtGui.QDesktopServices.openUrl(QtCore.QUrl('http://www.descensinfantil.cat/'))
 
-        diButton = QtWidgets.QAction(
-            QtGui.QIcon(os.path.join(base_path, 'Compass.png')),
-            f' &{self.locale.base["open_web"]}', self)
-        diButton.setStatusTip(f'{self.locale.base["open_web"]}')
-        diButton.triggered.connect(open_di)
-        helpMenu.addAction(diButton)
-        
-        aboutButton = QtWidgets.QAction(
-            QtGui.QIcon(os.path.join(base_path, 'Help.png')),
-            f' &{self.locale.base["about"]}', self)
-        aboutButton.setStatusTip(f'{self.locale.base["about"]}')
-        aboutButton.triggered.connect(self.about.show)
-        helpMenu.addAction(aboutButton)
- 
-        self.show()
+        def open_page(path):
+            def open_page_aux():
+                page.setPage(path)
+            return open_page_aux
 
-    
+        def create_menu_item(name, icon, action, shortcut = None):
+            button = QtWidgets.QAction(
+                QtGui.QIcon(os.path.join(Configuration().images_path, icon)),
+                f' &{self.locale.base[name]}', self)
+            button.setStatusTip(self.locale.base[name])
+            button.triggered.connect(action)
+
+            if shortcut:
+                button.setShortcut(shortcut)
+
+            return button
+
+        file_menu = self.menubar.addMenu(f'&{self.locale.base["file"]}')
+        file_menu.addAction(create_menu_item("home", 'Home.png', open_page('/')))
+        file_menu.addAction(create_menu_item("logout", 'Exit.png', open_page('/logout')))
+        file_menu.addAction(create_menu_item("log", 'List.png', self.console.show))
+        file_menu.addAction(create_menu_item("exit", 'Close.png', self.close, shortcut='Ctrl+Q'))
+
+        help_menu = self.menubar.addMenu(f'&{self.locale.base["help"]}')
+        help_menu.addAction(create_menu_item("open_web", 'Compass.png', open_di))
+        help_menu.addAction(create_menu_item("about", 'Help.png', self.about.show))
+
+    def update_permissions(self, new_permissions):
+        if self.permissions == new_permissions:
+            return
+
+        
+        
 
 
 def init_gui(qtapp, application, port=0, argv=None):
@@ -324,6 +316,7 @@ def init_gui(qtapp, application, port=0, argv=None):
 
 
     window = Window(console)
+    
 
     # Main Window Level
     
@@ -331,15 +324,47 @@ def init_gui(qtapp, application, port=0, argv=None):
     #window.setWindowTitle(window_title)
     #window.setWindowIcon(QtGui.QIcon(icon))
 
-    # WebView Level
-    webView = QtWebEngineWidgets.QWebEngineView(window)
-    window.setCentralWidget(webView)
-
     # WebPage Level
     page = WebPage('http://localhost:{}'.format(port))
     page.home()
-    webView.setPage(page)
 
+    #clean_all_tags = re.compile('<.*?>')
+
+    #def on_ready():
+    #    def html(html):
+    #        json_text = clean_all_tags.sub('', html)
+    #        a = 1
+    #        window.setAttribute(QtCore.Qt.WA_DontShowOnScreen, False)
+    #        window.show()
+    #    a = page.toHtml(html)
+    #    page.url().password
+
+    #page.loadFinished.connect(on_ready)
+
+    
+    # WebView Level
+    webView = QtWebEngineWidgets.QWebEngineView(window)
+
+    def on_ready():
+        def func_html(html):
+            values = html.split('-->', 1)[0][4:]
+            a = 1
+        a = webView.page().toHtml(func_html)
+
+
+    webView.loadFinished.connect(on_ready)
+
+
+
+    window.setCentralWidget(webView)
+    webView.setPage(page)
+    
+
+    
+
+    window.create_menu(page)
+
+    #window.setAttribute(QtCore.Qt.WA_DontShowOnScreen, True)
     window.show()
     return qtapp.exec_()
 
@@ -351,4 +376,5 @@ if __name__ == '__main__':
 
         configure_logs(app)
         qtapp = QtWidgets.QApplication(sys.argv)
+        qtapp.setWindowIcon(Configuration().icon)
         init_gui(qtapp, app)
