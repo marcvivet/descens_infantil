@@ -17,13 +17,20 @@ from appadmin.utils.localization_manager import Singleton
 from appadmin.utils.crypt import Crypt
 
 
+QtWidgets.QApplication.setAttribute(QtCore.Qt.AA_EnableHighDpiScaling, True)
+QtWidgets.QApplication.setAttribute(QtCore.Qt.AA_UseHighDpiPixmaps, True)
+
+
 class Configuration(metaclass=Singleton):
     def __init__(self):
         self._locale = LocalizationManager(singleton=False)
-        self._locale.add_bluprint_by_path(
-            os.path.join(
-                os.path.dirname(os.path.abspath(__file__)),
-                'interface', 'base'))
+
+        for folder in [
+                'base', 'race', 'organizers', 'editions', 'clubs', 'statistics', 'users', 'roles']:
+            self._locale.add_bluprint_by_path(
+                os.path.join(
+                    os.path.dirname(os.path.abspath(__file__)),
+                    'interface', folder))
 
         if any(platform.win32_ver()):
             extenssion = 'ico'
@@ -49,7 +56,6 @@ class Configuration(metaclass=Singleton):
     @property
     def images_path(self):
         return os.path.join(self._assets_path, 'images')
-
 
 
 class Console(QtWidgets.QDialog, logging.Handler):
@@ -112,17 +118,25 @@ class Console(QtWidgets.QDialog, logging.Handler):
         else:
             self.on_new_record(record)
 
+    def update_data(self):
+        self.editor.setHtml('\n'.join(self.lines))
+        cursor = self.editor.textCursor()        
+        cursor.movePosition(QtGui.QTextCursor.End)
+        self.editor.setTextCursor(cursor)
+        self.editor.ensureCursorVisible()
+
     def on_new_record(self, record):
         self.lines.append(record)
 
         if len(self.lines) > 100:
             self.lines = self.lines[1:]
 
-        self.editor.setHtml('\n'.join(self.lines))
-        cursor = self.editor.textCursor()        
-        cursor.movePosition(QtGui.QTextCursor.End)
-        self.editor.setTextCursor(cursor)
-        self.editor.ensureCursorVisible()
+        if self.isVisible():
+            self.update_data()
+
+    def showEvent(self, event):
+        super().showEvent(event)
+        self.update_data()
 
 
 class About(QtWidgets.QDialog):
@@ -188,7 +202,8 @@ class WebPage(QtWebEngineWidgets.QWebEnginePage):
     def on_downloadRequested(self, download):
         old_path = download.path()
         suffix = QtCore.QFileInfo(old_path).suffix()
-        path, _ = QtWidgets.QFileDialog.getSaveFileName(self.view(), "Save File", old_path, "*."+suffix)
+        path, _ = QtWidgets.QFileDialog.getSaveFileName(
+            self.view(), "Save File", old_path, "*."+suffix)
         if path:
             download.setPath(path)
             download.accept()
@@ -246,9 +261,8 @@ class Window(QtWidgets.QMainWindow):
         self.setWindowTitle(self.title)
         self.setGeometry(self.left, self.top, self.width, self.height)
 
-        self.permissions = '{"race": 0, "organizers": 0, "editions": 0, "clubs": 0, "statistics": 0, "users": 0, "roles": 0}'
+        self.prev_page_values = ''
        
-        
     def create_menu(self, page):
         self.menubar = self.menuBar()
         #mainMenu.setNativeMenuBar(False)     
@@ -263,8 +277,8 @@ class Window(QtWidgets.QMainWindow):
         def create_menu_item(name, icon, action, shortcut = None):
             button = QtWidgets.QAction(
                 QtGui.QIcon(os.path.join(Configuration().images_path, icon)),
-                f' &{self.locale.base[name]}', self)
-            button.setStatusTip(self.locale.base[name])
+                f' &{name}', self)
+            button.setStatusTip(name)
             button.triggered.connect(action)
 
             if shortcut:
@@ -272,22 +286,101 @@ class Window(QtWidgets.QMainWindow):
 
             return button
 
-        file_menu = self.menubar.addMenu(f'&{self.locale.base["file"]}')
-        file_menu.addAction(create_menu_item("home", 'Home.png', open_page('/')))
-        file_menu.addAction(create_menu_item("logout", 'Exit.png', open_page('/logout')))
-        file_menu.addAction(create_menu_item("log", 'List.png', self.console.show))
-        file_menu.addAction(create_menu_item("exit", 'Close.png', self.close, shortcut='Ctrl+Q'))
+        self.menu_bar_items = {
+            'file': self.menubar.addMenu(f'&{self.locale.base["file"]}'),
+            'race': self.menubar.addMenu(f'&{self.locale.race["race"]}'),
+            'organizers': self.menubar.addMenu(f'&{self.locale.organizers["organizers"]}'),
+            'editions': self.menubar.addMenu(f'&{self.locale.editions["editions"]}'),
+            'clubs': self.menubar.addMenu(f'&{self.locale.clubs["clubs"]}'),
+            'statistics': self.menubar.addMenu(f'&{self.locale.statistics["statistics"]}'),
+            'users': self.menubar.addMenu(f'&{self.locale.users["users"]}'),
+            'roles': self.menubar.addMenu(f'&{self.locale.roles["roles"]}'),
+            'help': self.menubar.addMenu(f'&{self.locale.base["help"]}')
+        }
 
-        help_menu = self.menubar.addMenu(f'&{self.locale.base["help"]}')
-        help_menu.addAction(create_menu_item("open_web", 'Compass.png', open_di))
-        help_menu.addAction(create_menu_item("about", 'Help.png', self.about.show))
+        self.menu_bar_items['file'].addAction(create_menu_item(
+            self.locale.base["home"], 'fa-home.png', open_page('/')))
+        self.menu_bar_items['file'].addAction(create_menu_item(
+            self.locale.base["logout"], 'fa-sign-out.png', open_page('/logout')))
+        self.menu_bar_items['file'].addSeparator()
+        self.menu_bar_items['file'].addAction(create_menu_item(
+            self.locale.base["log"], 'fa-terminal.png', self.console.show))
+        self.menu_bar_items['file'].addSeparator()
+        self.menu_bar_items['file'].addAction(create_menu_item(
+            self.locale.base["exit"], 'fa-power-off.png', self.close, shortcut='Ctrl+Q'))
 
-    def update_permissions(self, new_permissions):
-        if self.permissions == new_permissions:
-            return
+        self.menu_bar_items['race'].addAction(create_menu_item(
+            self.locale.race["enter_times"], 'fa-dashboard.png', open_page('/race/enter_times')))
+        self.menu_bar_items['race'].addAction(create_menu_item(
+            self.locale.race["edit_participants"], 'fa-pencil-square-o.png',
+            open_page('/race/edit_participants')))
+        self.menu_bar_items['race'].addAction(create_menu_item(
+            self.locale.race["add_participants"], 'fa-address-card-o.png', open_page('/race/add')))
+        self.menu_bar_items['race'].addAction(create_menu_item(
+            self.locale.race["results"], 'fa-trophy.png', open_page('/race/results')))
+        self.menu_bar_items['race'].addSeparator()
+        self.menu_bar_items['race'].addAction(create_menu_item(
+            self.locale.race["list_bib_number"], 'fa-file-pdf-o.png',
+            open_page('/race/list_bib_number')))
+        self.menu_bar_items['race'].addAction(create_menu_item(
+            self.locale.race["list_out"], 'fa-file-pdf-o.png', open_page('/race/list_out')))
+        self.menu_bar_items['race'].addAction(create_menu_item(
+            self.locale.race["list_results"], 'fa-file-pdf-o.png', open_page('/race/list_results')))
 
-        
-        
+        self.menu_bar_items['organizers'].addAction(create_menu_item(
+            self.locale.organizers["view_organizers"], 'fa-sitemap.png',
+            open_page('/organizers/view')))
+        self.menu_bar_items['organizers'].addAction(create_menu_item(
+            self.locale.organizers["add_organizer"], 'fa-address-book-o.png',
+            open_page('/organizers/add')))
+
+        self.menu_bar_items['editions'].addAction(create_menu_item(
+            self.locale.editions["view_editions"], 'fa-calendar.png', open_page('/editions/view')))
+        self.menu_bar_items['editions'].addAction(create_menu_item(
+            self.locale.editions["add_edition"], 'fa-calendar-plus-o.png',
+            open_page('/editions/add')))
+
+        self.menu_bar_items['clubs'].addAction(create_menu_item(
+            self.locale.clubs["view_clubs"], 'fa-institution.png', open_page('/clubs/view')))
+        self.menu_bar_items['clubs'].addAction(create_menu_item(
+            self.locale.clubs["add_club"], 'fa-plus-square-o.png', open_page('/clubs/add')))
+
+        self.menu_bar_items['statistics'].addAction(create_menu_item(
+            self.locale.statistics["organizers"], 'fa-pie-chart.png',
+            open_page('/statistics/organizers')))
+        self.menu_bar_items['statistics'].addAction(create_menu_item(
+            self.locale.statistics["editions"], 'fa-bar-chart-o.png',
+            open_page('/statistics/editions')))
+
+        self.menu_bar_items['users'].addAction(create_menu_item(
+            self.locale.users["users"], 'fa-users.png', open_page('/users/view')))
+        self.menu_bar_items['users'].addAction(create_menu_item(
+            self.locale.users["add_user"], 'fa-user-plus.png', open_page('/users/add')))
+
+        self.menu_bar_items['roles'].addAction(create_menu_item(
+            self.locale.roles["view_roles"], 'fa-unlock-alt.png', open_page('/roles/view')))
+        self.menu_bar_items['roles'].addAction(create_menu_item(
+            self.locale.roles["add_new_role"], 'fa-plus-square-o.png', open_page('/roles/add')))
+
+        self.menu_bar_items['help'].addAction(create_menu_item(
+            self.locale.base["open_web"], 'fa-snowflake-o.png', open_di))
+        self.menu_bar_items['help'].addAction(create_menu_item(
+            self.locale.base["about"], 'fa-question-circle-o.png', self.about.show))
+
+    def update_menu(self, web_view):
+        def update_menu_wrapper():
+            def func_html(html):
+                values = html.split('-->', 1)[0][4:]
+                if values == self.prev_page_values:
+                    return
+
+                pages = Crypt().decrypt(values).split(':')           
+                for page in [
+                        'race', 'organizers', 'editions', 'clubs', 'statistics', 'users', 'roles']:
+                    self.menu_bar_items[page].menuAction().setVisible(page in pages)
+
+            web_view.page().toHtml(func_html)
+        return update_menu_wrapper
 
 
 def init_gui(qtapp, application, port=0, argv=None):
@@ -300,73 +393,30 @@ def init_gui(qtapp, application, port=0, argv=None):
         port = sock.getsockname()[1]
         sock.close()
 
-    # Application Level
-
     QtCore.QCoreApplication.setApplicationName('descens infantil')
-
     QtCore.QCoreApplication.setApplicationVersion(version)
     QtCore.QCoreApplication.setOrganizationName('Descens Infantil')
     QtCore.QCoreApplication.setOrganizationDomain('www.descensinfantil.cat')
 
-    #qtapp.setApplicationName("di")
     console = Console()
 
     webapp = ApplicationThread(application, port)
     webapp.start()
     qtapp.aboutToQuit.connect(webapp.terminate)
 
-
     window = Window(console)
-    
-
-    # Main Window Level
-    
-    #window.resize(width, height)
-    #window.setWindowTitle(window_title)
-    #window.setWindowIcon(QtGui.QIcon(icon))
 
     # WebPage Level
     page = WebPage('http://localhost:{}'.format(port))
     page.home()
 
-    #clean_all_tags = re.compile('<.*?>')
-
-    #def on_ready():
-    #    def html(html):
-    #        json_text = clean_all_tags.sub('', html)
-    #        a = 1
-    #        window.setAttribute(QtCore.Qt.WA_DontShowOnScreen, False)
-    #        window.show()
-    #    a = page.toHtml(html)
-    #    page.url().password
-
-    #page.loadFinished.connect(on_ready)
-
-    
     # WebView Level
     webView = QtWebEngineWidgets.QWebEngineView(window)
-
-    def on_ready():
-        def func_html(html):
-            values = html.split('-->', 1)[0][4:]
-            pages = Crypt().decrypt(values).split(':')
-            a = 1
-        a = webView.page().toHtml(func_html)
-
-
-    webView.loadFinished.connect(on_ready)
-
-
-
+    webView.loadFinished.connect(window.update_menu(webView))
     window.setCentralWidget(webView)
     webView.setPage(page)
-    
-
-    
-
     window.create_menu(page)
 
-    #window.setAttribute(QtCore.Qt.WA_DontShowOnScreen, True)
     window.show()
     return qtapp.exec_()
 
