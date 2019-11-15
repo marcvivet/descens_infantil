@@ -7,6 +7,8 @@ from passlib.hash import bcrypt
 from flask_user import UserMixin
 from urllib.parse import quote_plus
 
+from appadmin.utils.crypt import Crypt
+
 db = SQLAlchemy()
 
 class Page(db.Model):
@@ -261,6 +263,21 @@ class User(db.Model, UserMixin):
             if my_role.name in role:
                 return True
         return False
+
+    @property
+    def crypt_roles(self):
+        roles = ':'.join(self.list_roles())
+        return Crypt().encrypt(roles)
+
+    @property
+    def crypt_pages(self):
+        pages_set = set()
+        for role in self.roles:
+            for page in role.allowed_pages:
+                pages_set.add(page)
+
+        pages = ':'.join(list(pages_set))
+        return Crypt().encrypt(pages)
 
     def list_roles(self):
         list_of_roles = []

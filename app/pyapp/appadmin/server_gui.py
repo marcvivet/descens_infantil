@@ -14,6 +14,7 @@ from appadmin.server import app, configure_logs
 from appadmin.utils.localization_manager import LocalizationManager
 from appadmin.utils.version import __version__ as version
 from appadmin.utils.localization_manager import Singleton
+from appadmin.utils.crypt import Crypt
 
 
 class Configuration(metaclass=Singleton):
@@ -245,7 +246,7 @@ class Window(QtWidgets.QMainWindow):
         self.setWindowTitle(self.title)
         self.setGeometry(self.left, self.top, self.width, self.height)
 
-        self.permissions = '{"race": 0, "organizers": 0, "editions": 0, "clubs": 0, "statistics": 0,"users": 0,"roles": 0}'
+        self.permissions = '{"race": 0, "organizers": 0, "editions": 0, "clubs": 0, "statistics": 0, "users": 0, "roles": 0}'
        
         
     def create_menu(self, page):
@@ -348,6 +349,7 @@ def init_gui(qtapp, application, port=0, argv=None):
     def on_ready():
         def func_html(html):
             values = html.split('-->', 1)[0][4:]
+            pages = Crypt().decrypt(values).split(':')
             a = 1
         a = webView.page().toHtml(func_html)
 

@@ -8,6 +8,7 @@ from flask_login import current_user
 from flask_user.access import is_authenticated
 
 from appadmin.models.interface_model import Language
+from appadmin.utils.singleton import Singleton
 
 
 class LocalizedException(Exception):
@@ -21,24 +22,6 @@ class LocalizedException(Exception):
 
         """
         super().__init__(LocalizationManager().get_blueprint_locale(blp)[message])
-
-
-class Singleton(type):
-    _instance = None
-
-    def __call__(cls, *args, **kwargs):
-        singleton = kwargs.pop('singleton', True)
-
-        if not singleton:
-            return super(Singleton, cls).__call__(*args, **kwargs)
-
-        if not cls._instance:
-            cls._instance = \
-                super(Singleton, cls).__call__(*args, **kwargs)
-        
-        # REMOVE THIS AT THE END
-        # cls._instance.reload()
-        return cls._instance
 
 
 class LocaleData:
