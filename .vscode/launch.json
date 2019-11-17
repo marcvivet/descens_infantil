@@ -15,10 +15,10 @@
             "type": "python",
             "request": "launch",
             "env": {
-                "PYTHONPATH": "${workspaceFolder}/app/pyapp",
-                "PATH": "${workspaceFolder}/app/pyapp/appadmin/bin;$PATH"
+                "PYTHONPATH": "${workspaceFolder}/pyapp",
+                "PATH": "${workspaceFolder}/pyapp/appadmin/bin;$PATH"
             },
-            "program": "${workspaceFolder}/app/pyapp/run.py",
+            "program": "${workspaceFolder}/pyapp/run.py",
             "console": "integratedTerminal"
         },
         {
@@ -26,9 +26,9 @@
             "type": "python",
             "request": "launch",
             "env": {
-                "PYTHONPATH": "${workspaceFolder}/app/pyapp"
+                "PYTHONPATH": "${workspaceFolder}/pyapp"
             },
-            "program": "${workspaceFolder}/app/pyapp/appadmin/server_gui.py",
+            "program": "${workspaceFolder}/pyapp/appadmin/server_gui.py",
             "console": "integratedTerminal"
         },
         {
@@ -37,9 +37,9 @@
             "type": "python",
             "request": "launch",
             "env": {
-                "PYTHONPATH": "${workspaceFolder}/app/pyapp"
+                "PYTHONPATH": "${workspaceFolder}/pyapp"
             },
-            "program": "${workspaceFolder}/app/pyapp/appadmin/server_gui.py",
+            "program": "${workspaceFolder}/pyapp/appadmin/server_gui.py",
             "console": "integratedTerminal"
         },
         {
@@ -47,9 +47,9 @@
             "type": "python",
             "request": "launch",
             "env": {
-                "PYTHONPATH": "${workspaceFolder}/app/pyapp"
+                "PYTHONPATH": "${workspaceFolder}/pyapp"
             },
-            "program": "${workspaceFolder}/app/pyapp/scripts/import_database.py",
+            "program": "${workspaceFolder}/pyapp/scripts/import_database.py",
             "console": "integratedTerminal"
         },
         {
@@ -76,8 +76,8 @@
             "type": "python",
             "request": "launch",
             "env": {
-                "PYTHONPATH": "${workspaceFolder}/app/pyapp",
-                "PATH": "${workspaceFolder}/app/pyapp/appadmin/bin;$PATH"
+                "PYTHONPATH": "${workspaceFolder}/pyapp",
+                "PATH": "${workspaceFolder}/pyapp/appadmin/bin;$PATH"
             },
             "program": "${file}",
             "console": "integratedTerminal"
@@ -88,8 +88,8 @@
             "type": "python",
             "request": "launch",
             "env": {
-                "PYTHONPATH": "${workspaceFolder}/app/pyapp",
-                "PATH": "${workspaceFolder}/app/pyapp/appadmin/bin;$PATH"
+                "PYTHONPATH": "${workspaceFolder}/pyapp",
+                "PATH": "${workspaceFolder}/pyapp/appadmin/bin;$PATH"
             },
             "program": "${file}",
             "console": "integratedTerminal"
