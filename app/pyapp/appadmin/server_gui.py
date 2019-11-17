@@ -32,7 +32,7 @@ class Configuration(metaclass=Singleton):
             if not os.path.exists(curr_path):
                 curr_path = os.path.join(
                     os.path.dirname(os.path.abspath(__file__)),
-                    'appadmin', 'interface', folder)
+                    'interface', folder)
 
             self._locale.add_bluprint_by_path(curr_path)
 
@@ -48,7 +48,7 @@ class Configuration(metaclass=Singleton):
         if not os.path.exists(icon_path):
             icon_path = os.path.join(
                 os.path.dirname(os.path.abspath(__file__)),
-                'appadmin', 'interface', 'base', 'static', 'images', 'favicon', f'icono_72_72.{extenssion}')
+                'interface', 'base', 'static', 'images', 'favicon', f'icono_72_72.{extenssion}')
 
         self._icon = QtGui.QIcon(icon_path)
         self._assets_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'appadmin', 'assets')

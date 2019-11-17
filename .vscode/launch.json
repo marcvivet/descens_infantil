@@ -26,8 +26,7 @@
             "type": "python",
             "request": "launch",
             "env": {
-                "PYTHONPATH": "${workspaceFolder}/app/pyapp",
-                "PATH": "${workspaceFolder}/app/pyapp/appadmin/bin;$PATH"
+                "PYTHONPATH": "${workspaceFolder}/app/pyapp"
             },
             "program": "${workspaceFolder}/app/pyapp/appadmin/server_gui.py",
             "console": "integratedTerminal"
