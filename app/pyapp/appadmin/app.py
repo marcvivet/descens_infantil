@@ -22,8 +22,8 @@ ROOT_FILE_PATH = os.path.abspath(os.path.dirname(__file__))
 
 
 def id_generator(size=16, chars=string.ascii_uppercase + string.digits):
-    # return ''.join(random.choice(chars) for _ in range(size))
-    return "1234"
+    return ''.join(random.choice(chars) for _ in range(size))
+    #return "1234"
 
 
 class ConfigClass(object):

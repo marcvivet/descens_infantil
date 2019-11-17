@@ -33,6 +33,17 @@
             "console": "integratedTerminal"
         },
         {
+            "name": "PyQt5 w",
+            "pythonPath": "${workspaceFolder}/.venv_win/Scripts/pythonw.exe",
+            "type": "python",
+            "request": "launch",
+            "env": {
+                "PYTHONPATH": "${workspaceFolder}/app/pyapp"
+            },
+            "program": "${workspaceFolder}/app/pyapp/appadmin/server_gui.py",
+            "console": "integratedTerminal"
+        },
+        {
             "name": "Import DB",
             "type": "python",
             "request": "launch",

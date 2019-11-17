@@ -1,12 +1,9 @@
 import sys
 import os
 import subprocess
-
-import requests
 import logging
-import re
-
 import platform
+
 from PyQt5 import QtCore, QtWidgets, QtGui, QtWebEngineWidgets
 import socket
 
@@ -27,10 +24,17 @@ class Configuration(metaclass=Singleton):
 
         for folder in [
                 'base', 'race', 'organizers', 'editions', 'clubs', 'statistics', 'users', 'roles']:
-            self._locale.add_bluprint_by_path(
-                os.path.join(
+
+            curr_path = os.path.join(
+                os.path.dirname(os.path.abspath(__file__)),
+                'appadmin', 'interface', folder)
+
+            if not os.path.exists(curr_path):
+                curr_path = os.path.join(
                     os.path.dirname(os.path.abspath(__file__)),
-                    'interface', folder))
+                    'appadmin', 'interface', folder)
+
+            self._locale.add_bluprint_by_path(curr_path)
 
         if any(platform.win32_ver()):
             extenssion = 'ico'
@@ -39,11 +43,17 @@ class Configuration(metaclass=Singleton):
 
         icon_path = os.path.join(
             os.path.dirname(os.path.abspath(__file__)),
-            'interface', 'base', 'static', 'images', 'favicon', f'icono_72_72.{extenssion}')
+            'appadmin', 'interface', 'base', 'static', 'images', 'favicon', f'icono_72_72.{extenssion}')
+
+        if not os.path.exists(icon_path):
+            icon_path = os.path.join(
+                os.path.dirname(os.path.abspath(__file__)),
+                'appadmin', 'interface', 'base', 'static', 'images', 'favicon', f'icono_72_72.{extenssion}')
 
         self._icon = QtGui.QIcon(icon_path)
-
-        self._assets_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'assets')
+        self._assets_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'appadmin', 'assets')
+        if not os.path.exists(self._assets_path):
+            self._assets_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'assets')
 
     @property
     def locale(self):
@@ -227,9 +237,6 @@ class WebPage(QtWebEngineWidgets.QWebEnginePage):
     def setPage(self, page):
         self.load(QtCore.QUrl(self.root_url + page))
 
-    def ask(self, *args):
-        self.load(QtCore.QUrl(self.root_url + '/ask'))
-
     def acceptNavigationRequest(self, url, kind, is_main_frame):
         """Open external links in browser and internal links in the webview"""
         ready_url = url.toEncoded().data().decode()
@@ -261,7 +268,7 @@ class Window(QtWidgets.QMainWindow):
         self.setWindowTitle(self.title)
         self.setGeometry(self.left, self.top, self.width, self.height)
 
-        self.prev_page_values = ''
+        self.prev_page_values = 'not set'
        
     def create_menu(self, page):
         self.menubar = self.menuBar()
@@ -326,6 +333,7 @@ class Window(QtWidgets.QMainWindow):
             self.locale.race["list_out"], 'fa-file-pdf-o.png', open_page('/race/list_out')))
         self.menu_bar_items['race'].addAction(create_menu_item(
             self.locale.race["list_results"], 'fa-file-pdf-o.png', open_page('/race/list_results')))
+        self.menu_bar_items['race'].menuAction().setVisible(False)
 
         self.menu_bar_items['organizers'].addAction(create_menu_item(
             self.locale.organizers["view_organizers"], 'fa-sitemap.png',
@@ -333,17 +341,20 @@ class Window(QtWidgets.QMainWindow):
         self.menu_bar_items['organizers'].addAction(create_menu_item(
             self.locale.organizers["add_organizer"], 'fa-address-book-o.png',
             open_page('/organizers/add')))
+        self.menu_bar_items['organizers'].menuAction().setVisible(False)
 
         self.menu_bar_items['editions'].addAction(create_menu_item(
             self.locale.editions["view_editions"], 'fa-calendar.png', open_page('/editions/view')))
         self.menu_bar_items['editions'].addAction(create_menu_item(
             self.locale.editions["add_edition"], 'fa-calendar-plus-o.png',
             open_page('/editions/add')))
+        self.menu_bar_items['editions'].menuAction().setVisible(False)
 
         self.menu_bar_items['clubs'].addAction(create_menu_item(
             self.locale.clubs["view_clubs"], 'fa-institution.png', open_page('/clubs/view')))
         self.menu_bar_items['clubs'].addAction(create_menu_item(
             self.locale.clubs["add_club"], 'fa-plus-square-o.png', open_page('/clubs/add')))
+        self.menu_bar_items['clubs'].menuAction().setVisible(False)
 
         self.menu_bar_items['statistics'].addAction(create_menu_item(
             self.locale.statistics["organizers"], 'fa-pie-chart.png',
@@ -351,16 +362,19 @@ class Window(QtWidgets.QMainWindow):
         self.menu_bar_items['statistics'].addAction(create_menu_item(
             self.locale.statistics["editions"], 'fa-bar-chart-o.png',
             open_page('/statistics/editions')))
+        self.menu_bar_items['statistics'].menuAction().setVisible(False)
 
         self.menu_bar_items['users'].addAction(create_menu_item(
             self.locale.users["users"], 'fa-users.png', open_page('/users/view')))
         self.menu_bar_items['users'].addAction(create_menu_item(
             self.locale.users["add_user"], 'fa-user-plus.png', open_page('/users/add')))
+        self.menu_bar_items['users'].menuAction().setVisible(False)
 
         self.menu_bar_items['roles'].addAction(create_menu_item(
             self.locale.roles["view_roles"], 'fa-unlock-alt.png', open_page('/roles/view')))
         self.menu_bar_items['roles'].addAction(create_menu_item(
             self.locale.roles["add_new_role"], 'fa-plus-square-o.png', open_page('/roles/add')))
+        self.menu_bar_items['roles'].menuAction().setVisible(False)
 
         self.menu_bar_items['help'].addAction(create_menu_item(
             self.locale.base["open_web"], 'fa-snowflake-o.png', open_di))

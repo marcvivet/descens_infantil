@@ -98,7 +98,7 @@ a = Analysis(
     pathex=[os.path.dirname(pyapp_path)],
     binaries=[],
     datas=[],
-    hiddenimports=['PIL', 'PIL._imagingtk', 'PIL._tkinter_finder', 'PIL.Image', 'requests', 'pdfkit', 'PyQt5', 'sip', 'PyQt5.QtWebEngineWidgets'], # , 'PyQtWebEngine'],
+    hiddenimports=['PIL', 'PIL._imagingtk', 'PIL._tkinter_finder', 'PIL.Image', 'requests', 'pdfkit', 'PyQt5', 'sip', 'PyQt5.QtWebEngineWidgets', 'PyQtWebEngine'],
     hookspath=[],
     runtime_hooks=[],
     excludes=[],
@@ -135,9 +135,9 @@ exe = EXE(
 
 collect = COLLECT(
     exe,
-    #a.scripts,
+    a.scripts,
     a.binaries,
-    #a.zipfiles,
+    a.zipfiles,
     pkg_data_bin,
     a.datas,
     pkg_data,

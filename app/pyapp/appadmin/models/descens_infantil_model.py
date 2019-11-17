@@ -557,10 +557,14 @@ class Edition(db.Model):
                 result[category]['disqualified'] = sorted(
                         result[category]['disqualified'], key=lambda k: k['bib_number'])                      
         
+        penalizations = Edition.get_penalizations(edition_id)
+        for key in penalizations:
+            penalizations[key] = str(penalizations[key])
+
         return {
             'category_dict': result,
             'categories': sorted(list(result.keys())),
-            'penalizations': Edition.get_penalizations(edition_id)
+            'penalizations': penalizations
         }
 
     @staticmethod

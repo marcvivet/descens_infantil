@@ -13,4 +13,7 @@ class Crypt(metaclass=Singleton):
         return self.fernet.encrypt(str_to_enc.encode()).decode('utf-8')
 
     def decrypt(self, enc_str):
-        return self.fernet.decrypt(enc_str.encode()).decode('utf-8')
+        if enc_str:
+            return self.fernet.decrypt(enc_str.encode()).decode('utf-8')
+        else:
+            return enc_str
