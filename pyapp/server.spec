@@ -4,9 +4,9 @@ import os
 import sys
 from PyInstaller.building.build_main import Analysis, PYZ, EXE, COLLECT, BUNDLE, TOC
 
-IGNORE_EXTENSIONS = {'.pyo'}
+IGNORE_EXTENSIONS = {'.py', '.pyo', '.pyc'}
 
-def collect_pkg_data(package, include_py_files=False, subdir=None):
+def collect_pkg_data(package):
     import os
     from PyInstaller.utils.hooks import get_package_paths, remove_prefix, PY_IGNORE_EXTENSIONS
 
@@ -15,16 +15,18 @@ def collect_pkg_data(package, include_py_files=False, subdir=None):
         raise ValueError
 
     pkg_base, pkg_dir = get_package_paths(package)
-    if subdir:
-        pkg_dir = os.path.join(pkg_dir, subdir)
     # Walk through all file in the given package, looking for data files.
     data_toc = TOC()
     for dir_path, dir_names, files in os.walk(pkg_dir):
         if '__pycache__' in dir_path:
             continue
+        if '__deprecated' in dir_path:
+            continue
+        #if '__templates' in dir_path:
+        #    continue
         for f in files:
             extension = os.path.splitext(f)[1]
-            if include_py_files or (extension not in PY_IGNORE_EXTENSIONS) or extension not in IGNORE_EXTENSIONS:
+            if (extension not in PY_IGNORE_EXTENSIONS) and extension not in IGNORE_EXTENSIONS:
                 source_file = os.path.join(dir_path, f)
                 dest_folder = remove_prefix(dir_path, os.path.dirname(pkg_base) + os.sep)
                 dest_file = os.path.join(dest_folder, f)
@@ -72,20 +74,18 @@ def collect_pkg_bin(package):
             extension = os.path.splitext(f)[1]
             if extension in {'.dll', '.exe'}:
                 source_file = os.path.join(dir_path, f)
-                dest_folder = remove_prefix(dir_path, os.path.dirname(pkg_base) + os.sep)
-                dest_file = os.path.join(dest_folder, f)
-                data_toc.append((dest_file, source_file, 'DATA'))
+                data_toc.append((f, source_file, 'DATA'))
 
     return data_toc
 
 
-pyapp_path = os.path.join(os.getcwd(), 'pyapp')
+pyapp_path = os.path.join(os.getcwd())
 
 if not os.path.exists(pyapp_path):
-    pyapp_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'pyapp')
+    pyapp_path = os.path.join(os.path.dirname(os.path.abspath(__file__)))
 
 sys.path.append(pyapp_path)
-pkg_data = collect_pkg_data('appadmin', include_py_files=True)
+pkg_data = collect_pkg_data('appadmin')
 pkg_data_py = collect_pkg_python('appadmin')
 pkg_data_bin = collect_pkg_bin('appadmin')
 
@@ -94,8 +94,8 @@ block_cipher = None
 print(f'Working Directory: {pyapp_path}')
 
 a = Analysis(
-    ['pyapp/appadmin/server_gui.py'],
-    pathex=[os.path.dirname(pyapp_path)],
+    ['appadmin/server_gui.py'],
+    pathex=[pyapp_path],
     binaries=[],
     datas=[],
     hiddenimports=['PIL', 'PIL._imagingtk', 'PIL._tkinter_finder', 'PIL.Image', 'requests', 'pdfkit', 'PyQt5', 'sip', 'PyQt5.QtWebEngineWidgets', 'PyQtWebEngine'],
@@ -118,6 +118,7 @@ pyz = PYZ(
 exe = EXE(
     pyz,
     a.scripts,
+    pkg_data_py,
     #pkg_data_py,
     #a.binaries,
     #a.zipfiles,
@@ -130,7 +131,7 @@ exe = EXE(
     strip=False,
     upx=False,
     runtime_tmpdir=None,
-    console=False,
+    console=True,
     icon=os.path.join(pyapp_path, 'appadmin', 'interface', 'base', 'static', 'images', 'favicon', 'icono_72_72.ico'))
 
 collect = COLLECT(

@@ -4,4 +4,4 @@ QTWEBENGINEPROCESS_PATH=/Users/mvivet/local/src/other/descens_infantil/.venv/lib
 
 rm -rvf pyappdist
 # pyinstaller --onefile --distpath pyappdist server.spec
-pyinstaller --windowed --onedir --clean --distpath pyappdist server.spec # -F --add-data path/to/file/file.txt
+pyinstaller --clean --distpath pyappdist server.spec

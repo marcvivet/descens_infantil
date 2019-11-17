@@ -83,6 +83,21 @@
             "console": "integratedTerminal"
         },
         {
+            "name": "Python: Current File args",
+            "type": "python",
+            "request": "launch",
+            "env": {
+                "PYTHONPATH": "${workspaceFolder}/pyapp",
+                "PATH": "${workspaceFolder}/pyapp/appadmin/bin;$PATH"
+            },
+            "args": [
+                "--clean", "--distpath", "pyappdist", "server.spec"
+            ],
+            "program": "${file}",
+            "cwd": "${fileDirname}",
+            "console": "integratedTerminal"
+        },
+        {
             "name": "Python: Current File Windowed",
             "pythonPath": "${workspaceFolder}/.venv_win/Scripts/pythonw.exe",
             "type": "python",
