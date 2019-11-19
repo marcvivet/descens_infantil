@@ -145,6 +145,8 @@ def collect_pkg_data(package):
             continue
         if '__deprecated' in dir_path:
             continue
+        if 'vendors' in dir_path:
+            continue
         #if '__templates' in dir_path:
         #    continue
         for f in files:
