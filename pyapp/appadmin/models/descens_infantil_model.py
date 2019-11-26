@@ -545,7 +545,8 @@ class Edition(db.Model):
             if row['disqualified'] or row['not_arrived'] or row['not_came_out']:
                 result[row['category']]['disqualified'].append(row)
             else:
-                result[row['category']]['classified'].append(row)
+                if row['time_final']:
+                    result[row['category']]['classified'].append(row)
 
         for category in result.keys():
             if result[category]['classified']:
