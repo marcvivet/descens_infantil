@@ -21,7 +21,7 @@ class Organizer(db.Model):
     time_created = db.Column(
         db.DateTime(timezone=True), server_default=db.func.now())
     time_updated = db.Column(
-        db.DateTime(timezone=True), onupdate=db.func.now())
+        db.DateTime(timezone=True), onupdate=db.func.now(), server_default=db.func.now(), nullable=False)
 
     editions_as_chief_of_course = db.relationship(
         'Edition', backref='organizers_chief_of_course', foreign_keys='Edition.chief_of_course_id')
@@ -173,7 +173,7 @@ class Participant(db.Model):
     time_created = db.Column(
         db.DateTime(timezone=True), server_default=db.func.now())
     time_updated = db.Column(
-        db.DateTime(timezone=True), onupdate=db.func.now())
+        db.DateTime(timezone=True), onupdate=db.func.now(), server_default=db.func.now(), nullable=False)
 
     edition_participants = db.relationship(
         'EditionParticipant', backref='participants', cascade="all,delete")
@@ -199,11 +199,7 @@ class Participant(db.Model):
 
         self.picture = picture
 
-        self.hash = int(
-            hashlib.sha256(
-                f'{unidecode(self.name)}_{unidecode(self.surnames)}_'\
-                    f'{self.birthday.strftime("%Y-%m-%d")}'.encode(
-                    'utf-8')).hexdigest(), 16) % (2 ** 63)
+        self.hash = Participant.get_hash(self.name, self.surnames, self.birthday)
 
     def __repr__(self):
         return f'<Participant: [{self.id}, {self.name}, {self.surnames}, {self.birthday}]>'
@@ -227,11 +223,7 @@ class Participant(db.Model):
         if picture:
             self.picture = picture
 
-        self.hash = int(
-            hashlib.sha256(
-                f'{unidecode(self.name)}_{unidecode(self.surnames)}_'\
-                    f'{self.birthday.strftime("%Y-%m-%d")}'.encode(
-                    'utf-8')).hexdigest(), 16) % (2 ** 63)
+        self.hash = Participant.get_hash(self.name, self.surnames, self.birthday)
 
     @property
     def updated(self):
@@ -263,6 +255,12 @@ class Participant(db.Model):
 
     @staticmethod
     def get_hash(name: str, surnames: str, birthday: date):
+        name = name.strip().title()
+
+        all_surnames = surnames.strip().title().split(' ')
+        all_surnames = [surname for surname in all_surnames if surname != '']
+        surnames = ' '.join(all_surnames)
+
         return int(
             hashlib.sha256(
                 f'{unidecode(name)}_{unidecode(surnames)}_'\
@@ -290,7 +288,7 @@ class Edition(db.Model):
     time_created = db.Column(
         db.DateTime(timezone=True), server_default=db.func.now())
     time_updated = db.Column(
-        db.DateTime(timezone=True), onupdate=db.func.now())
+        db.DateTime(timezone=True), onupdate=db.func.now(), server_default=db.func.now(), nullable=False)
 
     chief_of_course = db.relationship(
         'Organizer', foreign_keys=[chief_of_course_id], uselist=False)
@@ -468,12 +466,13 @@ class Edition(db.Model):
 
         result = [dict(zip(keys, row)) for row in query.fetchall()]
         for element in result:
-            element['time'] = element['time'][3:-4]
-            if element['category'] in penalizations and element['penalized'] == 1:
-                element['time_final'] = (
-                    datetime.strptime(element['time_final'], "%H:%M:%S.%f") +
-                    penalizations[element['category']]).strftime("%H:%M:%S.%f")
-            element['time_final'] = element['time_final'][3:-4]
+            if element['time']:
+                element['time'] = element['time'][3:-4]
+                if element['category'] in penalizations and element['penalized'] == 1:
+                    element['time_final'] = (
+                        datetime.strptime(element['time_final'], "%H:%M:%S.%f") +
+                        penalizations[element['category']]).strftime("%H:%M:%S.%f")
+                element['time_final'] = element['time_final'][3:-4]
 
         return result
 
@@ -493,8 +492,15 @@ class Edition(db.Model):
 
         query = db.session.execute(sql_query)
         t0 = datetime.strptime("00:00:00.00000","%H:%M:%S.%f")
-        return {row['category']: (datetime.strptime(row['time'], "%H:%M:%S.%f") - t0)
-                for row in query.fetchall()}
+
+        result = {}
+        for row in query.fetchall():
+            if row['time'] is not None:
+                result[row['category']] = (datetime.strptime(row['time'], "%H:%M:%S.%f") - t0)
+            else:
+                result[row['category']] = t0 - t0
+
+        return result
 
     @staticmethod
     def get_list_bib_number(edition_id: int, order_by: str = None):
@@ -601,7 +607,7 @@ class Club(db.Model):
     time_created = db.Column(
         db.DateTime(timezone=True), server_default=db.func.now())
     time_updated = db.Column(
-        db.DateTime(timezone=True), onupdate=db.func.now())
+        db.DateTime(timezone=True), onupdate=db.func.now(), server_default=db.func.now(), nullable=False)
 
     def __init__(
             self, id: int = None, acronym: str = None, name: str = None, emblem: str = None,
@@ -672,7 +678,7 @@ class EditionParticipant(db.Model):
     time = db.Column(db.Time(), nullable=True)
 
     time_created = db.Column(db.DateTime(timezone=True), server_default=db.func.now())
-    time_updated = db.Column(db.DateTime(timezone=True), onupdate=db.func.now())
+    time_updated = db.Column(db.DateTime(timezone=True), onupdate=db.func.now(), server_default=db.func.now(), nullable=False)
 
     edition = db.relationship('Edition', uselist=False)
     participant = db.relationship('Participant', uselist=False)
@@ -771,4 +777,4 @@ class EditionParticipant(db.Model):
                     f"WHERE edition_id = {edition_id} AND participant_id = {participant_id}"
         
         query = db.session.execute(sql_query)
-        db.commit()
+        db.session.commit()

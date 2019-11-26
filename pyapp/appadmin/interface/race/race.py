@@ -136,11 +136,15 @@ def communicate():
 
     if json_data['action'] == 'delete':
         participant_id, edition_id = json_data['id'].split('_')
-
         edition_participant = db.query(
             EditionParticipant).get([int(edition_id), int(participant_id)])
-        db.delete(edition_participant)
+        EditionParticipant.delete(participant_id, edition_id)
+        """
+        edition_participant = db.query(
+            EditionParticipant).get([int(edition_id), int(participant_id)])
+        db.delete(edition_id)
         db.commit()
+        """
         response['message'] = locm.delete_successful.format(
             f'{edition_participant.participant.name} {edition_participant.participant.surnames}')
 

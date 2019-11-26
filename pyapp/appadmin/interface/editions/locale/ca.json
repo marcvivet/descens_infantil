@@ -21,5 +21,6 @@
     "error_on_edit": "S'ha produït un error en intentar editar l'edició {}",
     "edition_edited": "Edició {} correctament modificada",
     "exception": "Excepció: {}",
-    "error_during_edit": "S'ha produït un error en intentar editar una edició. {}"
+    "error_during_edit": "S'ha produït un error en intentar editar una edició. {}",
+    "import": "Importar parcipants"
 }

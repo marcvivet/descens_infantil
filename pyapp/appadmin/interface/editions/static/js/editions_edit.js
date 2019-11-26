@@ -71,5 +71,9 @@ function setupPage(locale, isEdit) {
             name: 'organizers',
             source: substringMatcher(response.message)
         });
+
+        $("#send").on('click', () => {
+            Page.setLoading(true);
+        });
     });
 }

@@ -17,10 +17,18 @@ class PageList extends Page {
   }
 
   get editionYear() {
+    if (this._select_edition.selectedIndex > this._select_edition.options.length) {
+      this._select_edition.selectedIndex = 0;
+    }
+    
     return this._select_edition.options[this._select_edition.selectedIndex].text;
   }
 
   get editionId() {
+    if (this._select_edition.selectedIndex > this._select_edition.options.length) {
+      this._select_edition.selectedIndex = 0;
+    }
+
     return this._select_edition.options[this._select_edition.selectedIndex].value;
   }
 

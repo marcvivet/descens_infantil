@@ -16,11 +16,11 @@ from appadmin.utils.db_manager import DBManager
 
 def main():
     base_path = os.path.dirname(
-        os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
+        os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
     data_folder = os.path.join(base_path, 'extract')
     image_folder = os.path.join(
-        base_path, 'app', 'pyapp', 'appadmin', 'interface', 'base', 'static', 'images')
+        base_path, 'pyapp', 'appadmin', 'interface', 'base', 'static', 'images')
     club_image_folder = os.path.join(image_folder, 'clubs')
     edition_image_folder = os.path.join(image_folder, 'editions')
 

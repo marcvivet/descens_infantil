@@ -52,8 +52,14 @@ class ViewParticipantsPageRow extends PageRow {
 
     let last_state = localStorage.getItem("selected_edition");
     if (last_state) {
-      this._select_edition.value = last_state;
+      if (last_state >= this._select_edition.options.length) {
+        last_state = this._select_edition.options[0].value;
+        localStorage.setItem(
+          "selected_edition", this.editionId);
+      }
+      this._select_edition.value = last_state;  
     }
+
 
     Page.httpRequest({
       action: "get_participants",
@@ -270,9 +276,15 @@ class ViewParticipantsPageRow extends PageRow {
     $('#category_select').html(participant.category);
     $('#birthday_select').html(participant.birthday);
     
-    let minutes = participant.time.substring(0, 2);
-    let seconds = participant.time.substring(3, 5);
-    let hundreds = participant.time.substring(6, 8);
+    let minutes = '00';
+    let seconds = '00';
+    let hundreds = '00';
+
+    if (participant.time) {
+      minutes = participant.time.substring(0, 2);
+      seconds = participant.time.substring(3, 5);
+      hundreds = participant.time.substring(6, 8);
+    }
 
     this._currData = {
       participant_id: parseInt(participant.id),
@@ -362,13 +374,13 @@ class ViewParticipantsPageRow extends PageRow {
       participant_data: data
     }, `/race/communicate`, ((participantId, participantData) => {
       return (response) => {
-        this._participants_data[id].penalized = participantData.penalized;
-        this._participants_data[id].disqualified = participantData.disqualified;
-        this._participants_data[id].not_arrived = participantData.not_arrived;
-        this._participants_data[id].not_came_out = participantData.not_came_out;
-        this._participants_data[id].time = participantData.time;
+        this._participants_data[participantId].penalized = participantData.penalized;
+        this._participants_data[participantId].disqualified = participantData.disqualified;
+        this._participants_data[participantId].not_arrived = participantData.not_arrived;
+        this._participants_data[participantId].not_came_out = participantData.not_came_out;
+        this._participants_data[participantId].time = participantData.time;
         
-        this.restoreRow(id);
+        this.restoreRow(participantId);
       }
     })(id, data), (status, responseText) => {
       Page.showError(responseText);
@@ -696,6 +708,12 @@ class ViewParticipantsPageRow extends PageRow {
         </td>`;
     }
 
+    let participant_time = participant.time;
+    if (!participant_time) participant_time = '';
+
+    let participant_time_final = participant.time_final;
+    if (!participant_time_final) participant_time_final = '';
+
     innerHtml += `
       <td id="surnames_${id}">${participant.surnames}</td>
       <td id="name_${id}">${participant.name}</td>
@@ -705,10 +723,10 @@ class ViewParticipantsPageRow extends PageRow {
       <td id="category_${id}">${participant.category}</td>
       <td id="penalized_${id}">${penalized}</td>
       <td id="status_${id}">${status}</td>
-      <td id="time_${id}">${participant.time}</td>`;
+      <td id="time_${id}">${participant_time}</td>`;
 
     if (this._page_type == 'results') {
-      innerHtml += `<td id="time_final_${id}">${participant.time_final}</td>`;
+      innerHtml += `<td id="time_final_${id}">${participant_time_final}</td>`;
     }
 
     tr.innerHTML = innerHtml;
@@ -752,7 +770,10 @@ class ViewParticipantsPageRow extends PageRow {
 
     document.getElementById(`status_${id}`).innerHTML = this.genRaceStatus(
       participant.disqualified, participant.not_arrived, participant.not_came_out);
-    document.getElementById(`time_${id}`).innerHTML = participant.time;
+
+    let participant_time = participant.time;
+    if (!participant_time) participant_time = '';
+    document.getElementById(`time_${id}`).innerHTML = participant_time;
     } catch {
       console.log('Not found ' + id);
     }
@@ -777,6 +798,8 @@ class ViewParticipantsPageRow extends PageRow {
     let not_came_out;
 
     [disqualified, not_arrived, not_came_out] = this.splitStatus(status);
+
+    console.log(disqualified)
 
     let data = {
       participant_id: parseInt(participant.id),
@@ -807,21 +830,21 @@ class ViewParticipantsPageRow extends PageRow {
           return s;
         }
 
-        this._participants_data[id].surnames = participantData.surnames;
-        this._participants_data[id].name = participantData.name;
-        this._participants_data[id].club_id = participantData.club_id;
-        this._participants_data[id].club_name = this._clubs_lut[participantData.club_id].name;
-        this._participants_data[id].club_emblem = this._clubs_lut[participantData.club_id].emblem;
-        this._participants_data[id].birthday = participantData.birthday;
-        this._participants_data[id].bib_number = participantData.bib_number;
-        this._participants_data[id].penalized = participantData.penalized;
-        this._participants_data[id].disabled = participantData.disqualified;
-        this._participants_data[id].not_arrived = participantData.not_arrived;
-        this._participants_data[id].not_came_out = participantData.not_came_out;
-        this._participants_data[id].category = participantData.category;
-        this._participants_data[id].time = `${participantData.minutes.pad()}:${participantData.seconds.pad()}.${participantData.hundreds.pad()}`;
+        this._participants_data[participantId].surnames = participantData.surnames;
+        this._participants_data[participantId].name = participantData.name;
+        this._participants_data[participantId].club_id = participantData.club_id;
+        this._participants_data[participantId].club_name = this._clubs_lut[participantData.club_id].name;
+        this._participants_data[participantId].club_emblem = this._clubs_lut[participantData.club_id].emblem;
+        this._participants_data[participantId].birthday = participantData.birthday;
+        this._participants_data[participantId].bib_number = participantData.bib_number;
+        this._participants_data[participantId].penalized = participantData.penalized;
+        this._participants_data[participantId].disqualified = participantData.disqualified;
+        this._participants_data[participantId].not_arrived = participantData.not_arrived;
+        this._participants_data[participantId].not_came_out = participantData.not_came_out;
+        this._participants_data[participantId].category = participantData.category;
+        this._participants_data[participantId].time = `${participantData.minutes.pad()}:${participantData.seconds.pad()}.${participantData.hundreds.pad()}`;
         Page.showSuccess(response.message);
-        this.restoreRow(id)
+        this.restoreRow(participantId)
       }
     })(id, data), (status, responseText) => {
       Page.showError(responseText);
@@ -989,41 +1012,43 @@ class ViewParticipantsPageRow extends PageRow {
     // TIME
     let timeTd = document.getElementById(`time_${id}`);
     let timeValue = participant.time;
-    const regex = /^(\d\d):(\d\d).(\d\d)/gm;
+    let minutes = '00';
+    let seconds = '00';
+    let centesimal = '00';
+    if (timeValue) {
+      const regex = /^(\d\d):(\d\d).(\d\d)/gm;
 
-    let m;
-    let minutes = 0;
-    let seconds = 0;
-    let centesimal = 0;
-    while ((m = regex.exec(timeValue)) !== null) {
-      // This is necessary to avoid infinite loops with zero-width matches
-      if (m.index === regex.lastIndex) {
-          regex.lastIndex++;
+      let m;
+      while ((m = regex.exec(timeValue)) !== null) {
+        // This is necessary to avoid infinite loops with zero-width matches
+        if (m.index === regex.lastIndex) {
+            regex.lastIndex++;
+        }
+        
+        // The result can be accessed through the `m`-variable.
+        m.forEach((match, groupIndex) => {
+          if (groupIndex == 1) {
+            minutes = parseInt(match);
+            if (minutes < 10) {
+              minutes = '0' + minutes;
+            }
+          }
+
+          if (groupIndex == 2) {
+            seconds = parseInt(match);
+            if (seconds < 10) {
+              seconds = '0' + seconds;
+            }
+          }
+
+          if (groupIndex == 3) {
+            centesimal = parseInt(match);
+            if (centesimal < 10) {
+              centesimal = '0' + centesimal;
+            }
+          }
+        });
       }
-      
-      // The result can be accessed through the `m`-variable.
-      m.forEach((match, groupIndex) => {
-        if (groupIndex == 1) {
-          minutes = parseInt(match);
-          if (minutes < 10) {
-            minutes = '0' + minutes;
-          }
-        }
-
-        if (groupIndex == 2) {
-          seconds = parseInt(match);
-          if (seconds < 10) {
-            seconds = '0' + seconds;
-          }
-        }
-
-        if (groupIndex == 3) {
-          centesimal = parseInt(match);
-          if (centesimal < 10) {
-            centesimal = '0' + centesimal;
-          }
-        }
-      });
     }
 
     timeTd.innerHTML = `<div class="div-time-small">
