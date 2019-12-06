@@ -82,6 +82,17 @@ class ViewParticipantsPageRow extends PageRow {
     }
   }
 
+  runOnReadyJQuery(id, func) {
+    var element = $(id);
+    if (element.length > 0) {
+      func();
+    } else {
+      setTimeout(() => {
+        this.runOnReadyJQuery(id, func);
+      }, 100);
+    }
+  }
+
   runOnChildrenReady(id, func) {
     var element = document.getElementById(id);
     if (element.hasChildNodes) {
@@ -500,6 +511,12 @@ class ViewParticipantsPageRow extends PageRow {
         this.selectTableElement(0, $(event.target).parent());
       }
     });
+
+    this.runOnReadyJQuery("input[type='search']", () => {
+      $("input[type='search']").on("keyup", () => {
+          this.removeSelectTableElement();
+    })});
+    
 
     this._datatable._page_dialog._event_display = (show) => {
 

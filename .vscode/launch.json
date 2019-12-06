@@ -57,7 +57,7 @@
             "type": "chrome",
             "request": "launch",
             "url": "http://0.0.0.0:10001",
-            "webRoot": "${workspaceFolder}app/pyapp/appadmin/interface",
+            "webRoot": "${workspaceFolder}/pyapp/appadmin/interface",
             "pathMapping": {
                 "/static/*": "${workspaceFolder}app/pyapp/appadmin/interface/base/static/*",
                 "/race/static/*": "${workspaceFolder}app/pyapp/appadmin/interface/race/static/*",
