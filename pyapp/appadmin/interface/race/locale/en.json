@@ -28,8 +28,6 @@
     "tooltip_minutes": "Minutes",
     "tooltip_seconds": "Seconds",
     "tooltip_hundredths": "Hundredths of a second",
-    "yes": "Yes",
-    "no": "No",
     "delete_successful": "Participant {} deleted successfully",
     "participant_updated": "Participant {} {} updated correctly",
     "participant_exists": "This participant already exists!",

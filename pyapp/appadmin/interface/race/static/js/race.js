@@ -150,7 +150,7 @@ class ViewParticipantsPageRow extends PageRow {
       columns: [0, 1, 4, 5, 6, 7, 8, 9]
     }
 
-    let buttons = [{
+    let buttons = [/*{
         extend: "copy",
         className: "btn-sm",
         title: this.title,
@@ -184,7 +184,7 @@ class ViewParticipantsPageRow extends PageRow {
         title: this.title,
         exportOptions: exportOptions,
         footer: false
-      },
+      },*/
     ];
 
     let order = [

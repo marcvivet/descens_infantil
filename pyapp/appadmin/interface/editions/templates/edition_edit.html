@@ -4,6 +4,7 @@
 
 {% block stylesheets %}
 {{ super() }}
+<link href="{{ url_for('static', filename='vendors/bootstrap-toggle/css/bootstrap-toggle.min.css') }}" rel="stylesheet">
 <link href="{{ url_for('static', filename='vendors/bootstrap-datepicker/dist/css/bootstrap-datepicker.min.css') }}" rel="stylesheet">
 {% block extrastyles %}
 <link href="{{ url_for('editions.static', filename='css/editions_edit.css') }}" rel="stylesheet">
@@ -79,7 +80,8 @@
                 <label class="control-label col-md-3 col-sm-3 col-xs-12" for="import">{{ blocale.import }}
                 </label>
                 <div class="col-md-6 col-sm-6 col-xs-12">
-                  <input type="checkbox" id="import" name="import" class="form-control flat align-middle">
+                  <input id="import" name="import" type="checkbox" data-toggle="toggle" data-on="{{ locale.base.yes }}" data-off="{{ locale.base.no }}" data-onstyle="primary" data-offstyle="default" data-size="small">
+                  <!--<input type="checkbox" id="import" name="import" class="form-control flat align-middle">-->
                 </div>
               </div>
 
@@ -103,6 +105,7 @@
 
 {% block javascripts %}
 {{ super() }}
+<script src="{{ url_for('static', filename='vendors/bootstrap-toggle/js/bootstrap-toggle.min.js') }}"></script>
 <script src="{{ url_for('static', filename='vendors/bootstrap-datepicker/dist/js/bootstrap-datepicker.min.js') }}"></script>
 <script>
     var request = new XMLHttpRequest();
@@ -111,6 +114,7 @@
     var message_locale = JSON.parse(request.responseText);
 </script>
 <!-- validator -->
+
 <script src="{{ url_for('static', filename='vendors/validator/validator.js') }}"></script>
 <script src="{{ url_for('static', filename='vendors/typeahead.js/dist/typeahead.jquery.min.js') }}"></script>
 <script src="{{ url_for('editions.static', filename='js/editions_edit.js') }}"></script>

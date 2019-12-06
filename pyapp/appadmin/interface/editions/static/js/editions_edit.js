@@ -1,4 +1,5 @@
 function setupPage(locale, isEdit) {
+    $('#import').bootstrapToggle();
     $('#year').datepicker({
         minViewMode: 2,
         changeYear: true,
