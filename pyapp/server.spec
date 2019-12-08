@@ -11,6 +11,8 @@ def collect_pkg_data(package, include_py_files=False, subdir=None):
     import os
     from PyInstaller.utils.hooks import get_package_paths, remove_prefix, PY_IGNORE_EXTENSIONS
 
+    print('***COLLECTING DATA***')
+
     # Accept only strings as packages.
     if type(package) is not str:
         raise ValueError
@@ -40,7 +42,7 @@ def collect_pkg_data(package, include_py_files=False, subdir=None):
             extenssion = os.path.splitext(file_name)[1]
             if extenssion == '.html':
                 source_file = os.path.join(dir_path, file_name)
-                with open(source_file, 'r') as file_r:
+                with open(source_file, 'r', encoding='utf-8') as file_r:
                     file_data = file_r.read()
 
                 path_data = find_path.findall(file_data)
@@ -49,7 +51,8 @@ def collect_pkg_data(package, include_py_files=False, subdir=None):
                     continue
 
                 for path_found in path_data:
-                    if path_found.startswith('vendors/'):
+                    if path_found.startswith('vendors'):
+                        path_found = path_found.replace('\\', '/')
                         resources.add(os.path.join(pkg_dir, 'interface', 'base', 'static', path_found).replace('\\', '/'))
 
                         if not path_found.endswith('.css'):
@@ -62,7 +65,7 @@ def collect_pkg_data(package, include_py_files=False, subdir=None):
                             for file_name_vendor in files_vendor:
                                 extenssion = os.path.splitext(file_name_vendor)[1]
                                 if extenssion in {'.ttf'}:
-                                    source_file = os.path.join(dir_path_vendor, file_name_vendor)
+                                    source_file = os.path.join(dir_path_vendor, file_name_vendor).replace('\\', '/')
                                     resources.add(source_file)
                                     print(source_file)
 
@@ -222,4 +225,3 @@ app = BUNDLE(exe,
     name='myscript.app',
     icon=None,
     bundle_identifier=None)
-
