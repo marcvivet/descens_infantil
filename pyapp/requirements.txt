@@ -2,9 +2,9 @@ Flask-Mail==0.9.1
 Flask-SQLAlchemy==2.4.1
 Flask-WTF==0.14.2
 MarkupSafe==1.1.1
-PyQt5==5.13.2
+PyQt5==5.14.0
 PyQt5-sip==12.7.0
-PyQtWebEngine==5.13.2
+PyQtWebEngine==5.14.0
 PyYAML==5.1.2
 Six==1.13.0
 WTForms==2.2.1

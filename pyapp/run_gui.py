@@ -1,5 +1,9 @@
 import sys
 import os
+
+#os.environ["QTWEBENGINE_CHROMIUM_FLAGS"] = "--disable-logging --no-sandbox --disable-gpu"
+#os.environ['QTWEBENGINE_DISABLE_SANDBOX'] = 1
+
 import subprocess
 import platform
 from PyQt5 import QtCore, QtWidgets, QtGui, QtWebEngineWidgets
@@ -149,5 +153,7 @@ def init_gui(application, port=0, width=800, height=600,
 
 
 if __name__ == '__main__':
+    #os.environ["QTWEBENGINE_CHROMIUM_FLAGS"] = "--disable-logging --no-sandbox --disable-gpu"
+
     configure_logs(app)
     init_gui(app)

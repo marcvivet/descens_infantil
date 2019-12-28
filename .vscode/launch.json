@@ -33,7 +33,7 @@
         },
         {
             "name": "PyQt5 w",
-            "pythonPath": "${workspaceFolder}/.venv_win/Scripts/pythonw.exe",
+            "pythonPath": "${workspaceFolder}/.venv/Scripts/pythonw.exe",
             "type": "python",
             "request": "launch",
             "env": {
