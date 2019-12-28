@@ -98,7 +98,7 @@
         </li>
         {% endif %}
       </ul>
-    </div>{% endif %}{% if current_user.has_page(['templates']) %}
+    </div>{% endif %}{% if current_user.has_page(['templates']) and not PRODUCTION %}
     <div class="menu_section">
       <h3>{{ locale.base.templates }}</h3>
       <ul class="nav side-menu">

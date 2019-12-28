@@ -10,3 +10,6 @@ app/dist
 .venv
 pyapp/build/
 pyapp/pyappdist/
+*.pyo
+err.txt
+log.txt

@@ -15,6 +15,7 @@ from flask_user import UserManager, SQLAlchemyAdapter
 from appadmin.utils.db_manager import DBManager
 from appadmin.utils.localization_manager import LocalizationManager
 from appadmin.models.interface_model import db, User
+from appadmin.utils.version import __version__ as version
 
 
 login_manager = LoginManager()
@@ -22,8 +23,9 @@ ROOT_FILE_PATH = os.path.abspath(os.path.dirname(__file__))
 
 
 def id_generator(size=16, chars=string.ascii_uppercase + string.digits):
-    return ''.join(random.choice(chars) for _ in range(size))
-    #return "1234"
+    if not 'b' in version:
+        return ''.join(random.choice(chars) for _ in range(size))
+    return "1234"
 
 
 class ConfigClass(object):
@@ -130,7 +132,7 @@ def create_app():
         @blp.context_processor
         def inject_blp_locale():
             return dict(
-                blocale=LocalizationManager().get_blueprint_locale(blp.name), str=str, len=len)
+                blocale=LocalizationManager().get_blueprint_locale(blp.name), PRODUCTION='b' not in version, str=str, len=len)
 
         @blp.errorhandler(403)
         def access_forbidden(error):
@@ -179,6 +181,37 @@ def create_app():
             setup_blueprint(app, module.blp, module_name)
             module.blp.db_manager = app.db_manager
             app.register_blueprint(module.blp)
+
+    def register_blueprints_production(app):
+        import appadmin.interface.base.base as base_blp
+        import appadmin.interface.clubs.clubs as clubs_blp
+        import appadmin.interface.editions.editions as editions_blp
+        import appadmin.interface.main.main as main_blp
+        import appadmin.interface.roles.roles as roles_blp
+        import appadmin.interface.race.race as race_blp
+        import appadmin.interface.organizers.organizers as organizers_blp
+        import appadmin.interface.statistics.statistics as statistics_blp
+        import appadmin.interface.users.users as users_blp
+
+        modules = {
+            'base': base_blp,
+            'clubs': clubs_blp,
+            'editions': editions_blp,
+            'main': main_blp,
+            'organizers': organizers_blp,
+            'race': race_blp,
+            'roles': roles_blp,
+            'statistics': statistics_blp,
+            'users': users_blp
+        }
+
+        for module_name, module in modules.items():
+            locale_manager = LocalizationManager()
+            locale_manager.add_blueprint(module.blp)
+           
+            setup_blueprint(app, module.blp, module_name)
+            module.blp.db_manager = app.db_manager
+            app.register_blueprint(module.blp)
     
     app = Flask(
         __name__, static_url_path='/static',
@@ -189,11 +222,15 @@ def create_app():
     app.config.from_object(__name__+'.ConfigClass')
     app.config['SQLALCHEMY_DATABASE_URI'] = app.db_manager.data_base_local_path
 
-    app.jinja_env.auto_reload = True
-    app.config['TEMPLATES_AUTO_RELOAD'] = True
+    if 'b' in version:
+        app.jinja_env.auto_reload = True
+        app.config['TEMPLATES_AUTO_RELOAD'] = True
 
-    register_blueprints(app)
-    register_template_blueprints(app)
+    if not 'b' in version:
+        register_blueprints_production(app)
+    else:
+        register_blueprints(app)
+        register_template_blueprints(app)
 
     db.init_app(app)
 

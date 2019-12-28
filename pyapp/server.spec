@@ -5,7 +5,7 @@ import sys
 import re
 from PyInstaller.building.build_main import Analysis, PYZ, EXE, COLLECT, BUNDLE, TOC
 
-IGNORE_EXTENSIONS = {'.pyo', '.pyc', '.dll', '.exe'}
+IGNORE_EXTENSIONS = {'.py', '.pyo', '.pyc', '.dll', '.exe'}
 
 def collect_pkg_data(package, include_py_files=False, subdir=None):
     import os
@@ -72,8 +72,8 @@ def collect_pkg_data(package, include_py_files=False, subdir=None):
             continue
         if '__deprecated' in dir_path:
             continue
-        #if '__templates' in dir_path:
-        #    continue
+        if '__templates' in dir_path:
+            continue
         for f in files:
             extension = os.path.splitext(f)[1]
             if extension in IGNORE_EXTENSIONS:
@@ -109,8 +109,8 @@ def collect_pkg_python(package):
             continue
         if '__deprecated' in dir_path:
             continue
-        #if '__templates' in dir_path:
-        #    continue
+        if '__templates' in dir_path:
+            continue
         for f in files:
             extension = os.path.splitext(f)[1]
             if extension == '.py':
@@ -138,8 +138,8 @@ def collect_pkg_bin(package):
             continue
         if '__deprecated' in dir_path:
             continue
-        #if '__templates' in dir_path:
-        #    continue
+        if '__templates' in dir_path:
+            continue
         for f in files:
             extension = os.path.splitext(f)[1]
             if extension in {'.dll', '.exe'}:
@@ -218,8 +218,9 @@ collect = COLLECT(
     runtime_tmpdir=None,
     console=True)
 
+"""
 app = BUNDLE(exe,
     name='myscript.app',
     icon=None,
     bundle_identifier=None)
-
+"""
