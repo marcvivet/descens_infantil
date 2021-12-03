@@ -121,7 +121,7 @@ class Console(QtWidgets.QDialog, logging.Handler):
         elif record.levelname == 'CRITICAL':
             color = 'red'
 
-        record = f'<font color="{color}">{self.format(record)}</font><br />'
+        record = f'<font color="{color}">{record.msg}</font><br />'
 
         if self.isVisible():
             self.new_record_signal.emit(record)
@@ -388,10 +388,13 @@ class Window(QtWidgets.QMainWindow):
                 if values == self.prev_page_values:
                     return
 
-                pages = Crypt().decrypt(values).split(':')           
-                for page in [
-                        'race', 'organizers', 'editions', 'clubs', 'statistics', 'users', 'roles']:
-                    self.menu_bar_items[page].menuAction().setVisible(page in pages)
+                pages_str = Crypt().decrypt(values)
+
+                if pages_str:
+                    pages = pages_str.split(':')
+                    for page in [
+                            'race', 'organizers', 'editions', 'clubs', 'statistics', 'users', 'roles']:
+                        self.menu_bar_items[page].menuAction().setVisible(page in pages)
 
             web_view.page().toHtml(func_html)
         return update_menu_wrapper

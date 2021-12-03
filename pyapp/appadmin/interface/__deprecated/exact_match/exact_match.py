@@ -6,7 +6,6 @@ sys.path.append(os.path.join(os.path.dirname(__file__), "../../../"))
 from flask import Blueprint, render_template, request, redirect, url_for, Response, send_from_directory, jsonify
 from flask_login import current_user, LoginManager
 from flask_login import login_required
-from flask_user import roles_required
 from werkzeug.utils import secure_filename
 
 from models.ac_interface import dbi, User, Role, AnnotationDatabase, Configuration
@@ -65,7 +64,7 @@ def communicate():
 
     try:
         if request.method == 'POST':
-            json_data = json.loads(request.data.decode('utf-8'), encoding='utf8')
+            json_data = json.loads(request.data.decode('utf-8'))
 
             if json_data['request'] == 'get_wrong_images_for_job':
                 response = dbrm.get_wrong_images_by_job_id(

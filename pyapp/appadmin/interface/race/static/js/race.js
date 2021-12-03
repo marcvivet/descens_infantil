@@ -9,6 +9,7 @@ class ViewParticipantsPageRow extends PageRow {
       rowId: 'participants_row'
     });
 
+    this._save_on = true;
     this._page_type = page_type;
     this._participants_data = null;
     this._template = document.getElementById('list').innerHTML;
@@ -34,7 +35,6 @@ class ViewParticipantsPageRow extends PageRow {
         this._clubs_lut[this._clubs[i].id] = {
           name: this._clubs[i].name,
           emblem: this._clubs[i].emblem
-
         }
       }
     });
@@ -255,8 +255,9 @@ class ViewParticipantsPageRow extends PageRow {
   }
 
   selectTableElement(offset, selected=null) {
-    this.saveTableElement();
     if (this._disable_select) return;
+
+    this._save_on = false;
 
     if (! selected ) {
       selected = $('#table_body>tr.selected').first();
@@ -320,6 +321,7 @@ class ViewParticipantsPageRow extends PageRow {
     $('#not_arrived_select').bootstrapToggle('enable');
     $('#not_came_out_select').bootstrapToggle('enable');
 
+
     if (participant.penalized) {
       $('#penalized_select').bootstrapToggle('on');
     } else {
@@ -345,20 +347,40 @@ class ViewParticipantsPageRow extends PageRow {
     }
 
     $("#button-save").prop("disabled", false);
+    this._save_on = true;
   }
 
   saveTableElement() {
-    if (this._disable_select) return;
-    if (!this._currData) return;
+    if (this._save_on == false) {
+      return;
+    }
+
+    if (this._disable_select) {
+      return;
+    }
+    if (!this._currData) {
+      return;
+    }
     let selected = $('#table_body>tr.selected').first();
-    if (!selected) return;
+    if (!selected) {
+      return;
+    }
     
     let curItemIndex = this._datatable._table.row(selected).index();
     let item = this._datatable._table.row(curItemIndex);
 
     let id = $(item.node()).attr('id').substring(10);
     let participant = this._participants_data[id];
-    let time = `${$('#time_minutes_select').val()}:${$('#time_seconds_select').val()}.${$('#time_hundreds_select').val()}`;
+
+    let minutes = $('#time_minutes_select').val();
+    let seconds = $('#time_seconds_select').val();
+    let hundreds = $('#time_hundreds_select').val();
+    
+    if (Number.isNaN(parseInt(minutes))) minutes = '00';
+    if (Number.isNaN(parseInt(seconds))) seconds = '00';
+    if (Number.isNaN(parseInt(hundreds))) hundreds = '00';
+
+    let time = `${minutes}:${seconds}.${hundreds}`;
 
     if (time == ':.') {
       time = '00:00.00';
@@ -390,13 +412,12 @@ class ViewParticipantsPageRow extends PageRow {
         this._participants_data[participantId].not_arrived = participantData.not_arrived;
         this._participants_data[participantId].not_came_out = participantData.not_came_out;
         this._participants_data[participantId].time = participantData.time;
-        
+
         this.restoreRow(participantId);
       }
     })(id, data), (status, responseText) => {
       Page.showError(responseText);
-    });
-    
+    }, null, false);
   }
 
 
@@ -513,13 +534,11 @@ class ViewParticipantsPageRow extends PageRow {
     });
 
     this.runOnReadyJQuery("input[type='search']", () => {
-      $("input[type='search']").on("keyup", () => {
-          this.removeSelectTableElement();
+      $("input[type='search']").on("keydown", () => {
+        this.removeSelectTableElement();
     })});
-    
 
     this._datatable._page_dialog._event_display = (show) => {
-
       if (show) {
         this.disableSelectTable();
       } else {
@@ -528,12 +547,36 @@ class ViewParticipantsPageRow extends PageRow {
     };
 
     this.removeSelectTableElement();
+
+    $('#penalized_select').change(
+      () => {
+        this.saveTableElement();
+      }
+    );
+
+    $('#time_minutes_select').change(
+      () => {
+        this.saveTableElement();
+      }
+    );
+    $('#time_seconds_select').change(
+      () => {
+        this.saveTableElement();
+      }
+    );
+    $('#time_hundreds_select').change(
+      () => {
+        this.saveTableElement();
+      }
+    );
+
     $('#disqualified_select').change(
       () => {
         if($("#disqualified_select").is(':checked')) {
           $('#not_arrived_select').bootstrapToggle('off');
           $('#not_came_out_select').bootstrapToggle('off');
         }
+        this.saveTableElement();
       }
     );
 
@@ -543,6 +586,7 @@ class ViewParticipantsPageRow extends PageRow {
           $('#disqualified_select').bootstrapToggle('off');
           $('#not_came_out_select').bootstrapToggle('off');
         }
+        this.saveTableElement();
       }
     );
 
@@ -552,6 +596,7 @@ class ViewParticipantsPageRow extends PageRow {
           $('#disqualified_select').bootstrapToggle('off');
           $('#not_arrived_select').bootstrapToggle('off');
         }
+        this.saveTableElement();
       }
     );
 
@@ -559,9 +604,11 @@ class ViewParticipantsPageRow extends PageRow {
       this.saveTableElement();
     });
 
+    /*
     window.setInterval(() => {
       this.saveTableElement();
     }, 250);
+    */
   }
 
   fadeIn(id, time) {
@@ -772,25 +819,25 @@ class ViewParticipantsPageRow extends PageRow {
       </button>`;
     }
 
-    try {    
-    document.getElementById(`surnames_${id}`).innerHTML = participant.surnames;
-    document.getElementById(`name_${id}`).innerHTML = participant.name;
-    document.getElementById(`club_name_${id}`).innerHTML = participant.club_name;
-    document.getElementById(`birthday_${id}`).innerHTML = participant.birthday;
-    document.getElementById(`bib_number_${id}`).innerHTML = participant.bib_number;
+    try {
+      document.getElementById(`surnames_${id}`).innerHTML = participant.surnames;
+      document.getElementById(`name_${id}`).innerHTML = participant.name;
+      document.getElementById(`club_name_${id}`).innerHTML = participant.club_name;
+      document.getElementById(`birthday_${id}`).innerHTML = participant.birthday;
+      document.getElementById(`bib_number_${id}`).innerHTML = participant.bib_number;
 
-    let penalized = '<span class="hidden">0</span>';
-    if (participant.penalized == 1) {
-      penalized = '<span class="glyphicon glyphicon-remove text-danger" /><span class="hidden">1</span>'
-    }
-    document.getElementById(`penalized_${id}`).innerHTML = penalized;
+      let penalized = '<span class="hidden">0</span>';
+      if (participant.penalized == 1) {
+        penalized = '<span class="glyphicon glyphicon-remove text-danger" /><span class="hidden">1</span>'
+      }
+      document.getElementById(`penalized_${id}`).innerHTML = penalized;
 
-    document.getElementById(`status_${id}`).innerHTML = this.genRaceStatus(
-      participant.disqualified, participant.not_arrived, participant.not_came_out);
+      document.getElementById(`status_${id}`).innerHTML = this.genRaceStatus(
+        participant.disqualified, participant.not_arrived, participant.not_came_out);
 
-    let participant_time = participant.time;
-    if (!participant_time) participant_time = '';
-    document.getElementById(`time_${id}`).innerHTML = participant_time;
+      let participant_time = participant.time;
+      if (!participant_time) participant_time = '';
+        document.getElementById(`time_${id}`).innerHTML = participant_time;
     } catch {
       console.log('Not found ' + id);
     }
@@ -815,8 +862,6 @@ class ViewParticipantsPageRow extends PageRow {
     let not_came_out;
 
     [disqualified, not_arrived, not_came_out] = this.splitStatus(status);
-
-    console.log(disqualified)
 
     let data = {
       participant_id: parseInt(participant.id),

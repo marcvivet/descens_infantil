@@ -188,7 +188,7 @@ def communicate():
     message = None
     try:
         if request.method == 'POST':
-            json_data = json.loads(request.data.decode('utf-8'), encoding='utf8')
+            json_data = json.loads(request.data.decode('utf-8'))
 
             if 'method' in json_data:
                 blp.databases_add = {'method': json_data['method'], 'uploaded': []}

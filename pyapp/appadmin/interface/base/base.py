@@ -4,7 +4,6 @@ import os
 from appadmin.models.interface_model import User
 from appadmin.utils.localization_manager import LocalizationManager
 
-from flask_user.access import is_authenticated, is_confirmed_email
 from flask import Blueprint, render_template, redirect, request, url_for, flash, Response
 from flask_login import (
     current_user,

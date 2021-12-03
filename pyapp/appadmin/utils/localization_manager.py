@@ -5,7 +5,6 @@ import json
 from typing import Any
 
 from flask_login import current_user
-from flask_user.access import is_authenticated
 
 from appadmin.models.interface_model import Language
 from appadmin.utils.singleton import Singleton
@@ -106,7 +105,7 @@ class LocalizationManager(metaclass=Singleton):
     @property
     def user_locale(self):
         try:
-            if is_authenticated():
+            if current_user.is_authenticated:
                 return current_user.language.iso_639_1
         except AttributeError:
             pass

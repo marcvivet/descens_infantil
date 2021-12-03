@@ -4,7 +4,6 @@ from unidecode import unidecode
 from datetime import date, time
 from flask_sqlalchemy import SQLAlchemy
 from passlib.hash import bcrypt
-from flask_user import UserMixin
 from urllib.parse import quote_plus
 
 from appadmin.utils.crypt import Crypt
@@ -58,7 +57,7 @@ class Role(db.Model):
     name = db.Column(db.String(16), nullable=False, unique=True)
     description = db.Column(db.String(64), nullable=True)
 
-    pages = db.relationship('Page', secondary='role_pages', order_by='Page.id')
+    pages = db.relationship('Page', secondary='role_pages', order_by='Page.id', overlaps="roles")
 
     NAMES = ['Admin', 'User']
 
@@ -147,7 +146,7 @@ class Language(db.Model):
         self._locale = locale
 
 
-class User(db.Model, UserMixin):
+class User(db.Model):
     """Table users
     """
 
@@ -310,7 +309,7 @@ class UserEmail(db.Model):
 
     # User email information
     email = db.Column(db.String(255), nullable=False, unique=True)
-    email_confirmed_at = db.Column(db.DateTime())
+    email_confirmed_at = db.Column('confirmed_at', db.DateTime())
     is_primary = db.Column(db.Boolean(), nullable=False, server_default='0')
 
 

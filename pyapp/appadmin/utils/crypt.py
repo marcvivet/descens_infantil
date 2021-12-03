@@ -1,4 +1,4 @@
-from cryptography.fernet import Fernet
+from cryptography.fernet import Fernet, InvalidToken
 from base64 import b64encode, b64decode
 
 from appadmin.utils.singleton import Singleton
@@ -14,6 +14,9 @@ class Crypt(metaclass=Singleton):
 
     def decrypt(self, enc_str):
         if enc_str:
-            return self.fernet.decrypt(enc_str.encode()).decode('utf-8')
+            try:
+                return self.fernet.decrypt(enc_str.encode()).decode('utf-8')
+            except InvalidToken:
+                return None
         else:
             return enc_str

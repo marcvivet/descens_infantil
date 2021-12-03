@@ -232,7 +232,7 @@ def gallery():
     categories = db_combined.get_categories(only_one=True)
 
     if request.method == 'POST':
-        json_data = json.loads(request.data.decode('utf-8'), encoding='utf8')
+        json_data = json.loads(request.data.decode('utf-8'))
 
         try:
             for id_str, data in json_data.items():
@@ -401,7 +401,7 @@ def communicate():
     message = None
     try:
         if request.method == 'POST':
-            json_data = json.loads(request.data.decode('utf-8'), encoding='utf8')
+            json_data = json.loads(request.data.decode('utf-8'))
 
             db_combined = DBManagerCombined(current_user)
             if json_data['request'] == 'clusters':

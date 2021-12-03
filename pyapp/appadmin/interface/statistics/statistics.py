@@ -83,7 +83,7 @@ def communicate():
     status = 200
 
     try:
-        json_data = json.loads(request.data.decode('utf-8'), encoding='utf8')
+        json_data = json.loads(request.data.decode('utf-8'))
 
         if json_data['action'] == 'get_locale':
             message = LocalizationManager().get_blueprint_locale(blp.name)._locale

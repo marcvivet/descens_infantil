@@ -53,11 +53,11 @@
 
 .opacity_0 {
     opacity: 0;
-    -webkit-transition: all var(--transition-time) ease-in-out;
-    -moz-transition: all var(--transition-time) ease-in-out;
-    -ms-transition: all var(--transition-time) ease-in-out;
-    -o-transition: all var(--transition-time) ease-in-out;
-    transition: all var(--transition-time) ease-in-out;
+    -webkit-transition: opacity var(--transition-time);
+    -moz-transition: opacity var(--transition-time);
+    -ms-transition: opacity var(--transition-time);
+    -o-transition: opacity var(--transition-time);
+    transition: opacity var(--transition-time);
 }
 
 .div-time-big,

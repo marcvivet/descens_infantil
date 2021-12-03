@@ -10,7 +10,6 @@ from datetime import timedelta
 from flask import Flask
 from flask import render_template
 from flask_login import LoginManager
-from flask_user import UserManager, SQLAlchemyAdapter
 
 from appadmin.utils.db_manager import DBManager
 from appadmin.utils.localization_manager import LocalizationManager
@@ -54,6 +53,10 @@ class ConfigClass(object):
     MAIL_USERNAME = 'email@example.com'
     MAIL_PASSWORD = 'password'
 
+    UPLOAD_FOLDER = os.path.join(
+        ROOT_FILE_PATH, "interface/base/static/uploads/")
+
+    '''
     # Flask-User settings
     USER_APP_NAME = "Annotation Corrector"      # Shown in and email templates and page footers
     USER_ENABLE_EMAIL = False        # Enable email authentication
@@ -62,9 +65,6 @@ class ConfigClass(object):
     USER_ENABLE_REGISTER = False
     USER_EMAIL_SENDER_NAME = USER_APP_NAME
     USER_EMAIL_SENDER_EMAIL = "noreply@example.com"
-
-    UPLOAD_FOLDER = os.path.join(
-        ROOT_FILE_PATH, "interface/base/static/uploads/")
 
     USER_LOGIN_URL = '/login'
     USER_LOGOUT_URL = '/logout'
@@ -105,7 +105,7 @@ class ConfigClass(object):
     # Unauthorized users trying to access a view that has been decorated
     # with @roles_required will be redirected to this endpoint
     USER_UNAUTHORIZED_ENDPOINT               = ''              # v0.5.3 and up
-
+    '''
 
 
 def create_app():
@@ -233,10 +233,6 @@ def create_app():
         register_template_blueprints(app)
 
     db.init_app(app)
-
-    db_adapter = SQLAlchemyAdapter(db, User)
-    user_manager = UserManager(db_adapter)
-    user_manager.init_app(app)
 
     UPLOAD_FOLDER_FOR_DATABASES = os.path.join(
         app.config['AC_ROOT_FILE_PATH'], 'interface/base/static/uploads/databases')

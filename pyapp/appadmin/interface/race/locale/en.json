@@ -51,5 +51,7 @@
     "disqualified": "Disqualifieds",
     "classified": "Classifieds",
     "position": "Position",
-    "penalization_time": "Penalization Time"
+    "penalization_time": "Penalization Time",
+    "no": "No",
+    "yes": "Yes"
 }

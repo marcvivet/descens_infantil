@@ -70,7 +70,7 @@ def communicate():
         'elapsed_time': None
     }
     
-    json_data = json.loads(request.data.decode('utf-8'), encoding='utf8')
+    json_data = json.loads(request.data.decode('utf-8'))
 
     if json_data['action'] == 'get_locale':
         response['data'] = {

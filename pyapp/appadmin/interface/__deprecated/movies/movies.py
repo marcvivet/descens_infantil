@@ -39,7 +39,7 @@ def communicate():
 
     try:
         if request.method == 'POST':
-            json_data = json.loads(request.data.decode('utf-8'), encoding='utf8')
+            json_data = json.loads(request.data.decode('utf-8'))
 
             if json_data['request'] == 'search_movie':
                 tmdb = TMDBManager()

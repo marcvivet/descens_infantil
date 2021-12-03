@@ -51,5 +51,7 @@
     "disqualified": "Desqualificats",
     "classified": "Classificats",
     "position": "Posició",
-    "penalization_time": "Temps penalització"
+    "penalization_time": "Temps penalització",
+    "no": "No",
+    "yes": "Sí"
 }

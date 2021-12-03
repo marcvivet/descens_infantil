@@ -133,7 +133,7 @@ def communicate():
     locm = LocalizationManager().get_blueprint_locale(blp.name)
 
     try:
-        json_data = json.loads(request.data.decode('utf-8'), encoding='utf8')
+        json_data = json.loads(request.data.decode('utf-8'))
 
         if json_data['action'] == 'delete':
             message = locm.can_not_delete.format(json_data['id'])

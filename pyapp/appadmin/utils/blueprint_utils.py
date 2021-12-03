@@ -5,10 +5,9 @@ sys.path.append(os.path.join(os.path.dirname(__file__), "../"))
 
 import json
 
-from flask import current_app, Response
+from flask import current_app, Response, redirect, url_for
 from flask_login import current_user
 from functools import wraps
-from flask_user.access import is_authenticated, is_confirmed_email
 from appadmin.utils.localization_manager import LocalizationManager
 
 ROOT_FILE_PATH = os.path.abspath(os.path.dirname(os.path.dirname(__file__)))
@@ -33,14 +32,14 @@ def roles_required_online(blp):
         @wraps(func)
         def decorated_view(*args, **kwargs):
             # User must be logged
-            if not is_authenticated():
+            if not current_user.is_authenticated:
                 # Redirect to the unauthenticated page
-                return current_app.user_manager.unauthenticated_view_function()
+                return redirect(url_for('base.login'))
 
             # User must have the required roles
-            if not current_user.has_roles(blp.page.allowed_roles):
+            if not current_user.has_role(blp.page.allowed_roles):
                 # Redirect to the unauthorized page
-                return current_app.user_manager.unauthorized_view_function()
+                return redirect(url_for('main.main'))
 
             # Call the actual view
             return func(*args, **kwargs)
