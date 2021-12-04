@@ -1,8 +1,8 @@
 import sys
 import os
 
-#os.environ["QTWEBENGINE_CHROMIUM_FLAGS"] = "--disable-logging --no-sandbox --disable-gpu"
-#os.environ['QTWEBENGINE_DISABLE_SANDBOX'] = 1
+# os.environ["QTWEBENGINE_CHROMIUM_FLAGS"] = "--disable-logging --no-sandbox --disable-gpu"
+# os.environ['QTWEBENGINE_DISABLE_SANDBOX'] = 1
 
 import subprocess
 import platform
@@ -122,7 +122,7 @@ def init_gui(application, port=0, width=800, height=600,
     # Application Level
 
     QtCore.QCoreApplication.setApplicationName('descens infantil')
-    QtCore.QCoreApplication.setApplicationVersion('1.0.0')
+    QtCore.QCoreApplication.setApplicationVersion('1.1.0')
     QtCore.QCoreApplication.setOrganizationName('Descens Infantil')
     QtCore.QCoreApplication.setOrganizationDomain('www.descensinfantil.cat')
 
