@@ -132,6 +132,8 @@ def main():
                     print(f' Error: {participant}')
 
     try:
+        catala = None
+        english = None
         for lang_data in Language.LANGUAGES:
             language = Language(**lang_data)
             manager.add(language)
@@ -139,6 +141,9 @@ def main():
 
             if language.name == "Català":
                 catala = language
+
+            if language.name == "English":
+                english = language
 
         admin_role = Role('Admin')
         developer_role = Role(
@@ -153,7 +158,7 @@ def main():
 
         user.roles.append(admin_role)
         user.roles.append(developer_role)
-        user.language = catala
+        user.language = english
 
         manager.add(user)
 

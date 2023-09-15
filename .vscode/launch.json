@@ -11,6 +11,16 @@
     ],
     "configurations": [
         {
+            "name": "Create DB",
+            "type": "python",
+            "request": "launch",
+            "env": {
+                "PYTHONPATH": "${workspaceFolder}/pyapp"
+            },
+            "program": "${workspaceFolder}/pyapp/scripts/import_database.py",
+            "console": "integratedTerminal"
+        },
+        {
             "name": "Flask",
             "type": "python",
             "request": "launch",
@@ -40,16 +50,6 @@
                 "PYTHONPATH": "${workspaceFolder}/pyapp"
             },
             "program": "${workspaceFolder}/pyapp/appadmin/server_gui.py",
-            "console": "integratedTerminal"
-        },
-        {
-            "name": "Import DB",
-            "type": "python",
-            "request": "launch",
-            "env": {
-                "PYTHONPATH": "${workspaceFolder}/pyapp"
-            },
-            "program": "${workspaceFolder}/pyapp/scripts/import_database.py",
             "console": "integratedTerminal"
         },
         {
