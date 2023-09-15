@@ -352,14 +352,24 @@ class Edition(db.Model):
         sql_query = "SELECT MAX(editions.edition) "\
                     "FROM editions"
         
-        return db.session.execute(sql_query).fetchone()[0] + 1
+        edition_num = db.session.execute(sql_query).fetchone()[0]
+
+        if edition_num is not None:
+            return edition_num + 1
+
+        return 1
 
     @staticmethod
     def get_next_year():
         sql_query = "SELECT STRFTIME(\"%Y\", MAX(editions.date)) "\
                     "FROM editions"
         
-        return int(db.session.execute(sql_query).fetchone()[0]) + 1
+        edition_year = db.session.execute(sql_query).fetchone()[0]
+
+        if edition_year is not None:
+            return int(edition_year) + 1
+
+        return int(date.today().year)
 
 
     @staticmethod
