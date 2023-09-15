@@ -36,6 +36,9 @@ sudo apt-get install libmysqlclient-dev
 
 ## Getting Started
 
-Using VSCode, run the launch job *Import DB* in order to create an SQLite database. Then you can run the job *Flask* to try the app.
+Using VSCode, run the launch job *Import DB* in order to create an SQLite database. Then you can run the job *Flask* to try the app. Open the URL that appears into the console and use this credentials:
+
+* **User**: admin
+* **Password**: 12345
 
 Enjoy!.
