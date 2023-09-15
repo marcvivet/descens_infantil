@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # Descens Infantil la Molina
 
 This repository contains the code of the application that was used to record the times of participants in the children's downhill race during the years 2019 to 2022.
@@ -30,3 +31,6 @@ sudo apt-get install libmysqlclient-dev
 This project was developed using Visual Studio Code, and we recommend using it. Visual Studio Code includes preconfigured launch settings to streamline development.
 
 
+=======
+sudo apt-get install libmysqlclient-dev
+>>>>>>> 18af99818ee092a4374b626966d105dc9545e509
