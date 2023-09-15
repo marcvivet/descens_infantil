@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 # Descens Infantil la Molina
 
 This repository contains the code of the application that was used to record the times of participants in the children's downhill race during the years 2019 to 2022.
@@ -33,4 +32,9 @@ This project was developed using Visual Studio Code, and we recommend using it. 
 
 =======
 sudo apt-get install libmysqlclient-dev
->>>>>>> 18af99818ee092a4374b626966d105dc9545e509
+
+## Getting Started
+
+Using VSCode, run the launch job *Import DB* in order to create an SQLite database. Then you can run the job *Flask* to try the app.
+
+Enjoy!.
