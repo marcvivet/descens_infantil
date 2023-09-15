@@ -30,8 +30,9 @@ sudo apt-get install libmysqlclient-dev
 This project was developed using Visual Studio Code, and we recommend using it. Visual Studio Code includes preconfigured launch settings to streamline development.
 
 
-=======
+```shell
 sudo apt-get install libmysqlclient-dev
+```
 
 ## Getting Started
 
