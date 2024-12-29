@@ -1,0 +1,12 @@
+{
+    "editions": {
+        "set_address_list": "https://",
+        "db_config": {
+            "data_base_name": "",
+            "user": "",
+            "password": "",
+            "host": "",
+            "data_base_type": "mySQL"
+        }
+    }
+}

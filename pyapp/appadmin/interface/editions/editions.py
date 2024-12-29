@@ -12,6 +12,7 @@ from flask import Blueprint, render_template, request, redirect, Response
 from flask_login import current_user
 from flask_login import login_required
 
+import requests as req
 from PIL import Image
 import numpy as np
 
@@ -51,6 +52,7 @@ def get_organizer(full_name: str) -> Organizer:
 @roles_required_online(blp)
 def add():
     db = blp.db_manager
+    manual_config = blp.manual_config["editions"]
     locm = LocalizationManager().get_blueprint_locale(blp.name)
 
     state = None
@@ -83,9 +85,11 @@ def add():
             db.commit()
 
             if 'import' in data and data['import'] == 'on':
-                db_manager = DBManager(
-                    data_base_name='XXXXX', user='XXXXX', password='XXXXX',
-                    host='XXXXX', data_base_type='mySQL')
+                response = req.post(manual_config["set_address_list"])
+                if response.status_code != 200:
+                    raise Exception("Error while trying to add the IP to mikrotikapi")
+
+                db_manager = DBManager(**manual_config["db_config"])
 
                 result = db_manager.execute(
                     'SELECT inscrits.nom AS name, inscrits.cognoms AS surnames, '

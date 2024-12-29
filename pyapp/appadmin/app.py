@@ -211,6 +211,7 @@ def create_app():
            
             setup_blueprint(app, module.blp, module_name)
             module.blp.db_manager = app.db_manager
+            module.blp.manual_config = app.manual_config
             app.register_blueprint(module.blp)
     
     app = Flask(
@@ -221,6 +222,9 @@ def create_app():
     app.db_manager = DBManager(data_base_name='descens_infantil')
     app.config.from_object(__name__+'.ConfigClass')
     app.config['SQLALCHEMY_DATABASE_URI'] = app.db_manager.data_base_local_path
+
+    with open(os.path.join(os.path.dirname(os.path.abspath(__file__)), "manual_config.json"), "r", encoding="utf-8") as file_r:
+        app.manual_config = json.load(file_r)
 
     if 'b' in version:
         app.jinja_env.auto_reload = True
@@ -241,7 +245,6 @@ def create_app():
         os.makedirs(UPLOAD_FOLDER_FOR_DATABASES)
 
     app.permanent_session_lifetime = timedelta(hours=24)
-
     app.is_configured = True
 
     return app
