@@ -1,9 +1,12 @@
 import os
 import sys
-import csv
+from datetime import datetime
+
 from datetime import date, time, datetime
 from sqlalchemy import and_, orm
 from sqlalchemy.exc import IntegrityError
+import pandas as pd
+
 
 sys.path.append(
     os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -24,171 +27,63 @@ def main():
     club_image_folder = os.path.join(image_folder, 'clubs')
     edition_image_folder = os.path.join(image_folder, 'editions')
 
-    manager = DBManager(clean=True)
-    manager.create_all(dbd.Model)
-    manager.create_all(dbi.Model)
+    manager = DBManager(data_base_name='descens_infantil')
 
+    clubs = pd.read_csv(os.path.join(base_path, "pyapp", "scripts", "clubs.csv"), sep=";").set_index("ID")
+    inscrits = pd.read_excel(os.path.join(base_path, "pyapp", "scripts", "Inscripcions_DescensInfantil.xlsx")).sort_values(by='Data naixement', ascending=False)
 
-    clubs_csv = os.path.join(data_folder, 'CLUBS.csv')
-    if os.path.exists(clubs_csv):
-        with open(clubs_csv, newline='') as csvfile:
-            reader = csv.DictReader(csvfile)
-            for row in reader:
-                emblem = None
-                if os.path.exists(os.path.join(club_image_folder, f"{row['CLUB'].upper()}.jpg")):
-                    emblem = f"/static/images/clubs/{row['CLUB'].upper()}.jpg"
+    last_ed = manager.query(Edition).order_by(Edition.edition.desc()).all()[0]
+    new_edition = Edition(
+        edition=last_ed.edition + 1, date=date(datetime.now().year + 1, 1, 1))
 
-                club = Club(id=int(row['ID_CLUB']), acronym=row['CLUB'], name=row['NOM'], emblem=emblem)
-                manager.add(club)
-                manager.commit()
+    manager.add(new_edition)
+    manager.commit()
 
+    for bib_number, (_, row) in enumerate(inscrits.iterrows(), start=1):
+        birthday = row['Data naixement'].date()
+        try:
+            name = row['Nom'].title()
+        except:
+            name = " "
 
-    edicio_csv = os.path.join(data_folder, 'EDICIÓ.csv')
-    if os.path.exists(edicio_csv):
-        with open(edicio_csv, newline='') as csvfile:
-            reader = csv.DictReader(csvfile)
-            for row in reader:
-                picture = None
-                if os.path.exists(os.path.join(edition_image_folder, f"{row['ANY'].upper()}.jpg")):
-                    picture = f"/static/images/editions/{row['ANY'].upper()}.jpg"
+        participant = manager.query(Participant).filter(
+            Participant.hash == Participant.get_hash(
+                name, row['Cognoms'].title(), birthday)).first()
 
-                chief_of_course = None
-                if row['Director de la cursa']:
-                    hash_chief_of_course = Organizer.create_hash(*row['Director de la cursa'].split(' ', 1))
-                    chief_of_course = manager.query(Organizer).filter(
-                        Organizer.hash == hash_chief_of_course).first()
-                    if not chief_of_course:
-                        chief_of_course = Organizer(*row['Director de la cursa'].split(' ', 1))
-                        manager.add(chief_of_course)
-                        manager.flush()
+        if not participant:
+            participant = Participant(name, row['Cognoms'].title(), birthday)
+            manager.add(participant)
+            manager.flush()
 
-                start_referee = None
-                if row['Director de la cursa02']:
-                    hash_start_referee = Organizer.create_hash(*row['Director de la cursa02'].split(' ', 1))
-                    start_referee = manager.query(
-                        Organizer).filter(Organizer.hash == hash_start_referee).first()
-                    if not start_referee:
-                        start_referee = Organizer(*row['Director de la cursa02'].split(' ', 1))
-                        manager.add(start_referee)
-                        manager.flush()
+        edition_participant = manager.query(EditionParticipant).filter(and_(
+            EditionParticipant.participant_id == participant.id,
+            EditionParticipant.edition_id == new_edition.id)).first()
 
-                edition = Edition(
-                    edition=int(row['EDICIÓ']), chief_of_course=chief_of_course,
-                    start_referee=start_referee, date=date(int(row['ANY']), 1, 1), picture=picture)
-                
-                manager.add(edition)
-                manager.commit()
+        if edition_participant:
+            raise Exception('participant_exists')
 
-    competi_csv = os.path.join(data_folder, 'COMPETICIÓ.csv')
-    if os.path.exists(competi_csv):
-        with open(competi_csv, newline='') as csvfile:
-            reader = csv.DictReader(csvfile)
-            for row in reader:
-                club = manager.query(Club).filter(Club.id == row['CLUB']).one()
-                edition = manager.query(Edition).filter(Edition.date == date(int(row['ANY']), 1, 1)).one()
+        club_data = clubs.loc[row["Club"]].to_dict()
 
-                try:
-                    name = row['NOM'].title()
-                    surnames = row['COGNOMS'].title()
+        club = manager.query(Club).filter(
+            Club.name == club_data['Nom'].title()).first()
 
-                    if not row['DATA NAIXEMENT']:
-                        year = int(row['ANY'])
-                        category = int(row['CATEGORIA'])
-                        birthday = date(year - category, 1, 1)
-                    else:
-                        birthday = datetime.strptime(row['DATA NAIXEMENT'], '%m/%d/%y %H:%M:%S').date()
-                except:
-                    print('ERROR')
+        if not club:
+            club = Club(name=club_data['Nom'].title(), acronym=row['Club'].upper())
 
-                participant = Participant(name=name, surnames=surnames, birthday=birthday)
+            while manager.query(Club).filter(
+                    Club.acronym == club.acronym).first():
+                club.acronym += '*'
 
-                if manager.query(Participant).filter(Participant.hash == participant.hash).count():
-                    participant = manager.query(Participant).filter(Participant.hash == participant.hash).one()
-                else:
-                    manager.add(participant)
-                    manager.commit()
+            manager.add(club)
+            manager.flush()
 
-                minutes = 0 if not row['MIN'] else int(float(row['MIN']))
-                seconds = 0 if not row['SEG'] else int(float(row['SEG']))
-                macroseconds = 0 if not row['CENT'] else int(float(row['CENT'])) * 10000
+        edition_participant = EditionParticipant(
+            new_edition, participant, club, bib_number)
 
-                edition_participant = EditionParticipant(
-                    edition,
-                    participant,
-                    club,
-                    bib_number=int(row['DORSAL']),
-                    penalized=row['PENALITZACIÓ'] == '1',
-                    disqualified=row['DSQ'] == '1',
-                    not_arrived=row['DNF'] == '1',
-                    not_came_out=row['DNS'] == '1',
-                    time=time(0, minutes, seconds, macroseconds)
-                )
-
-                try:
-                    manager.add(edition_participant)
-                except:
-                    # print(club)
-                    # print(edition)
-                    print(f' Error: {participant}')
-
-    try:
-        catala = None
-        english = None
-        for lang_data in Language.LANGUAGES:
-            language = Language(**lang_data)
-            manager.add(language)
-            manager.commit()
-
-            if language.name == "Català":
-                catala = language
-
-            if language.name == "English":
-                english = language
-
-        admin_role = Role('Admin')
-        developer_role = Role(
-            'Developer', description='Adds GUI templates to the interface (for development only)')
-        
-        user_role = Role('User')
-
-        # Adding Default users
-        user = User(
-            'admin', name='Administrator', active=True, password="12345",
-            picture='/static/images/users/marc.jpg')
-
-        user.roles.append(admin_role)
-        user.roles.append(developer_role)
-        user.language = english
-
-        manager.add(user)
-
-        user = User(
-            'xenia', name='Xènia', active=True, password="12345",
-            picture='/static/images/users/xenia.jpg')
-
-        user.roles.append(admin_role)
-        user.language = catala
-
-        manager.add(user)
-
-        user = User(
-            'test', name='Test', surname='User', active=True, password="12345")
-
-        user.roles.append(user_role)
-        user.language = catala
-        manager.add(user)
+        manager.add(edition_participant)
         manager.commit()
+    manager.close()
 
-        page = Page(
-            'templates', description='GUI templates (for development only)')
-        page.roles.append(developer_role)
-        manager.add(page)
-        manager.commit()
-
-    except Exception as e:
-        print('Exception: {}'.format(e))
-        pass
-    
 
 if __name__ == '__main__':
     main()
