@@ -722,7 +722,7 @@ class EditionParticipant(db.Model):
         self.disqualified = disqualified
         self.not_arrived = not_arrived
         self.not_came_out = not_came_out
-        self.time = time        
+        self.time = time
 
     @property
     def penalize(self):

@@ -905,6 +905,10 @@ class ViewParticipantsPageRow extends PageRow {
         this._participants_data[participantId].not_came_out = participantData.not_came_out;
         this._participants_data[participantId].category = participantData.category;
         this._participants_data[participantId].time = `${participantData.minutes.pad()}:${participantData.seconds.pad()}.${participantData.hundreds.pad()}`;
+        if (response.reload) {
+          location.reload()
+        }
+        
         Page.showSuccess(response.message);
         this.restoreRow(participantId)
       }
@@ -941,7 +945,7 @@ class ViewParticipantsPageRow extends PageRow {
     surnamesTd.innerHTML = `
       <input name="form_${id}"
         value="${surnamesValue}"
-        placeholder="${this._locale.race.place_holder_surnames}"
+        placeholder="${this._locale.race.surnames}"
         id="form_surnames_${id}"
         class="form-control" style="width: 100%" data-validate-length-range="6"
         required="required" type="text">`;
@@ -951,8 +955,8 @@ class ViewParticipantsPageRow extends PageRow {
     let nameValue = participant.name;
     nameTd.innerHTML = `
       <input name="form_${id}"
-        value=${nameValue}
-        placeholder="${this._locale.race.place_holder_name}"
+        value="${nameValue}"
+        placeholder="${this._locale.race.name}"
         id="form_name_${id}"
         class="form-control" style="width: 100%" data-validate-length-range="6"
         required="required" type="text">`;
@@ -986,7 +990,7 @@ class ViewParticipantsPageRow extends PageRow {
     birthdayTd.innerHTML = `
       <input name="form_${id}"
         value=${birthdayValue}
-        placeholder="${this._locale.race.place_holder_birthday}"
+        placeholder="${this._locale.race.birthday}"
         id="form_birthday_${id}"
         class="date-own form-control" style="width: 100px" data-validate-length-range="6"
         required="required" type="text">`;
@@ -1014,7 +1018,7 @@ class ViewParticipantsPageRow extends PageRow {
     bib_numberTd.innerHTML = `
       <input name="form_${id}"
         value=${bib_numberValue}
-        placeholder="${this._locale.race.place_holder_bib_number}"
+        placeholder="${this._locale.race.bib_number}"
         id="form_bib_number_${id}"
         class="form-control" style="width: 100%"
         required="required" type="number">`;

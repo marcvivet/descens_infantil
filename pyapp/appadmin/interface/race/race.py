@@ -12,9 +12,12 @@ from flask_login import current_user
 from flask_login import login_required
 
 from sqlalchemy.sql.expression import and_
+from sqlalchemy.exc import IntegrityError
 
 from PIL import Image
 import numpy as np
+
+from appadmin.utils.db_manager import DBManager
 
 from appadmin.models.descens_infantil_model import Edition, Club, EditionParticipant, Participant
 from appadmin.utils.blueprint_utils import roles_required_online, config, safe_response
@@ -62,7 +65,7 @@ def results():
 def communicate():
     start = time()
 
-    db = blp.db_manager
+    db : DBManager = blp.db_manager
     locm = LocalizationManager().get_blueprint_locale(blp.name)
 
     response = {
@@ -96,8 +99,9 @@ def communicate():
         }
 
     if json_data['action'] == 'update_participant':
+        response['reload'] = False
         data = json_data['participant_data']
-        edition_participant = db.query(
+        edition_participant : EditionParticipant = db.query(
             EditionParticipant).get([data['edition_id'], data['participant_id']])
         edition_participant.set_time(data['minutes'], data['seconds'], data['hundreds'])
         edition_participant.club_id = data['club_id']
@@ -107,9 +111,27 @@ def communicate():
         edition_participant.not_came_out = data['not_came_out']
         edition_participant.category = data['category']
 
-        participant = edition_participant.participant
-        participant.set_data(data['name'], data['surnames'], data['birthday'])
-        db.commit()
+        try:
+            participant : Participant = edition_participant.participant
+            participant.set_data(data['name'], data['surnames'], data['birthday'])
+
+            db.commit()
+        except IntegrityError:
+            p_hash = Participant.get_hash(data['name'], data['surnames'], participant.birthday)
+            new_participant : Participant = db.query(Participant).filter(Participant.hash == p_hash).first()
+
+            new_edition_participant = EditionParticipant(
+                edition_participant.edition, new_participant, edition_participant.club,
+                bib_number=edition_participant.bib_number, penalized=edition_participant.penalized,
+                disqualified=edition_participant.disqualified, not_arrived=edition_participant.not_arrived,
+                not_came_out=edition_participant.not_came_out, time=edition_participant.time
+            )
+
+            db.delete(edition_participant)
+            db.delete(participant)
+            db.add(new_edition_participant)
+            db.commit()
+            response['reload'] = True
         response['message'] = locm.participant_updated.format(data['name'], data['surnames'])
 
     if json_data['action'] == 'update_times':
