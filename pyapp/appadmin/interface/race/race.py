@@ -110,6 +110,7 @@ def communicate():
         edition_participant.not_arrived = data['not_arrived']
         edition_participant.not_came_out = data['not_came_out']
         edition_participant.category = data['category']
+        edition_participant.bib_number = data['bib_number']
 
         try:
             participant : Participant = edition_participant.participant
@@ -122,7 +123,7 @@ def communicate():
 
             new_edition_participant = EditionParticipant(
                 edition_participant.edition, new_participant, edition_participant.club,
-                bib_number=edition_participant.bib_number, penalized=edition_participant.penalized,
+                bib_number=data["bib_number"], penalized=edition_participant.penalized,
                 disqualified=edition_participant.disqualified, not_arrived=edition_participant.not_arrived,
                 not_came_out=edition_participant.not_came_out, time=edition_participant.time
             )
