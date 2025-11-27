@@ -5,6 +5,7 @@ from datetime import datetime
 
 from sqlalchemy import exc
 from datetime import date
+import pandas as pd
 
 from sqlalchemy.sql.expression import and_
 
@@ -84,6 +85,58 @@ def add():
             db.add(new_edition)
             db.commit()
 
+            if 'import' in request.files:
+                file = request.files['import']
+                if file and file.filename:
+                    df = pd.read_csv(file, encoding='latin-1')
+                    df.columns = [
+                        'name', 'surnames', 'club_name', 
+                        'club_acronym', 'birthday'
+                    ]
+
+                    df['birthday'] = pd.to_datetime(df['birthday'], format='%d/%m/%Y')
+                    df = df.sort_values(by='birthday', ascending=False).reset_index(drop=True)
+
+                    for bib_number, (_, row) in enumerate(df.iterrows(), start=1):
+                        birthday_dt = row['birthday'].to_pydatetime().date()
+
+                        participant = db.query(Participant).filter(
+                            Participant.hash == Participant.get_hash(
+                                row['name'], row['surnames'], birthday_dt)).first()
+
+                        if not participant:
+                            participant = Participant(row['name'], row['surnames'], birthday_dt)
+                            db.add(participant)
+                            db.flush()
+
+                        edition_participant = db.query(EditionParticipant).filter(and_(
+                            EditionParticipant.participant_id == participant.id,
+                            EditionParticipant.edition_id == new_edition.id)).first()
+
+                        if edition_participant:
+                            raise LocalizedException('participant_exists', blp=blp.name)
+
+                        club = db.query(Club).filter(
+                            Club.name == str(row['club_name']).title()).first() 
+
+                        if not club:
+                            club = Club(name=row['club_name'], acronym=row['club_acronym'])
+
+                            while db.query(Club).filter(
+                                Club.acronym == club.acronym).first():
+                                club.acronym += '*'
+
+                            db.add(club)
+                            db.flush()
+
+                        edition_participant = EditionParticipant(
+                            new_edition, participant, club, bib_number)
+
+                        db.add(edition_participant)
+                        db.commit()
+
+
+            """
             if 'import' in data and data['import'] == 'on':
                 response = req.post(manual_config["set_address_list"])
                 if response.status_code != 200:
@@ -136,6 +189,7 @@ def add():
                     db.add(edition_participant)
                     db.commit()
                 db_manager.close()
+            """
 
             message = locm.edition_added
             state = 'success'
