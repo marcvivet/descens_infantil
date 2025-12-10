@@ -88,11 +88,8 @@ def add():
             if 'import' in request.files:
                 file = request.files['import']
                 if file and file.filename:
-                    df = pd.read_csv(file, encoding='latin-1')
-                    df.columns = [
-                        'name', 'surnames', 'club_name', 
-                        'club_acronym', 'birthday'
-                    ]
+                    df = pd.read_csv(file, encoding='utf-8')
+                    df.columns = ['name', 'surnames', 'club_name', 'birthday']
 
                     df['birthday'] = pd.to_datetime(df['birthday'], format='%d/%m/%Y')
                     df = df.sort_values(by='birthday', ascending=False).reset_index(drop=True)
@@ -117,14 +114,10 @@ def add():
                             raise LocalizedException('participant_exists', blp=blp.name)
 
                         club = db.query(Club).filter(
-                            Club.name == str(row['club_name']).title()).first() 
+                            Club.name == str(row['club_name']).title()).first()
 
                         if not club:
-                            club = Club(name=row['club_name'], acronym=row['club_acronym'])
-
-                            while db.query(Club).filter(
-                                Club.acronym == club.acronym).first():
-                                club.acronym += '*'
+                            club = Club(name=row['club_name'])
 
                             db.add(club)
                             db.flush()
