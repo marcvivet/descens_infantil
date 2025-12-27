@@ -22,5 +22,6 @@
     "edition_edited": "Edició {} correctament modificada",
     "exception": "Excepció: {}",
     "error_during_edit": "S'ha produït un error en intentar editar una edició. {}",
-    "import": "Importar parcipants"
+    "import": "Importar parcipants",
+    "error_importing_dates": "S'ha produït un error en importar les dates. Assegureu-vos que el format és correcte (DD/MM/AAAA)."
 }

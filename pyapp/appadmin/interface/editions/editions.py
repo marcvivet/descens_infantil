@@ -88,21 +88,36 @@ def add():
             if 'import' in request.files:
                 file = request.files['import']
                 if file and file.filename:
-                    df = pd.read_csv(file, encoding='utf-8')
+                    if file.filename.endswith('.xlsx') or file.filename.endswith('.xls'):
+                        df = pd.read_excel(file)
+                    else:
+                        df = pd.read_csv(file, encoding='utf-8')
+
                     df.columns = ['name', 'surnames', 'club_name', 'birthday']
 
-                    df['birthday'] = pd.to_datetime(df['birthday'], format='%d/%m/%Y')
+                    try:
+                        df['birthday'] = pd.to_datetime(df['birthday'], format='%d/%m/%Y')
+                    except Exception:
+                        db.delete(new_edition)
+                        db.commit()
+                        raise Exception(locm.error_importing_dates)
+
                     df = df.sort_values(by='birthday', ascending=False).reset_index(drop=True)
 
                     for bib_number, (_, row) in enumerate(df.iterrows(), start=1):
-                        birthday_dt = row['birthday'].to_pydatetime().date()
+                        try:
+                            birthday_dt = row['birthday'].to_pydatetime().date()
+                        except Exception:
+                            db.delete(new_edition)
+                            db.commit()
+                            raise Exception(locm.error_importing_dates)
 
                         participant = db.query(Participant).filter(
                             Participant.hash == Participant.get_hash(
-                                row['name'], row['surnames'], birthday_dt)).first()
+                                row['name'].title(), row['surnames'].title(), birthday_dt)).first()
 
                         if not participant:
-                            participant = Participant(row['name'], row['surnames'], birthday_dt)
+                            participant = Participant(row['name'].title(), row['surnames'].title(), birthday_dt)
                             db.add(participant)
                             db.flush()
 

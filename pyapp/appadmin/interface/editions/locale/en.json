@@ -22,5 +22,6 @@
     "edition_edited": "Edition {} correctly modified",
     "exception": "Exception: {}",
     "error_during_edit": "An error occurred while trying to edit a edition. {}",
-    "import": "Import participants"
+    "import": "Import participants",
+    "error_importing_dates": "An error occurred while importing the dates. Make sure the format is correct (DD/MM/YYYY)."
 }

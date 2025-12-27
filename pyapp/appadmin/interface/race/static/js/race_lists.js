@@ -222,7 +222,7 @@ class BibNumberListPageRow extends ListPageRow {
       <tr>
         <th>${this._locale.race["surnames"]}</th>
         <th>${this._locale.race["name"]}</th>
-        <th>${this._locale.race["category"]}</th>                 
+        <th>${this._locale.race["category"]}</th>
         <th>${this._locale.race["bib_number"]}</th>
       </tr>`;
   }

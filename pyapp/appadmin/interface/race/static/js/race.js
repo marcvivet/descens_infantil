@@ -316,6 +316,14 @@ class ViewParticipantsPageRow extends PageRow {
     $("#time_seconds_select").prop("disabled", false);
     $("#time_hundreds_select").prop("disabled", false);
 
+    // Put focus on the main minutes input when selecting a participant
+    try {
+      let topMinutes = document.getElementById('time_minutes_select');
+      if (topMinutes) { topMinutes.focus(); topMinutes.select(); }
+    } catch (e) {
+      // ignore
+    }
+
     $('#penalized_select').bootstrapToggle('enable');
     $('#disqualified_select').bootstrapToggle('enable');
     $('#not_arrived_select').bootstrapToggle('enable');
@@ -548,27 +556,39 @@ class ViewParticipantsPageRow extends PageRow {
 
     this.removeSelectTableElement();
 
-    $('#penalized_select').change(
-      () => {
-        this.saveTableElement();
-      }
-    );
+    $('#penalized_select').change(() => { this.saveTableElement(); });
 
-    $('#time_minutes_select').change(
-      () => {
+    // Call changeTime on user input/keys and save. This allows jumping focus
+    // from minutes -> seconds -> hundreds when two digits are entered or
+    // when using arrow keys to change the value.
+    // Handle typing separately from committing (save). We only jump focus
+    // after two digits are present. Save occurs on `change`/`blur` or Enter.
+    $('#time_minutes_select, #time_seconds_select, #time_hundreds_select')
+      .on('input', (e) => {
+        // only check for jumping focus on raw input — do NOT format/save here
+        checkJump(e.target);
+      })
+      .on('keyup', (e) => {
+        // handle arrow keys that change the value: check jump
+        if (e.key === 'ArrowUp' || e.key === 'ArrowDown') {
+          checkJump(e.target);
+        }
+      })
+      .on('change blur', (e) => {
+        // user committed a change — save
+        changeTime(e.target);
         this.saveTableElement();
-      }
-    );
-    $('#time_seconds_select').change(
-      () => {
-        this.saveTableElement();
-      }
-    );
-    $('#time_hundreds_select').change(
-      () => {
-        this.saveTableElement();
-      }
-    );
+      })
+      .on('keydown', (e) => {
+        // Enter should save current participant and move to next
+        if (e.key === 'Enter' || e.keyCode === 13) {
+          e.preventDefault();
+          changeTime(e.target);
+          this.saveTableElement();
+          // small timeout to ensure save finishes UI updates
+          setTimeout(() => { this.selectTableElement(1); }, 10);
+        }
+      });
 
     $('#disqualified_select').change(
       () => {
@@ -1006,9 +1026,9 @@ class ViewParticipantsPageRow extends PageRow {
       $(`#form_birthday_${id}`).on('change', ()=>{
         let date = new Date($(`#form_birthday_${id}`).datepicker('getDate'));
         let year = date.getFullYear();
-        let category = parseInt(this.editionYear) - parseInt(year);
+        let category = parseInt(this.editionYear) - parseInt(year) - 1;
         let categoryTd = document.getElementById(`category_${id}`);
-        categoryTd.innerHTML = Math.max(1, category);
+        categoryTd.innerHTML = Math.max(0, category);
       });
     });
 
@@ -1119,13 +1139,13 @@ class ViewParticipantsPageRow extends PageRow {
 
     timeTd.innerHTML = `<div class="div-time-small">
       <span tooltip="${this._locale.race.tooltip_minutes}" tooltip-position='bottom' class="input">
-        <input name="form_${id}" id="time_minutes_${id}" type="number" min="0" max="59" value="${minutes}" placeholder="00" onfocus="this.select();" oninput="changeTime(this)" onchange="changeTime(this)">
+        <input name="form_${id}" id="time_minutes_${id}" type="number" min="0" max="59" value="${minutes}" placeholder="00" onfocus="this.select();" oninput="checkJump(this)" onchange="changeTime(this)">
       </span>:
       <span tooltip="${this._locale.race.tooltip_seconds}" tooltip-position='bottom' class="input">
-        <input name="form_${id}" id="time_seconds_${id}" type="number" min="0" max="59" value="${seconds}"    placeholder="00" onfocus="this.select();" oninput="changeTime(this)" onchange="changeTime(this)">
+        <input name="form_${id}" id="time_seconds_${id}" type="number" min="0" max="59" value="${seconds}"    placeholder="00" onfocus="this.select();" oninput="checkJump(this)" onchange="changeTime(this)">
       </span>.
       <span tooltip="${this._locale.race.tooltip_hundredths}" of a second' tooltip-position='bottom' class="input">
-        <input name="form_${id}" id="time_hundredths_${id}" type="number" min="0" max="99" value="${centesimal}" placeholder="00" onfocus="this.select();" oninput="changeTime(this)" onchange="changeTime(this)">
+        <input name="form_${id}" id="time_hundredths_${id}" type="number" min="0" max="99" value="${centesimal}" placeholder="00" onfocus="this.select();" oninput="checkJump(this)" onchange="changeTime(this)">
       </span>
     </div>`;
   }
@@ -1136,26 +1156,53 @@ class ViewParticipantsPageRow extends PageRow {
 }
 
 function changeTime(element) {
-  let value = parseInt(element.value);
+  if (!element) return;
+
+  let raw = element.value;
+  let value = parseInt(raw);
+  if (Number.isNaN(value)) value = 0;
 
   let valueStr = value.toString();
   if (valueStr.length > 2) {
-    valueStr = valueStr.substring(1, 3);
+    valueStr = valueStr.slice(-2);
     value = parseInt(valueStr);
   }
 
-  if (value > element.max) {
-    value = element.min;
-  }
+  let min = parseInt(element.min);
+  let max = parseInt(element.max);
+  if (Number.isNaN(min)) min = 0;
+  if (Number.isNaN(max)) max = 99;
 
-  if (value < element.min) {
-    value = element.min;
-  }
+  if (value > max) value = min;
+  if (value < min) value = min;
 
   if (value < 10) {
     element.value = '0' + value.toString();
   } else {
     element.value = value.toString();
+  }
+
+  // Focus jump logic: minutes -> seconds -> hundreds/hundredths
+  try {
+    if (element.id && element.id.indexOf('time_minutes') !== -1) {
+      // jump only when there are two numeric digits (user finished minutes)
+      let digits = element.value.replace(/\D/g, '');
+      if (digits.length >= 2) {
+        let nextId = element.id.replace('minutes', 'seconds');
+        let next = document.getElementById(nextId);
+        if (next) { next.focus(); next.select(); }
+      }
+    } else if (element.id && element.id.indexOf('time_seconds') !== -1) {
+      let digits = element.value.replace(/\D/g, '');
+      if (digits.length >= 2) {
+        let nextId1 = element.id.replace('seconds', 'hundreds');
+        let nextId2 = element.id.replace('seconds', 'hundredths');
+        let next = document.getElementById(nextId1) || document.getElementById(nextId2);
+        if (next) { next.focus(); next.select(); }
+      }
+    }
+  } catch (e) {
+    // ignore focus errors
   }
 }
 
@@ -1182,4 +1229,31 @@ function clickOnCancel(id) {
 
 function setupPage(locale, page_type) {
   row_participants = new ViewParticipantsPageRow(locale, page_type);
+}
+
+// Check whether to jump focus to the next time field without formatting/padding.
+function checkJump(element) {
+  if (!element || !element.id) return;
+  // raw value, don't pad or coerce
+  let raw = String(element.value || '');
+  let digits = raw.replace(/\D/g, '');
+
+  try {
+    if (element.id.indexOf('time_minutes') !== -1) {
+      if (digits.length >= 2) {
+        let nextId = element.id.replace('minutes', 'seconds');
+        let next = document.getElementById(nextId);
+        if (next) { next.focus(); next.select(); }
+      }
+    } else if (element.id.indexOf('time_seconds') !== -1) {
+      if (digits.length >= 2) {
+        let nextId1 = element.id.replace('seconds', 'hundreds');
+        let nextId2 = element.id.replace('seconds', 'hundredths');
+        let next = document.getElementById(nextId1) || document.getElementById(nextId2);
+        if (next) { next.focus(); next.select(); }
+      }
+    }
+  } catch (e) {
+    // ignore
+  }
 }

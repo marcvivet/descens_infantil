@@ -86,16 +86,16 @@ endblock title %} {% block stylesheets %}
                     <div class="div-time-big">
                       <span class="input">
                         <input name="select_participant" id="time_minutes_select" type="number" min="0" max="59"
-                          placeholder="00" onfocus="this.select();" oninput="changeTime(this)"
+                          placeholder="00" onfocus="this.select();" oninput="checkJump(this)"
                           onchange="changeTime(this)">
                       </span>:
                       <span class="input">
-                        <input name="select_participant" id="time_seconds_select" type="number" min="0" max="59" oninput="changeTime(this)"
+                        <input name="select_participant" id="time_seconds_select" type="number" min="0" max="59" oninput="checkJump(this)"
                           placeholder="00" onfocus="this.select();"
                           onchange="changeTime(this)">
                       </span>.
                       <span class="input">
-                        <input name="select_participant" id="time_hundreds_select" type="number" min="0" max="99" oninput="changeTime(this)"
+                        <input name="select_participant" id="time_hundreds_select" type="number" min="0" max="99" oninput="checkJump(this)"
                           placeholder="00" onfocus="this.select();"
                           onchange="changeTime(this)">
                       </span>
