@@ -234,19 +234,29 @@ class Participant(db.Model):
 
     @staticmethod
     def get_names_surnames():
-        sql_query = "SELECT participants.name AS name, participants.surnames as surnames " \
-                    "FROM participants"
+        # sql_query = "SELECT participants.name AS name, participants.surnames as surnames " \
+        #             "FROM participants"
 
-        rows = db.session.execute(sql_query).fetchall()
+        rows = db.session.query(
+            Participant.name,
+            Participant.surnames
+        ).all()
+
+        # rows = db.session.execute(sql_query).fetchall()
 
         output = {
             'names': set(),
             'surnames': set()
         }
 
+        def ensure_str(v):
+            if isinstance(v, bytes):
+                return v.decode("utf-8", errors="replace").replace('\x00', '')
+            return v
+
         for row in rows:
-            output['names'].add(row['name'])
-            output['surnames'].add(row['surnames'])
+            output['names'].add(ensure_str(row.name))
+            output['surnames'].add(ensure_str(row.surnames))
 
         output['names'] = sorted(list(output['names']))
         output['surnames'] = sorted(list(output['surnames']))

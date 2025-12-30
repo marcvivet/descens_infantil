@@ -112,12 +112,22 @@ def add():
                             db.commit()
                             raise Exception(locm.error_importing_dates)
 
+                        if isinstance(row['name'], bytes):
+                            name = row['name'].decode('utf-8')
+                        else:
+                            name = row['name']
+
+                        if isinstance(row['surnames'], bytes):
+                            surnames = row['surnames'].decode('utf-8')
+                        else:
+                            surnames = row['surnames']
+
                         participant = db.query(Participant).filter(
                             Participant.hash == Participant.get_hash(
-                                row['name'].title(), row['surnames'].title(), birthday_dt)).first()
+                                name.title(), surnames.title(), birthday_dt)).first()
 
                         if not participant:
-                            participant = Participant(row['name'].title(), row['surnames'].title(), birthday_dt)
+                            participant = Participant(name.title(), surnames.title(), birthday_dt)
                             db.add(participant)
                             db.flush()
 
